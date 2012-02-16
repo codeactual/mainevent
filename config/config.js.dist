@@ -1,0 +1,22 @@
+exports.read = function () {
+  return {
+    sources: [
+      {
+        file: '/path/to/php/log',
+        parser: 'php',
+        tags: []
+      },
+      {
+        file: '/path/to/json/log',
+        parser: 'json',
+        tags: []
+      }
+    ],
+    storage: {
+      db: 'mydb',
+      host: '127.0.0.1',
+      port: 27017,
+      collection: 'mycollection'
+    }
+  };
+};
