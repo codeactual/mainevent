@@ -41,7 +41,7 @@ $(function(){
       });
       delete o.filters;
 
-      this._timeline(o);
+      this._timeline(_.filter(o, function(value) { return null !== value; }));
     },
 
     _timeline: function(options) {
