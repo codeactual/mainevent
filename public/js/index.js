@@ -3,8 +3,9 @@
 $(function(){
   var Workspace = Backbone.Router.extend({
     routes: {
-      "": "index",
-      "event/:id": "event"
+      '': 'index',
+      'timeline': 'timeline',
+      'event/:id': 'event'
     },
 
     index: function() {
@@ -21,9 +22,13 @@ $(function(){
         },
         render: function(callback) {
           var foo = this.model.get('foo');
-          dust.render('event_nginx_access', this.model.toJSON(), function(err, out) {
-            $(foo).html(out);
-          });
+          dust.render(
+            'event_' + this.model.attributes.parser,
+            this.model.toJSON(),
+            function(err, out) {
+              $(foo).html(out);
+            }
+          );
         }
       });
 
