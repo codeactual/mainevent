@@ -53,6 +53,13 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
+app.get('/timeline', function(req, res) {
+  storage.connect(config.storage);
+  storage.get_timeline(req.query, function(err, documents) {
+    res.send(documents);
+  });
+});
+
 app.get('/event/:id', function(req, res) {
   storage.connect(config.storage);
   if (!req.params.id.match(/^[a-z0-9]{24}$/)) {
