@@ -1,4 +1,5 @@
 /**
+ * TODO: which table columns are always shown (how to render various event types)
  * TODO: Add file logging for 404/500 (http://expressjs.com/guide.html#error-handling)
  */
 
@@ -27,7 +28,6 @@ _.templateSettings = {
 // NODE_ENV=development node app/ui.js
 app.configure('development', function() {
   console.log('environment: dev');
-  // TODO: dust.js compiles all templates into public/templates.js
   var path = require('path');
   var dust = require('dust');
   var fs = require('fs');
