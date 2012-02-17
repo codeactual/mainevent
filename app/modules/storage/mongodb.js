@@ -23,8 +23,9 @@ exports.insert_log = function(source, log) {
     db.collection(collection, function(err, collection) {
       log.parser = source.parser;
       log.tags = source.tags;
-      collection.insert(log, function(err, docs) {
-        console.log('inserted: ' + util.inspect(log));
+      collection.insert(log, { safe: true }, function(err, docs) {
+        // close() required -- otherwise will hang
+        db.close();
       });
     });
   });

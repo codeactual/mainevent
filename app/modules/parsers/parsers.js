@@ -15,9 +15,23 @@ exports.parse_log = function(source, msg) {
   }
   msg = msg.toString();
   var lines = msg.replace(/\n$/, '').split("\n");
+  var docs = [];
   for (var l in lines) {
-    storage.insert_log(source, parsers[source.parser].parse(lines[l]));
+    docs.push(parsers[source.parser].parse(lines[l]));
   }
+  storage.insert_log(source, docs);
+};
+
+exports.parse_log_multi = function(source, lines) {
+  if (!storage) {
+    storage = require(__dirname + '/../storage/mongodb.js');
+    storage.connect(config.storage);
+  }
+  var docs = [];
+  for (var l in lines) {
+    docs.push(parsers[source.parser].parse(lines[l]));
+  }
+  storage.insert_log(source, docs);
 };
 
 exports.named_capture = function(subject, names, regex) {
