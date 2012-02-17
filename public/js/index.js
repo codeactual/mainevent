@@ -41,24 +41,11 @@ $(function(){
       });
       delete o.filters;
 
-      console.log('before', options);
-      console.log('after', o);
-
       this._timeline(o);
     },
 
     _timeline: function(options) {
-      //var url_compiled = _.template('/timeline?<%= filters %><%= limit %><%= skip %><%= sort_attr %><%= sort_dir %>');
       var url = '/timeline?' + $.param(options);
-      /*var url = url_compiled({
-        filters: 'code=200',
-        limit: limit ? '&limit=' + limit : '',
-        skip: skip ? '&skip=' + skip : '',
-        sort_attr: sort_attr ? '&sort_attr=' + sort_attr : '',
-        sort_dir: sort_dir ? '&sort_dir=' + sort_dir : ''
-      });*/
-
-      console.log('url', url);
 
       window.Timeline = Backbone.Collection.extend({
         model: Event,
