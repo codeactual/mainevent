@@ -55,7 +55,6 @@ exports.get_timeline = function(params, callback) {
         options.limit = parseInt(params.limit, 10);
         delete params.limit;
       }
-      console.log(options);
       collection.find(params, options).toArray(callback);
     });
   });
