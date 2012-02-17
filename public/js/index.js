@@ -5,16 +5,64 @@ $(function(){
     routes: {
       '': 'index',
       'timeline': 'timeline',
+      'timeline/:options': 'timeline',
       'event/:id': 'event'
     },
 
     index: function() {
     },
 
-    timeline: function() {
+    timeline: function(options) {
+      var o = {
+        filters: {},
+        skip: null,
+        limit: null,
+        sort_attr: null,
+        sort_dir: null
+      };
+
+      if (undefined !== options) {
+        var parts = options.split(';');
+        _.each(parts, function(part) {
+          console.log('part', part);
+          var kv = part.split('=');
+          if (2 == kv.length) {
+            if (o.hasOwnProperty(kv[0])) {
+              o[kv[0]] = kv[1];
+            } else {
+              o.filters[kv[0]] = kv[1];
+            }
+          }
+        });
+      }
+
+      _.each(o.filters, function(value, key) {
+        o[key] = value;
+      });
+      delete o.filters;
+
+      console.log('before', options);
+      console.log('after', o);
+
+      this._timeline(o);
+    },
+
+    _timeline: function(options) {
+      //var url_compiled = _.template('/timeline?<%= filters %><%= limit %><%= skip %><%= sort_attr %><%= sort_dir %>');
+      var url = '/timeline?' + $.param(options);
+      /*var url = url_compiled({
+        filters: 'code=200',
+        limit: limit ? '&limit=' + limit : '',
+        skip: skip ? '&skip=' + skip : '',
+        sort_attr: sort_attr ? '&sort_attr=' + sort_attr : '',
+        sort_dir: sort_dir ? '&sort_dir=' + sort_dir : ''
+      });*/
+
+      console.log('url', url);
+
       window.Timeline = Backbone.Collection.extend({
         model: Event,
-        url: '/timeline?limit=2',
+        url: url,
         initialize: function() {
           this.bind('add', function(model) {
             console.log('Timeline->add()', model);

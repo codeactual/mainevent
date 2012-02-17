@@ -5,6 +5,7 @@ var mongodb = require('mongodb');
 var BSON = mongodb.BSONPure;
 var db = null;
 var collection = null;
+var maxResultSize = 100;
 
 exports.connect = function(config) {
   if (!db) {
@@ -52,8 +53,14 @@ exports.get_timeline = function(params, callback) {
         delete params.sort_attr;
       }
       if (params.limit) {
-        options.limit = parseInt(params.limit, 10);
+        options.limit = Math.min(parseInt(params.limit, 10), maxResultSize);
         delete params.limit;
+      } else {
+        options.limit = maxResultSize;
+      }
+      if (params.skip) {
+        options.skip = parseInt(params.skip, 10);
+        delete params.skip;
       }
       collection.find(params, options).toArray(callback);
     });
