@@ -1,4 +1,5 @@
 /**
+ * TODO: #timeline -> event page -> history back (and reverse), no view data is cached
  * TODO: which table columns are always shown (how to render various event types)
  * TODO: Add file logging for 404/500 (http://expressjs.com/guide.html#error-handling)
  */
