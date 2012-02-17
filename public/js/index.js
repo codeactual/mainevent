@@ -37,7 +37,7 @@ $(function(){
           $(this.el).remove();
         },
         render: function(callback) {
-          dust.render("event", this.model.toJSON(), function(err, out) {
+          dust.render('event_nginx_access', this.model.toJSON(), function(err, out) {
             console.log('rendering', err, out);
             console.log('EventView: rendering', this.parent);
             callback(out);
