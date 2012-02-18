@@ -1,6 +1,8 @@
 "use strict";
 
 $(function(){
+  var cache = new clientsiiide('Diana');
+
   var Workspace = Backbone.Router.extend({
     routes: {
       '': 'index',
@@ -133,6 +135,36 @@ $(function(){
 
   window.Event = Backbone.Model.extend({
     urlRoot: '/event',
+    sync: function(method, model, options) {
+      if ('read' != method) {
+        console.log('non-read');
+        return Backbone.sync.call(this, method, this, options);
+      }
+      console.log('read', model.id, options);
+      var key = 'event-' + model.id;
+      cache.get({
+        ns: 'event',
+        keys: key,
+        expires: 100,
+        onDone: function(results) {
+          // Process key/value pairs in "results":
+          console.log('ondone', results);
+          options.success(results[key]);
+        },
+        onMiss: function(keys, onMissDone) {
+          var o = {
+            url: '/event/' + model.id,
+            success: function(data) {
+              var d = {};
+              d[key] = data;
+              onMissDone(d);
+            }
+          };
+          console.log('onmiss 1', keys);
+          Backbone.sync.call(this, method, this, o);
+        }
+      });
+    }
   });
 
   new Workspace();
