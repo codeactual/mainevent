@@ -29,7 +29,7 @@ exports.parse_log = function(source, lines, callback) {
       };
       source.tags.push('parse_error');
     }
-    storage.insert_log(source, parsed, callback);
+    storage.insert_log(source, parsed, callback || function() {});
   });
 };
 
