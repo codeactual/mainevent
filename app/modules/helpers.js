@@ -3,8 +3,8 @@
 var _ = require('underscore');
 
 /**
-  * Iterate over a list with a async consumer, ex. insert 5 rows into a DB
-  * through an async driver.
+  * Iterate synchronously over a list with a async consumer, ex. insert 5 rows
+  * into a DB through an async driver.
   *
   * @param list {Array} Iteration elements.
   * @param consumer {Function} Function executed on each element, ex. DB insert.
@@ -16,6 +16,9 @@ exports.walkAsync = function(list, consumer, consumerCallback, onDone) {
   arguments[0] = _.clone(arguments[0]);
 
   (function(list, consumer, consumerCallback, onDone) {
+    consumerCallback = consumerCallback || function() {};
+    onDone = onDone || function() {};
+
     // E.g. pass one element for an async DB insert.
     consumer(list.shift(), function() {
       // Run the async DB insertion callback, e.g. log the insert.

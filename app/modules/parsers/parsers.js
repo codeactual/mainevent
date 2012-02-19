@@ -9,6 +9,7 @@ _.each(config.sources, function(source) {
   parsers[source.parser] = require(__dirname + '/' + source.parser);
 });
 
+var helpers = require(__dirname + '/../helpers.js');
 var storage = require(__dirname + '/../storage/mongodb.js');
 
 /**
@@ -20,19 +21,25 @@ var storage = require(__dirname + '/../storage/mongodb.js');
   * @return {Object} Captured properties.
   */
 exports.parse_log = function(source, lines, callback) {
-  _.each(lines, function(line) {
-    var parsed = parsers[source.parser].parse(line);
-    if (!_.size(parsed)) {
-      parsed = {
+  _.each(lines, function(line, index) {
+    lines[index] = parsers[source.parser].parse(line);
+    if (!_.size(lines[index])) {
+      lines[index] = {
         time: new Date().toUTCString(),
-        message: line
+        message: line,
+        __parse_error: 1
       };
-      var tags = source.tags;
-      tags.push('parse_error');
-      source.tags = tags;
     }
-    storage.insert_log(source, parsed, callback || function() {});
   });
+
+  helpers.walkAsync(
+    lines,
+    function (line, callback) {
+      storage.insert_log(source, line, callback);
+    },
+    null,
+    callback
+  );
 };
 
 /**

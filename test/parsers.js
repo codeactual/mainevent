@@ -163,10 +163,12 @@ exports.testUnparsable = function(test) {
   var time = new Date().toUTCString();
   var source = { parser: 'php', tags: ['a', 'b'] };
   var message = 'log line with invalid format';
+  test.expect(3);
   parsers.parse_log(source, [message], function(err, doc) {
     storage.get_timeline({ time: time }, function(err, docs) {
       test.equal(docs[0].message, message);
-      test.deepEqual(docs[0].tags, ['a', 'b','parse_error']);
+      test.deepEqual(docs[0].tags, source.tags);
+      test.equal(docs[0].__parse_error, 1);
       test.done();
     });
   });

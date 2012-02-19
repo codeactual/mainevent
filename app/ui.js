@@ -42,8 +42,6 @@ app.configure('development', function() {
     var compiled = dust.compile(fs.readFileSync(__dirname + '/views/' + template, 'UTF-8'), templateName);
     dust.loadSource(compiled);
     fs.writeSync(fd, compiled, null, 'utf8');
-    //fs.writeFileSync(path.join(__dirname + '/../public/templates', templateName + '.js'), compiled);
-    //fs.writeFileSync(path.join(__dirname + '/../public/templates/compiled.js'), compiled);
   });
 });
 
