@@ -7,4 +7,4 @@ exports.parse = function(log) {
     // From fluentd-0.10.9/lib/fluent/parser.rb:
     /^([^ ]*\s*[^ ]* [^ ]*) ([^ ]*) ([a-zA-Z0-9_\/\.\-]*)(?:\[([0-9]+)\])?[^\:]*\: *(.*)$/
   );
-}
+};

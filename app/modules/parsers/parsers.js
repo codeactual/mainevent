@@ -27,7 +27,9 @@ exports.parse_log = function(source, lines, callback) {
         time: new Date().toUTCString(),
         message: line
       };
-      source.tags.push('parse_error');
+      var tags = source.tags;
+      tags.push('parse_error');
+      source.tags = tags;
     }
     storage.insert_log(source, parsed, callback || function() {});
   });

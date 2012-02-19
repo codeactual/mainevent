@@ -53,6 +53,33 @@ exports.testNginxError = function(test) {
       host: 'diana'
     }
   );
+  verify_parse(
+    test,
+    '2012/02/05 00:26:21 [error] 18242#0: *1 access forbidden by rule, client: 127.0.0.1, server: diana, request: "GET /.htaccess HTTP/1.1", host: "diana"',
+    'nginx_error',
+    {
+      time: '2012/02/05 00:26:21',
+      level: 'error',
+      errno: '18242#0',
+      errstr: '*1 access forbidden by rule',
+      client: '127.0.0.1',
+      server: 'diana',
+      method: 'GET',
+      path: '/.htaccess',
+      host: 'diana'
+    }
+  );
+  verify_parse(
+    test,
+    '2012/02/05 00:25:54 [emerg] 18108#0: invalid number of arguments in "server_tokens" directive in /path/to/config:9',
+    'nginx_error',
+    {
+      time: '2012/02/05 00:25:54',
+      level: 'emerg',
+      errno: '18108#0',
+      errstr: 'invalid number of arguments in "server_tokens" directive in /path/to/config:9'
+    }
+  );
   test.done();
 };
 
