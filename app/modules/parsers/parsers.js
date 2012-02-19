@@ -21,6 +21,8 @@ var storage = require(__dirname + '/../storage/mongodb.js');
   * @return {Object} Captured properties.
   */
 exports.parse_log = function(source, lines, callback) {
+  callback = callback || function() {};
+
   _.each(lines, function(line, index) {
     lines[index] = parsers[source.parser].parse(line);
     if (!_.size(lines[index])) {
@@ -35,10 +37,15 @@ exports.parse_log = function(source, lines, callback) {
   helpers.walkAsync(
     lines,
     function (line, callback) {
-      storage.insert_log(source, line, callback);
+      var bulk = true;
+      storage.insert_log(source, line, callback, bulk);
     },
     null,
-    callback
+    function() {
+      // Manually close -- insert_log won't when bulk=true.
+      storage.db_close();
+      callback();
+    }
   );
 };
 

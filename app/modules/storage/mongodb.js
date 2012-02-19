@@ -8,32 +8,36 @@ var collection = null;
 var maxResultSize = 100;
 
 var db_connect_and_open = function(callback) {
-  if (!link) {
+  if (link) {
+    callback(null, link);
+  } else {
     var config = require(__dirname + '/../../../config/config.js').read().storage;
     collection = config.collection;
     link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
     );
+    link.open(callback);
   }
-  link.open(callback);
 };
 
-var db_close = function() {
+exports.db_close = function() {
   if (link) {
     link.close();
     link = null;
   }
 };
 
-exports.insert_log = function(source, log, callback) {
+exports.insert_log = function(source, log, callback, bulk) {
   db_connect_and_open(function(err, db) {
     db.collection(collection, function(err, collection) {
       log.parser = source.parser;
       log.tags = source.tags;
       collection.insert(log, { safe: true }, function(err, docs) {
-        // close() required -- otherwise will hang
-        db_close();
+        // close() required after one-time insert to avoid hang
+        if (!bulk) {
+          exports.db_close();
+        }
         callback(err, docs);
       });
     });
@@ -45,7 +49,7 @@ exports.get_log = function(id, callback) {
     db.collection(collection, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         callback(err, doc);
-        db_close();
+        exports.db_close();
       });
     });
   });
@@ -76,7 +80,7 @@ exports.get_timeline = function(params, callback) {
         delete params.skip;
       }
       collection.find(params, options).toArray(function(err, data) {
-        db_close();
+        exports.db_close();
         callback(err, data);
       });
     });
