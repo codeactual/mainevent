@@ -1,25 +1,35 @@
 'use strict';
 
 var _ = require('underscore');
-var config = require(__dirname + '/../../../config/config.js').read();
 
 // Parser modules indexed by name, ex. 'nginx_access'.
+var config = require(__dirname + '/../../../config/config.js').read();
 var parsers = {};
-
-// Storage module.
-var storage = null;
-
 _.each(config.sources, function(source) {
   parsers[source.parser] = require(__dirname + '/' + source.parser);
 });
 
-exports.parse_log = function(source, lines) {
-  if (!storage) {
-    storage = require(__dirname + '/../storage/mongodb.js');
-    storage.connect(config.storage);
-  }
+var storage = require(__dirname + '/../storage/mongodb.js');
+
+/**
+  * Parse each line according to its source parser. Tag unparsable.
+  *
+  * @param subject {String} Log line.
+  * @param names {Array} Capture names, ex. 'time' or 'host'.
+  * @param regex {RegExp} Pattern to capture all parts in 'names'.
+  * @return {Object} Captured properties.
+  */
+exports.parse_log = function(source, lines, callback) {
   _.each(lines, function(line) {
-    storage.insert_log(source, parsers[source.parser].parse(line));
+    var parsed = parsers[source.parser].parse(line);
+    if (!_.size(parsed)) {
+      parsed = {
+        time: new Date().toUTCString(),
+        message: line
+      };
+      source.tags.push('parse_error');
+    }
+    storage.insert_log(source, parsed, callback);
   });
 };
 

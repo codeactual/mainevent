@@ -3,44 +3,56 @@
 var util = require('util');
 var mongodb = require('mongodb');
 var BSON = mongodb.BSONPure;
-var db = null;
+var link = null;
 var collection = null;
 var maxResultSize = 100;
 
-exports.connect = function(config) {
-  if (!db) {
+var db_connect_and_open = function(callback) {
+  if (!link) {
+    var config = require(__dirname + '/../../../config/config.js').read().storage;
     collection = config.collection;
-    db = new mongodb.Db(
+    link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
     );
   }
-  return db;
+  link.open(callback);
 };
 
-exports.insert_log = function(source, log) {
-  db.open(function(err, db) {
+var db_close = function() {
+  if (link) {
+    link.close();
+    link = null;
+  }
+};
+
+exports.insert_log = function(source, log, callback) {
+  db_connect_and_open(function(err, db) {
     db.collection(collection, function(err, collection) {
       log.parser = source.parser;
       log.tags = source.tags;
       collection.insert(log, { safe: true }, function(err, docs) {
         // close() required -- otherwise will hang
-        db.close();
+        db_close();
+        callback(err, docs);
       });
     });
   });
 };
 
 exports.get_log = function(id, callback) {
-  db.open(function(err, db) {
+  db_connect_and_open(function(err, db) {
     db.collection(collection, function(err, collection) {
-      collection.findOne({_id: new BSON.ObjectID(id)}, callback);
+      collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
+        callback(err, doc);
+        db_close();
+      });
     });
   });
 };
 
 exports.get_timeline = function(params, callback) {
-  db.open(function(err, db) {
+  db_connect_and_open(function(err, db) {
     db.collection(collection, function(err, collection) {
       var options = {};
       if (params.sort_attr) {
@@ -63,7 +75,10 @@ exports.get_timeline = function(params, callback) {
         options.skip = parseInt(params.skip, 10);
         delete params.skip;
       }
-      collection.find(params, options).toArray(callback);
+      collection.find(params, options).toArray(function(err, data) {
+        db_close();
+        callback(err, data);
+      });
     });
   });
 };

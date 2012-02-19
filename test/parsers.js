@@ -1,6 +1,8 @@
 'use strict';
 
 var util = require('util');
+var parsers = require('../app/modules/parsers/parsers.js');
+var storage = require('../app/modules/storage/mongodb.js');
 
 var verify_parse = function(test, log, parser, expected) {
   var actual = require('../app/modules/parsers/' + parser + '.js').parse(log);
@@ -128,4 +130,17 @@ exports.testJson = function(test) {
     }
   );
   test.done();
+};
+
+exports.testUnparsable = function(test) {
+  var time = new Date().toUTCString();
+  var source = { parser: 'php', tags: ['a', 'b'] };
+  var message = 'log line with invalid format';
+  parsers.parse_log(source, [message], function(err, doc) {
+    storage.get_timeline({ time: time }, function(err, docs) {
+      test.equal(docs[0].message, message);
+      test.deepEqual(docs[0].tags, ['a', 'b','parse_error']);
+      test.done();
+    });
+  });
 };

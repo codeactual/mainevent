@@ -21,5 +21,5 @@ new lazy(fs.createReadStream(source.file))
   .lines
   .map(String)
   .join(function (lines) {
-    parsers.parse_log_multi(source, lines);
+    parsers.parse_log(source, lines);
   });
