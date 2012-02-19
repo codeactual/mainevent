@@ -1,4 +1,5 @@
 /**
+ * TODO: camelcase/underscore inconsistency
  * TODO: import.js hangs on /tmp/php.log -- need way to mass-insert async
  * TODO: which table columns are always shown (how to render various event types)
  * TODO: Add file logging for 404/500 (http://expressjs.com/guide.html#error-handling)
