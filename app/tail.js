@@ -14,7 +14,10 @@ var monitor_file = function(source) {
   // --bytes=0 to skip preexisting lines
   var cmd = spawn('tail', ['--bytes=0', '-F', source.file]);
   cmd.stdout.on('data', function(data) {
-    parsers.parse_log(source, data);
+    parsers.parse_log(
+      source,
+      data.toString().replace(/\n$/, '').split("\n")
+    );
   });
   console.log('tailing: ' + source.file);
 };
