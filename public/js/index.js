@@ -102,39 +102,40 @@ $(function(){
     },
 
     event: function(id) {
+      // View of an individual event.
       window.EventView = Backbone.View.extend({
+        el: $('#backbone-view'),
         initialize: function() {
+          // Fires automatically during EventPageView.initialize.
+          this.model = new Event({id: id});
           this.model.bind('change', this.render, this);
+          this.model.set('parent', this.el);
+          this.model.fetch();
+          this.render();
         },
-        render: function(callback) {
-          var foo = this.model.get('foo');
+
+        // Populate parent element with processed event template.
+        render: function() {
+          var parent = this.model.get('parent');
           dust.render(
+            // ex. 'event_nginx_access'
             'event_' + this.model.attributes.parser,
             this.model.toJSON(),
             function(err, out) {
-              $(foo).html(out);
+              $(parent).html(out);
             }
           );
         }
       });
 
-      window.EventPageView = Backbone.View.extend({
-        el: $('#backbone-view'),
-        initialize: function() {
-          var m = new Event({id: id});
-          m.set('foo', this.el);
-          m.fetch();
-          var view = new EventView({model: m});
-          view.render();
-        }
-      });
-
-      window.EventPage = new EventPageView();
+      window.EventPage = new EventView();
     },
   });
 
   window.Event = Backbone.Model.extend({
     urlRoot: '/event',
+
+    // Divert all reads through localStorage cache.
     sync: function(method, model, options) {
       if ('read' != method) {
         Backbone.sync.call(this, method, this, options);
