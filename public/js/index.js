@@ -137,31 +137,24 @@ $(function(){
     urlRoot: '/event',
     sync: function(method, model, options) {
       if ('read' != method) {
-        console.log('non-read');
-        return Backbone.sync.call(this, method, this, options);
+        Backbone.sync.call(this, method, this, options);
       }
-      console.log('read', model.id, options);
-      var key = 'event-' + model.id;
+      var cacheKey = 'id-' + model.id;
       cache.get({
         ns: 'event',
-        keys: key,
-        expires: 100,
+        keys: cacheKey,
         onDone: function(results) {
-          // Process key/value pairs in "results":
-          console.log('ondone', results);
-          options.success(results[key]);
+          options.success(results[cacheKey]);
         },
         onMiss: function(keys, onMissDone) {
-          var o = {
+          Backbone.sync.call(this, method, this, {
             url: '/event/' + model.id,
             success: function(data) {
-              var d = {};
-              d[key] = data;
-              onMissDone(d);
+              var write = {};
+              write[cacheKey] = data;
+              onMissDone(write);
             }
-          };
-          console.log('onmiss 1', keys);
-          Backbone.sync.call(this, method, this, o);
+          });
         }
       });
     }
