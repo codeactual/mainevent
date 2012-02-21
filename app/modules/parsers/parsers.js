@@ -83,6 +83,7 @@ exports.candidate_capture = function(subject, candidates) {
   for (var c in candidates) {
     captured = exports.named_capture(subject, candidates[c].names, candidates[c].regex);
     if (_.size(captured)) {
+      captured.parser_subtype = candidates[c].subtype;
       break;
     }
   }

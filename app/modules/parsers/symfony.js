@@ -2,15 +2,15 @@
 
 exports.parse = function(log) {
   return require('./parsers').candidate_capture(log, [
-    // event debug
     {
       'names': ['time', 'type', 'level', 'event', 'listener'],
-      'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/
+      'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,
+      subtype: 'event_debug'
     },
-    // uncaught exception
     {
       'names': ['time', 'type', 'level', 'class', 'message', 'file', 'line'],
-      'regex' : /^\[([^\]]*)\] ([^\.]+)\.([^:]+): ([^:]+):(?: (.*) at )(?:(\/.*) line )(\d+)/
+      'regex' : /^\[([^\]]*)\] ([^\.]+)\.([^:]+): ([^:]+):(?: (.*) at )(?:(\/.*) line )(\d+)/,
+      subtype: 'uncaught_exception'
     }
   ]);
 };

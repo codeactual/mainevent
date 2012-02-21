@@ -50,7 +50,8 @@ exports.testNginxError = function(test) {
       method: 'GET',
       path: '/timeline',
       upstream: 'fastcgi://unix:/usr/var/run/php-fpm.sock:',
-      host: 'diana'
+      host: 'diana',
+      parser_subtype: 'standard'
     }
   );
   verify_parse(
@@ -66,7 +67,8 @@ exports.testNginxError = function(test) {
       server: 'diana',
       method: 'GET',
       path: '/.htaccess',
-      host: 'diana'
+      host: 'diana',
+      parser_subtype: 'no_upstream'
     }
   );
   verify_parse(
@@ -77,7 +79,8 @@ exports.testNginxError = function(test) {
       time: '2012/02/05 00:25:54',
       level: 'emerg',
       errno: '18108#0',
-      errstr: 'invalid number of arguments in "server_tokens" directive in /path/to/config:9'
+      errstr: 'invalid number of arguments in "server_tokens" directive in /path/to/config:9',
+      parser_subtype: 'internal'
     }
   );
   test.done();
@@ -93,7 +96,8 @@ exports.testSymfonyEventDebug = function(test) {
       type: 'event',
       level: 'DEBUG',
       event: 'kernel.response',
-      listener: 'Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse'
+      listener: 'Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse',
+      parser_subtype: 'event_debug'
     }
   );
   test.done();
@@ -111,7 +115,8 @@ exports.testSymfonyUncaughtException = function(test) {
       class: 'Twig_Error_Runtime',
       message: 'Variable "rows" does not exist in "DianaTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception)',
       file: '/var/dev/diana/app/cache/dev/classes.php',
-      line: '8024'
+      line: '8024',
+      parser_subtype: 'uncaught_exception'
     }
   );
   test.done();
@@ -127,7 +132,8 @@ exports.testPhpNotice = function(test) {
       level: 'Notice',
       message: 'Undefined variable: b',
       file: '/tmp/errormaker.php',
-      line: '2'
+      line: '2',
+      parser_subtype: 'builtin'
     }
   );
   test.done();
@@ -140,7 +146,8 @@ exports.testPhpUserDefined = function(test) {
     'php',
     {
       time: '14-Feb-2012 06:38:38 UTC',
-      message: 'something terrible happened'
+      message: 'something terrible happened',
+      parser_subtype: 'userdef'
     }
   );
   test.done();
