@@ -68,8 +68,12 @@ exports.addPreview = function(logs, onAllDone) {
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
+      if (_.has(parsers[log.parser], 'getPreviewContext')) {
+        log = parsers[log.parser].getPreviewContext(log);
+      }
+
       // Use parser module's preview function, e.g. for parsers/json.js.
-      if (_.has(parsers[log.parser], 'preview')) {
+      if (_.has(parsers[log.parser], 'getPreview')) {
         log.preview = parser[log.parser].preview(log);
         onSingleDone();
       // Use parser's template.

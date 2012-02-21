@@ -198,7 +198,7 @@ exports.testGetPreviewFromFunction = function(test) {
   var str = '';
   _(10).times(function() { str += '0123456789'; });
   var expected = JSON.stringify(str).substr(0, 80);
-  test.equal(get_parser('json').preview(str), expected);
+  test.equal(get_parser('json').getPreview(str), expected);
   test.done();
 };
 

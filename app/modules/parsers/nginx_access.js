@@ -8,3 +8,13 @@ exports.parse = function(log) {
     /^([^ ]*) [^ ]* ([^ ]*) \[([^\]]*)\] "(\S+)(?: +([^ ]*) +\S*)?" ([^ ]*) ([^ ]*)(?: "([^\"]*)" "([^\"]*)")?$/
   );
 };
+
+exports.getPreviewContext = function(log) {
+  switch (log.code[0]) {
+    case '2': log.codeClass = 'success'; break;
+    case '3': log.codeClass = 'info'; break;
+    case '4': log.codeClass = 'important'; break;
+    case '5': log.codeClass = 'important'; break;
+  }
+  return log;
+};
