@@ -212,10 +212,9 @@ exports.testGetPreviewFromTemplate = function(test) {
   var expected = _.clone(logs);
   expected[0].preview = 'foo';
 
-  test.expect(4);
+  test.expect(5);
   parsers.addPreview(logs, function(actual) {
     _.each(_.keys(expected[0]), function(key) {
-      console.log(util.format(actual));
       test.equal(actual[0][key], expected[0][key]);
     });
     test.done();
