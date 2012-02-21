@@ -1,11 +1,16 @@
 'use strict';
 
+var _ = require('underscore');
 var util = require('util');
 var parsers = require('../app/modules/parsers/parsers.js');
 var storage = require('../app/modules/storage/mongodb.js');
 
+var get_parser = function(name) {
+  return require('../app/modules/parsers/' + name + '.js');
+};
+
 var verify_parse = function(test, log, parser, expected) {
-  var actual = require('../app/modules/parsers/' + parser + '.js').parse(log);
+  var actual = get_parser(parser).parse(log);
   var expected_keys = Object.keys(expected);
 
   test.equal(Object.keys(actual).length, expected_keys.length);
@@ -178,5 +183,38 @@ exports.testUnparsable = function(test) {
       test.equal(docs[0].__parse_error, 1);
       test.done();
     });
+  });
+};
+
+exports.testGetPreviewTemplate = function(test) {
+  var log = {parser: 'php', parser_subtype: 'userdef'};
+  test.equal(parsers.getPreviewTemplate(log), 'preview_php_userdef');
+  log = {parser: 'json'};
+  test.equal(parsers.getPreviewTemplate(log), 'preview_json');
+  test.done();
+};
+
+exports.testGetPreviewFromFunction = function(test) {
+  var str = '';
+  _(10).times(function() { str += '0123456789'; });
+  var expected = JSON.stringify(str).substr(0, 80);
+  test.equal(get_parser('json').preview(str), expected);
+  test.done();
+};
+
+exports.testGetPreviewFromTemplate = function(test) {
+  var logs = [{
+    parser: 'php',
+    parser_subtype: 'userdef',
+    time: 'Tue Feb 21 10:44:23 UTC',
+    message: 'foo'
+  }];
+  var expected = _.clone(logs);
+  expected[0].preview = 'foo';
+
+  test.expect(1);
+  parsers.addPreview(logs, function(actual) {
+    test.deepEqual(actual, expected);
+    test.done();
   });
 };

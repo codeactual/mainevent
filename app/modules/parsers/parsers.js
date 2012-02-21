@@ -49,6 +49,43 @@ exports.parse_log = function(source, lines, callback) {
   );
 };
 
+exports.getPreviewTemplate = function(log) {
+  return 'preview_' + log.parser + (undefined === log.parser_subtype ? '' : '_' + log.parser_subtype);
+};
+
+/**
+ * Augment each log object with preview HTML based on its parser subtype.
+ *
+  * @param log {Array} List of objects describing parsed log lines.
+  * @param onAllDone {Function} Called after all previews have been added.
+ */
+exports.addPreview = function(logs, onAllDone) {
+  var dust = require('dust');
+
+  helpers.walkAsync(
+    logs,
+    function(log, onSingleDone) {
+      // Use parser module's preview function, e.g. for parsers/json.js.
+      if (_.has(parsers[log.parser], 'preview')) {
+        log.preview = parser[log.parser].preview(log);
+        onSingleDone();
+      // Use parser's template.
+      } else {
+        dust.render(
+          exports.getPreviewTemplate(log),
+          log,
+          function(err, out) {
+            log.preview = out;
+            onSingleDone();
+          }
+        );
+      }
+    },
+    null,
+    onAllDone(logs)
+  );
+};
+
 /**
   * Apply a list of potential named capture regexes. First match wins.
   *
