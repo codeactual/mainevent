@@ -30,19 +30,9 @@ _.templateSettings = {
 // NODE_ENV=development node app/ui.js
 app.configure('development', function() {
   console.log('environment: dev');
-  var path = require('path');
-  var dust = require('dust');
-  var views = require(__dirname + '/modules/views');
-  var fs = require('fs');
-  var templates = fs.readdirSync(__dirname + '/views');
-  var fd = fs.openSync(__dirname + '/../public/templates/compiled.js', 'a');
-  _.each(templates, function(template) {
-    var templateName = path.basename(template, '.html');
-    var compiled = dust.compile(fs.readFileSync(views.getPath(templateName), 'UTF-8'), templateName);
-    dust.loadSource(compiled);
-    fs.writeSync(fd, compiled, null, 'utf8');
-  });
 });
+
+require(__dirname + '/modules/views.js').compile();
 
 app.use(express.static(__dirname + '/../public'));
 app.set('views', __dirname + '/views');
@@ -55,10 +45,17 @@ app.get('/', function(req, res) {
 
 app.get('/timeline', function(req, res) {
   storage.get_timeline(req.query, function(err, documents) {
-    var parsers = require(__dirname + '/modules/parsers/parsers.js');
-    parsers.addPreview(documents, function(updated) {
-      res.send(updated);
-    });
+    if (err) {
+      res.send({error: err});
+    } else if (documents.length) {
+      res.send(documents); return;
+      var parsers = require(__dirname + '/modules/parsers/parsers.js');
+      parsers.addPreview(documents, function(updated) {
+        res.send(updated);
+      });
+    } else {
+      res.send([]);
+    }
   });
 });
 
@@ -67,7 +64,11 @@ app.get('/event/:id', function(req, res) {
     res.send(null);
   }
   storage.get_log(req.params.id, function(err, document) {
-    res.send(document);
+    if (err) {
+      res.send({error: err});
+    } else {
+      res.send(document);
+    }
   });
 });
 

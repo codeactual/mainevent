@@ -80,7 +80,6 @@ exports.addPreview = function(logs, onAllDone) {
           templateName,
           log,
           function(err, out) {
-            var util = require('util');
             log.preview = out;
             updatedLogs.push(log);
             onSingleDone();
