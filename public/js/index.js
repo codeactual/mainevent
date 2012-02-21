@@ -8,19 +8,19 @@ $(function(){
       var routes = {
         '': {
           handler: disp_index,
-          context: { sidebar: false }
-        },
+          context: {sidebar: false, tab: 'nav-home'}
+       },
         'timeline': {
           handler: disp_timeline_search,
-          context: { sidebar: false }
-        },
+          context: {sidebar: false, tab: 'nav-timeline'}
+       },
         'timeline/:options': {
           handler: disp_timeline_search,
-          context: { sidebar: false }
-        },
+          context: {sidebar: false, tab: 'nav-timeline'}
+       },
         'event/:id': {
           handler: disp_event,
-          context: { sidebar: false }
+          context: {sidebar: false, tab: 'nav-timeline'}
         }
       };
 
@@ -32,6 +32,8 @@ $(function(){
             'content',
             config.context,
             function(err, out) {
+              $('#nav-list > li').removeClass('active');
+              $('#' + config.context.tab).addClass('active');
               $('#content').html(out);
               config.handler.apply(config.context, routeOptions);
             }
