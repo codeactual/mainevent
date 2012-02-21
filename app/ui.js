@@ -1,12 +1,4 @@
-/**
- * TODO: php previews not displayed
- * TODO: table-ize all event pages
- * TODO: render tag arrays on event pages
- * TODO: render tag arrays on timeline?
- * TODO: camelcase/underscore inconsistency
- * TODO: Add file logging for 404/500 (http://expressjs.com/guide.html#error-handling)
- * TODO: Add 'err' handling to mongodb.js
- */
+'use strict';
 
 var _ = require('underscore');
 var express = require('express');
