@@ -12,11 +12,11 @@ $(function(){
         },
         'timeline': {
           handler: disp_timeline_search,
-          context: { sidebar: true }
+          context: { sidebar: false }
         },
         'timeline/:options': {
           handler: disp_timeline_search,
-          context: { sidebar: true }
+          context: { sidebar: false }
         },
         'event/:id': {
           handler: disp_event,
