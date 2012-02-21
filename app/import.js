@@ -1,7 +1,5 @@
 'use strict';
 
-// TODO: consolidate parse_log/parse_log_multi
-
 if (!process.argv[2] || !process.argv[3]) {
   console.error('usage: node import.js <parser> <file>');
   process.exit(1);
