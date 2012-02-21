@@ -16,5 +16,7 @@ exports.getPreviewContext = function(log) {
     case '4': log.codeClass = 'important'; break;
     case '5': log.codeClass = 'important'; break;
   }
+
+  log.referer_min = log.referer.replace(/^http(s)?:\/\//, '');
   return log;
 };
