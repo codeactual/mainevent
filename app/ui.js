@@ -1,6 +1,6 @@
 /**
+ * TODO: use different label style for each HTTP error code
  * TODO: camelcase/underscore inconsistency
- * TODO: which table columns are always shown (how to render various event types)
  * TODO: Add file logging for 404/500 (http://expressjs.com/guide.html#error-handling)
  * TODO: Add 'err' handling to mongodb.js
  */
