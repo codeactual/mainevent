@@ -32,7 +32,6 @@ app.get('/timeline', function(req, res) {
     if (err) {
       res.send({error: err});
     } else if (documents.length) {
-      res.send(documents); return;
       var parsers = require(__dirname + '/modules/parsers/parsers.js');
       parsers.addPreview(documents, function(updated) {
         res.send(updated);

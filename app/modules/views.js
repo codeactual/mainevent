@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require('path');
 
 exports.compile = function() {
-  var fd = fs.openSync(__dirname + '/../../public/templates/compiled.js', 'a');
+  var fd = fs.openSync(__dirname + '/../../public/templates/compiled.js', 'w');
   var templates = fs.readdirSync(__dirname + '/../views');
 
   _.each(templates, function(template) {
