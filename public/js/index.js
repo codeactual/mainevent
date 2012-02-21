@@ -28,7 +28,6 @@ $(function(){
       _.each(routes, function(config, route) {
         router.route(route, config.handler, function() {
           var routeOptions = arguments;
-          console.log('outputting index');
           dust.render(
             'content',
             config.context,
