@@ -61,28 +61,46 @@ exports.getPreviewTemplate = function(log) {
  */
 exports.addPreview = function(logs, onAllDone) {
   var dust = require('dust');
+  var updatedLogs = [];
+
+  var views = require(__dirname + '/../views.js');
+
+  console.log('about to walk');
 
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
       // Use parser module's preview function, e.g. for parsers/json.js.
       if (_.has(parsers[log.parser], 'preview')) {
+        console.log('has preview');
         log.preview = parser[log.parser].preview(log);
         onSingleDone();
       // Use parser's template.
       } else {
+        console.log('no preview');
+        var templateName = exports.getPreviewTemplate(log);
+        console.log(views.getPath(templateName), templateName);
+        //dust.compile(views.getPath(exports.getPreviewTemplate(log)), 'UTF-8', templateName);
+        console.log('about to load');
+        dust.loadSource(require('fs').readFileSync(__dirname + '/../../../public/templates/compiled.js'));
+  console.log('about to render');
         dust.render(
-          exports.getPreviewTemplate(log),
+          templateName,
           log,
           function(err, out) {
+            var util = require('util');
+            console.log('log', util.format(log));
+            console.log('out', out);
+            console.log('err', err);
             log.preview = out;
+            updatedLogs.push(log);
             onSingleDone();
           }
         );
       }
     },
     null,
-    onAllDone(logs)
+    onAllDone(updatedLogs)
   );
 };
 

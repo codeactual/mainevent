@@ -2,11 +2,11 @@
 
 var _ = require('underscore');
 var util = require('util');
-var parsers = require('../app/modules/parsers/parsers.js');
-var storage = require('../app/modules/storage/mongodb.js');
+var parsers = require(__dirname + '/../app/modules/parsers/parsers.js');
+var storage = require(__dirname + '/../app/modules/storage/mongodb.js');
 
 var get_parser = function(name) {
-  return require('../app/modules/parsers/' + name + '.js');
+  return require(__dirname + '/../app/modules/parsers/' + name + '.js');
 };
 
 var verify_parse = function(test, log, parser, expected) {
@@ -212,9 +212,12 @@ exports.testGetPreviewFromTemplate = function(test) {
   var expected = _.clone(logs);
   expected[0].preview = 'foo';
 
-  test.expect(1);
+  test.expect(4);
   parsers.addPreview(logs, function(actual) {
-    test.deepEqual(actual, expected);
+    _.each(_.keys(expected[0]), function(key) {
+      console.log(util.format(actual));
+      test.equal(actual[0][key], expected[0][key]);
+    });
     test.done();
   });
 };

@@ -32,13 +32,13 @@ app.configure('development', function() {
   console.log('environment: dev');
   var path = require('path');
   var dust = require('dust');
+  var views = require(__dirname + '/modules/views');
   var fs = require('fs');
   var templates = fs.readdirSync(__dirname + '/views');
   var fd = fs.openSync(__dirname + '/../public/templates/compiled.js', 'a');
   _.each(templates, function(template) {
-    console.log('template: ' + template);
     var templateName = path.basename(template, '.html');
-    var compiled = dust.compile(fs.readFileSync(__dirname + '/views/' + template, 'UTF-8'), templateName);
+    var compiled = dust.compile(fs.readFileSync(views.getPath(templateName), 'UTF-8'), templateName);
     dust.loadSource(compiled);
     fs.writeSync(fd, compiled, null, 'utf8');
   });
@@ -55,7 +55,10 @@ app.get('/', function(req, res) {
 
 app.get('/timeline', function(req, res) {
   storage.get_timeline(req.query, function(err, documents) {
-    res.send(documents);
+    var parsers = require(__dirname + '/modules/parsers/parsers.js');
+    parsers.addPreview(documents, function(updated) {
+      res.send(updated);
+    });
   });
 });
 
