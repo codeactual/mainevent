@@ -11,36 +11,20 @@ var app = express.createServer();
 var storage = require(__dirname + '/modules/storage/mongodb.js');
 var config = require(__dirname + '/../config/config.js').read();
 
-// http://stackoverflow.com/questions/6825325/example-of-node-js-express-registering-underscore-js-as-view-engine
+require(__dirname + '/modules/views.js').compile();
+
 app.register('.html', {
-  compile: function (str, options) {
-    var template = _.template(str);
-    return function (locals) {
-      return template(locals);
-    };
+  compile: function(str, options) {
+    return function() { return str; };
   }
 });
 
-// http://japhr.blogspot.com/2011/10/underscorejs-templates-in-backbonejs.html
-_.templateSettings = {
-  evaluate : /\{\[([\s\S]+?)\]\}/g,
-  interpolate : /\{\{([\s\S]+?)\}\}/g
-};
-
-// NODE_ENV=development node app/ui.js
-app.configure('development', function() {
-  console.log('environment: dev');
-});
-
-require(__dirname + '/modules/views.js').compile();
-
 app.use(express.static(__dirname + '/../public'));
 app.set('views', __dirname + '/views');
-app.set('view engine', 'html');
 app.set('view options', { layout: false });
 
 app.get('/', function(req, res) {
-  res.render('index');
+  res.render('index.html');
 });
 
 app.get('/timeline', function(req, res) {
