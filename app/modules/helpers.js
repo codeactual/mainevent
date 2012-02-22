@@ -42,3 +42,12 @@ exports.walkAsync = function(list, consumer, consumerCallback, onDone) {
 exports.requireModule = function(name) {
   return require(__dirname + '/' + name + '.js');
 };
+
+/**
+ * Read the app configuration file.
+ *
+ * @return {Object}
+ */
+exports.getConfig = function() {
+  return require(__dirname + '/../../config/config.js').read();
+}

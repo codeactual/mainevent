@@ -1,16 +1,24 @@
 'use strict';
 
-var _ = require('underscore');
+var helpers = require(__dirname + '/../helpers.js');
+var config = helpers.getConfig();
+var storage = helpers.requireModule('storage/storage').load();
 
 // Parser modules indexed by name, ex. 'nginx_access'.
-var config = require(__dirname + '/../../../config/config.js').read();
 var parsers = {};
 _.each(config.sources, function(source) {
   parsers[source.parser] = require(__dirname + '/' + source.parser);
 });
 
-var helpers = require(__dirname + '/../helpers.js');
-var storage = require(__dirname + '/../storage/mongodb.js');
+/**
+ * Return a named parser.
+ *
+ * @param name {String} Ex. 'nginx_access'
+ * @return {Object} Copy of a cached parser module.
+ */
+exports.get = function(name) {
+  return _.clone(parsers[name]);
+};
 
 /**
   * Parse each line according to its source parser. Tag unparsable.

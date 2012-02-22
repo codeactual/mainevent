@@ -1,27 +1,34 @@
+/**
+ * Helpers related to views and templates.
+ */
+
 'use strict';
 
-var _ = require('underscore');
-var util = require('util');
-var parsers = require(__dirname + '/../app/modules/parsers/parsers.js');
-var storage = require(__dirname + '/../app/modules/storage/mongodb.js');
+var helpers = require(__dirname + '/../app/modules/helpers.js');
+var parsers = helpers.requireModule('parsers/parsers');
+var storage = helpers.requireModule('storage/storage').load();
 
-var get_parser = function(name) {
-  return require(__dirname + '/../app/modules/parsers/' + name + '.js');
-};
+/**
+ * Verification logic used by most test cases below.
+ *
+ * @param test {Object} Instance injected into the calling case function.
+ * @param log {String} Log line.
+ * @param parser {String} Ex. 'nginx_access'.
+ * @param expected {Object} Attributes from parse result.
+ */
+var assertParseValid = function(test, log, parser, expected) {
+  var actual = parsers.get(parser).parse(log);
+  var expectedKeys = Object.keys(expected);
 
-var verify_parse = function(test, log, parser, expected) {
-  var actual = get_parser(parser).parse(log);
-  var expected_keys = Object.keys(expected);
+  test.equal(Object.keys(actual).length, expectedKeys.length);
 
-  test.equal(Object.keys(actual).length, expected_keys.length);
-
-  expected_keys.forEach(function(key) {
+  expectedKeys.forEach(function(key) {
     test.equal(actual[key], expected[key]);
   });
 };
 
 exports.testNginxAccess = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '127.0.0.1 - www [12/Feb/2012:09:03:31 +0000] "GET /timeline HTTP/1.1" 502 166 "http://www.referer.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"',
     'nginx_access',
@@ -41,7 +48,7 @@ exports.testNginxAccess = function(test) {
 };
 
 exports.testNginxError = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '2012/02/12 09:03:31 [error] 16939#0: *491 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: diana, request: "GET /timeline HTTP/1.1", upstream: "fastcgi://unix:/usr/var/run/php-fpm.sock:", host: "diana"',
     'nginx_error',
@@ -59,7 +66,7 @@ exports.testNginxError = function(test) {
       parser_subtype: 'standard'
     }
   );
-  verify_parse(
+  assertParseValid(
     test,
     '2012/02/05 00:26:21 [error] 18242#0: *1 access forbidden by rule, client: 127.0.0.1, server: diana, request: "GET /.htaccess HTTP/1.1", host: "diana"',
     'nginx_error',
@@ -76,7 +83,7 @@ exports.testNginxError = function(test) {
       parser_subtype: 'no_upstream'
     }
   );
-  verify_parse(
+  assertParseValid(
     test,
     '2012/02/05 00:25:54 [emerg] 18108#0: invalid number of arguments in "server_tokens" directive in /path/to/config:9',
     'nginx_error',
@@ -92,7 +99,7 @@ exports.testNginxError = function(test) {
 };
 
 exports.testSymfonyEventDebug = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '[2012-02-12 09:03:31] event.DEBUG: Notified event "kernel.response" to listener "Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse". [] []',
     'symfony',
@@ -109,7 +116,7 @@ exports.testSymfonyEventDebug = function(test) {
 };
 
 exports.testSymfonyUncaughtException = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '[2012-02-10 10:24:17] request.CRITICAL: Twig_Error_Runtime: Variable "rows" does not exist in "DianaTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception) at /var/dev/diana/app/cache/dev/classes.php line 8024 [] []',
     'symfony',
@@ -128,7 +135,7 @@ exports.testSymfonyUncaughtException = function(test) {
 };
 
 exports.testPhpNotice = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '[14-Feb-2012 06:38:38 UTC] PHP Notice:  Undefined variable: b in /tmp/errormaker.php on line 2',
     'php',
@@ -145,7 +152,7 @@ exports.testPhpNotice = function(test) {
 };
 
 exports.testPhpUserDefined = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '[14-Feb-2012 06:38:38 UTC] something terrible happened',
     'php',
@@ -159,7 +166,7 @@ exports.testPhpUserDefined = function(test) {
 };
 
 exports.testJson = function(test) {
-  verify_parse(
+  assertParseValid(
     test,
     '{"time":"14-Feb-2012 06:38:38 UTC","message":"something good"}',
     'json',
