@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('underscore');
+GLOBAL._ = require('underscore');
+GLOBAL.util = require('util');
 
 /**
   * Iterate synchronously over a list with a async consumer, ex. insert 5 rows
@@ -30,4 +31,14 @@ exports.walkAsync = function(list, consumer, consumerCallback, onDone) {
       }
     });
   }).apply(null, arguments);
+};
+
+/**
+ * Load module based on file layout convention.
+ *
+ * @param name {String} Path relative to app/modules. No trailing '.js'.
+ * @return {Object}
+ */
+exports.requireModule = function(name) {
+  return require(__dirname + '/' + name + '.js');
 };

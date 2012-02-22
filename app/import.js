@@ -5,9 +5,8 @@ if (!process.argv[2] || !process.argv[3]) {
   process.exit(1);
 }
 
-var fs  = require("fs");
-var lazy = require('lazy');
-var parsers = require(__dirname + '/modules/parsers/parsers.js');
+GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
+var parsers = helpers.requireModule('parsers/parsers');
 
 var source = {
   parser: process.argv[2],
@@ -15,9 +14,14 @@ var source = {
   tags: process.argv[4] ? process.argv[4].split(',') : []
 };
 
+var fs  = require("fs");
+var lazy = require('lazy');
 new lazy(fs.createReadStream(source.file))
   .lines
   .map(String)
   .join(function (lines) {
-    parsers.parse_log(source, lines);
+    parsers.parse_log(
+      source,
+      lines
+    );
   });
