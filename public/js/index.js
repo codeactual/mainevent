@@ -1,40 +1,62 @@
-"use strict";
+/**
+ * Log timeline and event viewer.
+ *
+ * Relies on app/ui.js for backbone.js syncs.
+ * index.html provides the layout that includes #backbone-view used below.
+ * content.html is injected into #content that's also in index.html.
+ */
 
-$(function(){
+'use strict';
+
+$(function() {
+  // localStorage cache for items like /event/:id responses.
   var cache = new clientsiiide('Diana');
 
-  var Workspace = Backbone.Router.extend({
+  /**
+   * Custom routing used to allow 'context' attributes to support behaviors
+   * like sidebar toggling per URL pattern.
+   */
+  var Router = Backbone.Router.extend({
     initialize: function(options) {
+      /**
+        * 'context' options:
+        * - sidebar {Boolean} Display sidebar in layout.
+        * - tab {String} DOM ID of active navigation tab.
+        */
       var routes = {
         '': {
-          handler: disp_index,
+          handler: viewIndex,
           context: {sidebar: false, tab: 'nav-home'}
        },
         'timeline': {
-          handler: disp_timeline_search,
+          handler: viewTimelineSearch,
           context: {sidebar: false, tab: 'nav-timeline'}
        },
         'timeline/:options': {
-          handler: disp_timeline_search,
+          handler: viewTimelineSearch,
           context: {sidebar: false, tab: 'nav-timeline'}
        },
         'event/:id': {
-          handler: disp_event,
+          handler: viewEvent,
           context: {sidebar: false, tab: 'nav-timeline'}
         }
       };
 
       var router = this;
       _.each(routes, function(config, route) {
+        // Register route.
         router.route(route, config.handler, function() {
           var routeOptions = arguments;
+          // Apply 'context' options to the 'content' template, ex. show sidebar.
           dust.render(
             'content',
             config.context,
             function(err, out) {
+              // Apply context.tab option.
               $('#nav-list > li').removeClass('active');
               $('#' + config.context.tab).addClass('active');
               $('#content').html(out);
+              // Pass routeOptions to the actual handler.
               config.handler.apply(config.context, routeOptions);
             }
           );
@@ -43,14 +65,21 @@ $(function(){
     }
   });
 
+  /**
+   * Represents one logged event. Shared by multiple views.
+   * Attributes vary from one event to the next based on the parser.
+   */
   window.Event = Backbone.Model.extend({
     urlRoot: '/event',
 
-    // Divert all reads through localStorage cache.
     sync: function(method, model, options) {
+      // Only override reads.
       if ('read' != method) {
         Backbone.sync.call(this, method, this, options);
+        return;
       }
+
+      // Divert all reads through localStorage cache.
       var cacheKey = 'id-' + model.id;
       cache.get({
         ns: 'event',
@@ -72,43 +101,59 @@ $(function(){
     }
   });
 
-  var disp_index = function() {
+  /**
+   * Router handler for / requests.
+   */
+  var viewIndex = function() {
+    // TBD
   };
 
-  var disp_event = function(id) {
+  /**
+   * Router handler for /#event/:id requests.
+   *
+   * @param id {String} Database primary key.
+   */
+  var viewEvent = function(id) {
   // View of an individual event.
-      window.EventView = Backbone.View.extend({
-        el: $('#backbone-view'),
-        initialize: function() {
-          this.model = new Event({id: id});
-          this.model.bind('change', this.render, this);
-          this.model.set('parent', this.el);
-          this.model.fetch();
-          this.render();
-        },
+    window.EventView = Backbone.View.extend({
+      el: $('#backbone-view'),
+      initialize: function() {
+        this.model = new Event({id: id});
+        this.model.bind('change', this.render, this);
+        this.model.set('parent', this.el);
+        this.model.fetch();
+        this.render();
+      },
 
-        // Populate parent element with processed event template.
-        render: function() {
-          var parent = this.model.get('parent');
-          dust.render(
-            // ex. 'event_nginx_access'
-            'event_' + this.model.attributes.parser,
-            this.model.toJSON(),
-            function(err, out) {
-              $(parent).html(out);
-            }
-          );
-        }
-      });
+      // Populate parent element with processed event template.
+      render: function() {
+        var parent = this.model.get('parent');
+        dust.render(
+          // ex. 'event_nginx_access'
+          'event_' + this.model.attributes.parser,
+          this.model.toJSON(),
+          function(err, out) {
+            $(parent).html(out);
+          }
+        );
+      }
+    });
 
-      window.EventPage = new EventView();
-    };
+    window.EventPage = new EventView();
+  };
 
-  var disp_timeline_search = function(options) {
+  /**
+   * Router handler for /#timeline* requests.
+   *
+   * @param options {Object} Search/pagination options. See search_args below.
+   */
+  var viewTimelineSearch = function(options) {
     var search_args = {
+      // Holds all pairs with keys that do not match those below, ex. parser=php.
       conditions: {},
-      skip: null,
+
       limit: null,
+      skip: null,
       sort_attr: null,
       sort_dir: null
     };
@@ -142,10 +187,16 @@ $(function(){
       }
     });
 
+    /**
+     * Holds events from a timeline search result set.
+     */
     window.Timeline = Backbone.Collection.extend({
       url: '/timeline?' + $.param(search_args)
     });
 
+    /**
+     * Displays a single <table> row for a single Event in the result set.
+     */
     window.TimelineEventView = Backbone.View.extend({
       initialize: function() {
         this.model.bind('change', this.render, this);
@@ -161,11 +212,15 @@ $(function(){
       }
     });
 
+    /**
+     * Displays the <table> into which result sets are rendered. Automatically
+     * fetches the result set based on router options.
+     */
     window.TimelinePageView = Backbone.View.extend({
       el: $('#backbone-view'),
       initialize: function() {
         // Sync template with data fetched from server.
-        var on_template_rendered = function(err, out) {
+        var onTemplateRendered = function(err, out) {
           $('#backbone-view').html(out);
 
           var timeline = new Timeline();
@@ -180,12 +235,12 @@ $(function(){
             }
           });
         };
-        dust.render('timeline_table', null, on_template_rendered);
+        dust.render('timeline_table', null, onTemplateRendered);
       }
     });
     window.TimelinePage = new TimelinePageView();
   };
 
-  new Workspace();
+  new Router();
   Backbone.history.start();
 });

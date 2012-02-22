@@ -1,3 +1,11 @@
+/**
+ * Supply common/stateless helpers and module instances.
+ *
+ * All entry points (ui.js, app/tail.js, test runners, etc) must define
+ * require() this module into GLOBAL.helpers. Modules like parsers/parsers.js
+ * expect its presence.
+ */
+
 'use strict';
 
 GLOBAL._ = require('underscore');
