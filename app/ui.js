@@ -39,12 +39,12 @@ app.get('/', function(req, res) {
 
 app.get('/timeline', function(req, res) {
   var storage = helpers.requireModule('storage/mongodb');
-  storage.getTimeline(req.query, function(err, documents) {
+  storage.getTimeline(req.query, function(err, docs) {
     if (err) {
       res.send({error: err});
-    } else if (documents.length) {
-      var parsers = require(__dirname + '/modules/parsers/parsers.js');
-      parsers.addPreview(documents, function(updated) {
+    } else if (docs.length) {
+      // Augment each document object with preview text for the view table.
+      helpers.requireModule('parsers/parsers').addPreview(docs, function(updated) {
         res.send(updated);
       });
     } else {
@@ -56,11 +56,11 @@ app.get('/timeline', function(req, res) {
 app.get('/event/:id', function(req, res) {
   if (req.params.id.match(/^[a-z0-9]{24}$/)) {
     var storage = helpers.requireModule('storage/mongodb');
-    storage.getLog(req.params.id, function(err, document) {
+    storage.getLog(req.params.id, function(err, doc) {
       if (err) {
         res.send({error: err});
       } else {
-        res.send(document);
+        res.send(doc);
       }
     });
   } else {
