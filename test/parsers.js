@@ -195,24 +195,39 @@ exports.testGetPreviewTemplate = function(test) {
 };
 
 exports.testGetPreviewFromFunction = function(test) {
-  var str = '';
-  _(10).times(function() { str += '0123456789'; });
-  var expected = JSON.stringify(str).substr(0, 80);
-  test.equal(get_parser('json').getPreview(str), expected);
-  test.done();
+  // Expand JSON beyond preview truncation.
+  var message = '';
+  _(10).times(function() { message += '0123456789'; });
+
+  // Example row from DB.
+  var logs = [{
+    time: 'Tue Feb 21 10:44:23 UTC',
+    message: message,
+    parser: 'json'
+  }];
+
+  test.expect(3);
+  parsers.addPreview(logs, function(actual) {
+    test.equal(actual[0].time, logs[0].time);
+    test.equal(actual[0].message, logs[0].message);
+    test.equal(actual[0].preview, JSON.stringify(logs[0]).substr(0, 80));
+    test.done();
+  });
 };
 
 exports.testGetPreviewFromTemplate = function(test) {
+  // Example row from DB.
   var logs = [{
     parser: 'php',
     parser_subtype: 'userdef',
     time: 'Tue Feb 21 10:44:23 UTC',
     message: 'foo'
   }];
+
   var expected = _.clone(logs);
   expected[0].preview = 'foo';
 
-  test.expect(5);
+  test.expect(6);
   parsers.addPreview(logs, function(actual) {
     _.each(_.keys(expected[0]), function(key) {
       test.equal(actual[0][key], expected[0][key]);

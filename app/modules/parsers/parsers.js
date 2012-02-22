@@ -74,7 +74,8 @@ exports.addPreview = function(logs, onAllDone) {
 
       // Use parser module's preview function, e.g. for parsers/json.js.
       if (_.has(parsers[log.parser], 'getPreview')) {
-        log.preview = parser[log.parser].preview(log);
+        log.preview = parsers[log.parser].getPreview(log);
+        updatedLogs.push(log);
         onSingleDone();
       // Use parser's template.
       } else {
