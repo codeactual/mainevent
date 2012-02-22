@@ -10,6 +10,11 @@ var link = null;
 var collection = null;
 var maxResultSize = 100;
 
+/**
+ * Connect to the DB based on config.js. Reuse a link if available.
+ *
+ * @param callback {Function} Fired after connection attempted.
+ */
 var dbConnectAndOpen = function(callback) {
   if (link) {
     callback(null, link);
@@ -24,6 +29,9 @@ var dbConnectAndOpen = function(callback) {
   }
 };
 
+/**
+ * Disconnect from the DB.
+ */
 exports.dbClose = function() {
   if (link) {
     link.close();
@@ -31,13 +39,22 @@ exports.dbClose = function() {
   }
 };
 
+/**
+ * Insert a single parsed log line.
+ *
+ * @param source {Object} See config.js.dist for the structure.
+ * @param log {Object} Output from a parser module's parse() function.
+ * @param callback {Function} Fired after insert attempted.
+ * @param bulk {Boolean} If true, DB connection is not auto-closed.
+ */
 exports.insertLog = function(source, log, callback, bulk) {
   dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
       log.parser = source.parser;
       log.tags = source.tags;
+
       collection.insert(log, { safe: true }, function(err, docs) {
-        // close() required after one-time insert to avoid hang
+        // close() required after one-time insert to avoid hang.
         if (!bulk) {
           exports.dbClose();
         }
@@ -47,6 +64,12 @@ exports.insertLog = function(source, log, callback, bulk) {
   });
 };
 
+/**
+ * Retrieve a single log's attributes.
+ *
+ * @param id {String} Document ID.
+ * @param callback {Function} Fired after read attempted.
+ */
 exports.getLog = function(id, callback) {
   dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
@@ -58,6 +81,17 @@ exports.getLog = function(id, callback) {
   });
 };
 
+/**
+ * Retrieve the attributes of all matching logs.
+ *
+ * @param params {Object}
+ * - sort_dir {String} 'desc' or 'asc'
+ * - sort_attr {String} Ex. 'time'
+ * - skip {Number} Amount of documents skipped.
+ * - limit {Number} Maximum amount of documents retrieved.
+ * - All other key/value pairs are considered conditions.
+ * @param callback {Function} Fired after read attempted.
+ */
 exports.getTimeline = function(params, callback) {
   dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
