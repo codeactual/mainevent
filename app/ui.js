@@ -39,7 +39,7 @@ app.get('/', function(req, res) {
 
 app.get('/timeline', function(req, res) {
   var storage = helpers.requireModule('storage/mongodb');
-  storage.get_timeline(req.query, function(err, documents) {
+  storage.getTimeline(req.query, function(err, documents) {
     if (err) {
       res.send({error: err});
     } else if (documents.length) {
@@ -56,7 +56,7 @@ app.get('/timeline', function(req, res) {
 app.get('/event/:id', function(req, res) {
   if (req.params.id.match(/^[a-z0-9]{24}$/)) {
     var storage = helpers.requireModule('storage/mongodb');
-    storage.get_log(req.params.id, function(err, document) {
+    storage.getLog(req.params.id, function(err, document) {
       if (err) {
         res.send({error: err});
       } else {

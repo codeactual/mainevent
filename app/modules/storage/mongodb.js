@@ -1,17 +1,20 @@
+/**
+  * MongoDB storage implementation.
+  */
+
 'use strict';
 
-var util = require('util');
 var mongodb = require('mongodb');
 var BSON = mongodb.BSONPure;
 var link = null;
 var collection = null;
 var maxResultSize = 100;
 
-var db_connect_and_open = function(callback) {
+var dbConnectAndOpen = function(callback) {
   if (link) {
     callback(null, link);
   } else {
-    var config = require(__dirname + '/../../../config/config.js').read().storage;
+    var config = helpers.getConfig().storage;
     collection = config.collection;
     link = new mongodb.Db(
       config.db,
@@ -21,22 +24,22 @@ var db_connect_and_open = function(callback) {
   }
 };
 
-exports.db_close = function() {
+exports.dbClose = function() {
   if (link) {
     link.close();
     link = null;
   }
 };
 
-exports.insert_log = function(source, log, callback, bulk) {
-  db_connect_and_open(function(err, db) {
+exports.insertLog = function(source, log, callback, bulk) {
+  dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
       log.parser = source.parser;
       log.tags = source.tags;
       collection.insert(log, { safe: true }, function(err, docs) {
         // close() required after one-time insert to avoid hang
         if (!bulk) {
-          exports.db_close();
+          exports.dbClose();
         }
         callback(err, docs);
       });
@@ -44,19 +47,19 @@ exports.insert_log = function(source, log, callback, bulk) {
   });
 };
 
-exports.get_log = function(id, callback) {
-  db_connect_and_open(function(err, db) {
+exports.getLog = function(id, callback) {
+  dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         callback(err, doc);
-        exports.db_close();
+        exports.dbClose();
       });
     });
   });
 };
 
-exports.get_timeline = function(params, callback) {
-  db_connect_and_open(function(err, db) {
+exports.getTimeline = function(params, callback) {
+  dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
       var options = {};
       if (params.sort_attr) {
@@ -80,7 +83,7 @@ exports.get_timeline = function(params, callback) {
         delete params.skip;
       }
       collection.find(params, options).toArray(function(err, data) {
-        exports.db_close();
+        exports.dbClose();
         callback(err, data);
       });
     });

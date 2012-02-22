@@ -4,7 +4,6 @@
 
 'use strict';
 
-var helpers = require(__dirname + '/helpers.js');
 var dust = require('dust');
 var fs = require('fs');
 var path = require('path');

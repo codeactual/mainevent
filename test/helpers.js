@@ -1,7 +1,6 @@
 'use strict';
 
-var util = require('util');
-var helpers = require('../app/modules/helpers.js');
+GLOBAL.helpers = require(__dirname + '/../app/modules/helpers.js');
 
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];

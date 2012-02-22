@@ -4,7 +4,7 @@
 
 'use strict';
 
-var helpers = require(__dirname + '/../app/modules/helpers.js');
+GLOBAL.helpers = require(__dirname + '/../app/modules/helpers.js');
 var parsers = helpers.requireModule('parsers/parsers');
 var storage = helpers.requireModule('storage/storage').load();
 
@@ -183,8 +183,8 @@ exports.testUnparsable = function(test) {
   var source = { parser: 'php', tags: ['a', 'b'] };
   var message = 'log line with invalid format';
   test.expect(3);
-  parsers.parse_log(source, [message], function(err, doc) {
-    storage.get_timeline({ time: time }, function(err, docs) {
+  parsers.parseAndInsert(source, [message], function(err, doc) {
+    storage.getTimeline({ time: time }, function(err, docs) {
       test.equal(docs[0].message, message);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 1);

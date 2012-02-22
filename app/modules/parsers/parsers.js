@@ -1,6 +1,5 @@
 'use strict';
 
-var helpers = require(__dirname + '/../helpers.js');
 var config = helpers.getConfig();
 var storage = helpers.requireModule('storage/storage').load();
 
@@ -28,7 +27,7 @@ exports.get = function(name) {
   * @param regex {RegExp} Pattern to capture all parts in 'names'.
   * @return {Object} Captured properties.
   */
-exports.parse_log = function(source, lines, callback) {
+exports.parseAndInsert = function(source, lines, callback) {
   callback = callback || function() {};
 
   _.each(lines, function(line, index) {
@@ -46,12 +45,12 @@ exports.parse_log = function(source, lines, callback) {
     lines,
     function (line, callback) {
       var bulk = true;
-      storage.insert_log(source, line, callback, bulk);
+      storage.insertLog(source, line, callback, bulk);
     },
     null,
     function() {
-      // Manually close -- insert_log won't when bulk=true.
-      storage.db_close();
+      // Manually close -- insertLog won't when bulk=true.
+      storage.dbClose();
       callback();
     }
   );

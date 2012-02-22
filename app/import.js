@@ -1,3 +1,9 @@
+/**
+ * Parse and insert all log lines in a file.
+ *
+ * Example usage: node app/import.js nginx_access /var/log/ngninx/access.log
+ */
+
 'use strict';
 
 if (!process.argv[2] || !process.argv[3]) {
@@ -8,20 +14,17 @@ if (!process.argv[2] || !process.argv[3]) {
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 var parsers = helpers.requireModule('parsers/parsers');
 
+// Should mirror the source structure in config.js.
 var source = {
   parser: process.argv[2],
   file: process.argv[3],
   tags: process.argv[4] ? process.argv[4].split(',') : []
 };
 
-var fs  = require("fs");
 var lazy = require('lazy');
-new lazy(fs.createReadStream(source.file))
+new lazy(require("fs").createReadStream(source.file))
   .lines
   .map(String)
   .join(function (lines) {
-    parsers.parse_log(
-      source,
-      lines
-    );
+    parsers.parseAndInsert(source, lines);
   });
