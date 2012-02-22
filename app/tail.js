@@ -27,6 +27,7 @@ var monitorFile = function(source) {
   });
 };
 
-for (var s in helpers.getConfig().sources) {
+var config = helpers.getConfig();
+for (var s in config.sources) {
   monitorFile(config.sources[s]);
 }
