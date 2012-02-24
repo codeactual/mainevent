@@ -16,10 +16,7 @@ exports.testMonitoring = function(test) {
   var path = testConfig.sources[0].path;
   var log = JSON.stringify({path: path, run: run});
 
-  var tailJs = spawn('/usr/local/node/bin/node', [
-    __dirname + '/../app/tail.js',
-    testConfigFile
-  ]);
+  var tailJs = spawn(__dirname + '/../app/tail.js', [testConfigFile]);
   fs.writeFileSync(path, log);
 
   test.expect(1);

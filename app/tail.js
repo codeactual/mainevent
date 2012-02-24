@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * `tail -F` all source paths in config/config.js.
  *
@@ -13,11 +14,20 @@ var monitors = [];
 var spawn = require('child_process').spawn;
 
 /**
- * `tail -F` a specific path and parse/insert its updates.
- *
- * @param source {Object} See config/config.js.dist for structure.
+ * Kill all `tail` processes spawned below.
  */
-var monitorSource = function(source) {
+var monitorCleanup = function() {
+  _.each(monitors, function(monitor) {
+    monitor.kill('SIGKILL');
+  });
+};
+process.on('exit', monitorCleanup);
+process.on('uncaughtException', monitorCleanup);
+
+/**
+ * `tail -F` configured source paths and parse/insert its updates.
+ */
+_.each(config.sources, function(source) {
   // --bytes=0 to skip preexisting lines
   var cmd = spawn('tail', ['--bytes=0', '-F', source.path]);
   monitors.push(cmd);
@@ -28,18 +38,4 @@ var monitorSource = function(source) {
       data.toString().replace(/\n$/, '').split("\n")
     );
   });
-};
-
-var monitorCleanup = function() {
-  _.each(monitors, function(monitor) {
-    monitor.kill('SIGKILL');
-  });
-  monitors = [];
-};
-process.on('exit', monitorCleanup);
-process.on('uncaughtException', monitorCleanup);
-a
-
-_.each(config.sources, function(source) {
-  monitorSource(source);
 });

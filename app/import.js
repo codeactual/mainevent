@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Parse and insert all log lines in a path.
  *
