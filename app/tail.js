@@ -1,5 +1,5 @@
 /**
- * `tail -F` all source files in config/config.js.
+ * `tail -F` all source paths in config/config.js.
  *
  * Example usage: supervisor app/tail.js
  */
@@ -8,16 +8,19 @@
 
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 var parsers = helpers.requireModule('parsers/parsers');
+var config = helpers.getConfig(process.argv[2]);
+var monitors = [];
 var spawn = require('child_process').spawn;
 
 /**
- * `tail -F` a specific file and parse/insert its updates.
+ * `tail -F` a specific path and parse/insert its updates.
  *
  * @param source {Object} See config/config.js.dist for structure.
  */
-var monitorFile = function(source) {
+var monitorSource = function(source) {
   // --bytes=0 to skip preexisting lines
-  var cmd = spawn('tail', ['--bytes=0', '-F', source.file]);
+  var cmd = spawn('tail', ['--bytes=0', '-F', source.path]);
+  monitors.push(cmd);
 
   cmd.stdout.on('data', function(data) {
     parsers.parseAndInsert(
@@ -27,7 +30,16 @@ var monitorFile = function(source) {
   });
 };
 
-var config = helpers.getConfig();
-for (var s in config.sources) {
-  monitorFile(config.sources[s]);
-}
+var monitorCleanup = function() {
+  _.each(monitors, function(monitor) {
+    monitor.kill('SIGKILL');
+  });
+  monitors = [];
+};
+process.on('exit', monitorCleanup);
+process.on('uncaughtException', monitorCleanup);
+a
+
+_.each(config.sources, function(source) {
+  monitorSource(source);
+});

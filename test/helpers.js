@@ -1,6 +1,10 @@
+/**
+ * Test the global helpers module.
+ */
+
 'use strict';
 
-GLOBAL.helpers = require(__dirname + '/../app/modules/helpers.js');
+var testutil = require(__dirname + '/testutil.js');
 
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];

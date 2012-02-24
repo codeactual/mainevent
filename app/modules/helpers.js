@@ -56,6 +56,11 @@ exports.requireModule = function(name) {
  *
  * @return {Object}
  */
-exports.getConfig = function() {
-  return require(__dirname + '/../../config/config.js').read();
+exports.getConfig = function(file) {
+  if (file) {
+    file = require('fs').realpathSync(file);
+  } else {
+    file = __dirname + '/../../config/config.js';
+  }
+  return require(file).read();
 }

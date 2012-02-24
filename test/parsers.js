@@ -1,10 +1,10 @@
 /**
- * Helpers related to views and templates.
+ * Test parsing helpers and modules.
  */
 
 'use strict';
 
-GLOBAL.helpers = require(__dirname + '/../app/modules/helpers.js');
+var testutil = require(__dirname + '/testutil.js');
 var parsers = helpers.requireModule('parsers/parsers');
 var storage = helpers.requireModule('storage/storage').load();
 

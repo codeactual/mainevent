@@ -2,17 +2,18 @@ exports.read = function () {
   return {
     sources: [
       {
-        file: '/path/to/php/log',
+        path: '/path/to/php/log',
         parser: 'php',
         tags: []
       },
       {
-        file: '/path/to/json/log',
+        path: '/path/to/json/log',
         parser: 'json',
         tags: []
       }
     ],
     storage: {
+      module: 'mongodb',
       db: 'mydb',
       host: '127.0.0.1',
       port: 27017,
