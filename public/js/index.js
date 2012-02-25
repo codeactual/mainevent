@@ -134,10 +134,18 @@ $(function() {
 
         // Attributes are in an array of key/value pair objects, ex. from json parser.
         if (event.__list) {
-          // Ex. avoid rendering empty 'tags' lists.
           event.__list = _.filter(event.__list, function(pair) {
-            return pair.value !== null;
+            // Omit database ID.
+            if (pair.key == '_id') {
+              return false;
+            }
+            // Ex. avoid rendering empty 'tags' lists.
+            if (pair.value === null) {
+              return false;
+            }
+            return true;
           });
+
           var context = {list: event.__list};
         // Attributes are in a one-dimensional object, ex. from nginx_access parser.
         } else {
