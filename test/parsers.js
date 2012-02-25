@@ -180,11 +180,11 @@ exports.testJson = function(test) {
 
 exports.testUnparsable = function(test) {
   var time = new Date().toUTCString();
-  var source = { parser: 'php', tags: ['a', 'b'] };
+  var source = {parser: 'php', tags: ['a', 'b']};
   var message = 'log line with invalid format';
   test.expect(3);
-  parsers.parseAndInsert(source, [message], function(err, doc) {
-    storage.getTimeline({ time: time }, function(err, docs) {
+  parsers.parseAndInsert(source, [message], function() {
+    storage.getTimeline({time: time}, function(err, docs) {
       test.equal(docs[0].message, message);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 1);
@@ -234,11 +234,31 @@ exports.testGetPreviewFromTemplate = function(test) {
   var expected = _.clone(logs);
   expected[0].preview = 'foo';
 
-  test.expect(6);
+  test.expect(5);
   parsers.addPreview(logs, function(actual) {
     _.each(_.keys(expected[0]), function(key) {
       test.equal(actual[0][key], expected[0][key]);
     });
     test.done();
+  });
+};
+
+exports.testCustomTimeAttr = function(test) {
+  var source = {parser: 'json', timeAttr: 'logtime'};
+  var parsed = {
+    logtime: '14-Feb-2012 06:38:38 UTC',
+    message: 'shutdown succeeded',
+    run: testutil.getRandHash()  // Only for verification lookup.
+  };
+  var log = JSON.stringify(parsed);
+
+  test.expect(3);
+  parsers.parseAndInsert(source, [log], function() {
+    storage.getTimeline({run: parsed.run}, function(err, docs) {
+      test.equal(docs[0].message, parsed.message);
+      test.equal(docs[0].time, parsed.logtime);
+      test.strictEqual(docs[0].logtime, undefined);
+      test.done();
+    });
   });
 };

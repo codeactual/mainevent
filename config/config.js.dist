@@ -9,7 +9,8 @@ exports.read = function () {
       {
         path: '/path/to/json/log',
         parser: 'json',
-        tags: []
+        tags: [],
+        timeAttr: 'atime'
       }
     ],
     storage: {

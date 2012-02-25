@@ -34,7 +34,15 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
 
   _.each(lines, function(line, index) {
     lines[index] = parsers[source.parser].parse(line);
-    if (!_.size(lines[index])) {
+
+    // Parse succeeded.
+    if (_.size(lines[index])) {
+      if (source.timeAttr && lines[index][source.timeAttr]) {
+        lines[index].time = lines[index][source.timeAttr];
+        delete lines[index][source.timeAttr];
+      }
+    // Parse failed. Store the line and mark it.
+    } else {
       lines[index] = {
         time: new Date().toUTCString(),
         message: line,
@@ -43,8 +51,6 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
     }
   });
 
-  bulk = undefined === bulk ? false : bulk;
-
   helpers.walkAsync(
     lines,
     function (line, callback) {
@@ -52,7 +58,10 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
     },
     null,
     function() {
-      // Manually close -- insertLog won't when bulk=true.
+      // insertLog() is called above in bulk-mode, so we need to close the
+      // reused link after all lines are inserted. Only skip that step
+      // if parseAndInsert() itself is in bulk-mode, e.g. by tail.js.
+      bulk = undefined === bulk ? false : bulk;
       if (!bulk) {
         storage.dbClose();
       }
