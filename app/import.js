@@ -35,6 +35,10 @@ var lazy = require('lazy');
 new lazy(require("fs").createReadStream(source.path))
   .lines
   .map(String)
+  .filter(function(line) {
+    // lazy will convert a blank line to "undefined"
+    return line !== 'undefined';
+  })
   .join(function (lines) {
     parsers.parseAndInsert(source, lines);
   });
