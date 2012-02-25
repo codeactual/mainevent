@@ -117,6 +117,7 @@ $(function() {
   // View of an individual event.
     window.EventView = Backbone.View.extend({
       el: $('#backbone-view'),
+
       initialize: function() {
         this.model = new Event({id: id});
         this.model.bind('change', this.render, this);
@@ -128,10 +129,20 @@ $(function() {
       // Populate parent element with processed event template.
       render: function() {
         var parent = this.model.get('parent');
+        var event = this.model.toJSON();
+
+        // Attributes are in an array of key/value pair objects, ex. from json parser.
+        if (event.__list) {
+          var context = {list: event.__list};
+        // Attributes are in a one-dimensional object, ex. from nginx_access parser.
+        } else {
+          var context = event;
+        }
+
         dust.render(
           // ex. 'event_nginx_access'
           'event_' + this.model.attributes.parser,
-          this.model.toJSON(),
+          context,
           function(err, out) {
             $(parent).html(out);
           }
