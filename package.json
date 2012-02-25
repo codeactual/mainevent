@@ -26,6 +26,7 @@
     }
   ],
   "dependencies": {
+    "commander": "0.5.3",
     "dust": "0.3.0",
     "express": "2.5.8",
     "lazy": "1.0.8",

@@ -2,26 +2,34 @@
 
 /**
  * Parse and insert all log lines in a path.
- *
- * Example usage: node app/import.js nginx_access /var/log/ngninx/access.log
  */
 
 'use strict';
 
-if (!process.argv[2] || !process.argv[3]) {
-  console.error('usage: node import.js <parser> <path>');
+var program = require('commander');
+
+// Support all attributes normally defined by config.js.
+program
+  .option('-p, --parser <name>', 'Ex. nginx_access')
+  .option('-P, --path <file>', 'Ex. /var/log/nginx/access.log')
+  .option('-t, --tags [list]', 'Ex. tag1,tag2', function(list) { return list.split(','); })
+  .option('-T, --timeAttr [name]', 'Ex. logtime')
+  .parse(process.argv);
+
+var source = {
+  parser: program.parser,
+  path: program.path,
+  tags: program.tags,
+  timeAttr: program.timeAttr
+};
+
+if (!source.parser || !source.path) {
+  console.error('--parser and --path are required');
   process.exit(1);
 }
 
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 var parsers = helpers.requireModule('parsers/parsers');
-
-// Should mirror the source structure in config.js.
-var source = {
-  parser: process.argv[2],
-  path: process.argv[3],
-  tags: process.argv[4] ? process.argv[4].split(',') : []
-};
 
 var lazy = require('lazy');
 new lazy(require("fs").createReadStream(source.path))
