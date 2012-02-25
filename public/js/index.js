@@ -123,13 +123,14 @@ $(function() {
         this.model.bind('change', this.render, this);
         this.model.set('parent', this.el);
         this.model.fetch();
-        this.render();
       },
 
       // Populate parent element with processed event template.
       render: function() {
-        var parent = this.model.get('parent');
         var event = this.model.toJSON();
+        if (Object.keys(event).length < 3) {
+          return;
+        }
 
         // Attributes are in an array of key/value pair objects, ex. from json parser.
         if (event.__list) {
@@ -139,6 +140,7 @@ $(function() {
           var context = event;
         }
 
+        var parent = this.model.get('parent');
         dust.render(
           // ex. 'event_nginx_access'
           'event_' + this.model.attributes.parser,
