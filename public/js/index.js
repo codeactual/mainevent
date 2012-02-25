@@ -134,6 +134,10 @@ $(function() {
 
         // Attributes are in an array of key/value pair objects, ex. from json parser.
         if (event.__list) {
+          // Ex. avoid rendering empty 'tags' lists.
+          event.__list = _.filter(event.__list, function(pair) {
+            return pair.value !== null;
+          });
           var context = {list: event.__list};
         // Attributes are in a one-dimensional object, ex. from nginx_access parser.
         } else {
