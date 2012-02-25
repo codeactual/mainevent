@@ -10,14 +10,18 @@ exports.parse = function(log) {
 };
 
 exports.getPreviewContext = function(log) {
-  switch (log.code[0]) {
-    case '2': log.codeClass = 'success'; break;
-    case '3': log.codeClass = 'info'; break;
-    case '4': log.codeClass = 'important'; break;
-    case '5': log.codeClass = 'important'; break;
+  if (log.code) {
+    switch (log.code[0]) {
+      case '2': log.codeClass = 'success'; break;
+      case '3': log.codeClass = 'info'; break;
+      case '4': log.codeClass = 'important'; break;
+      case '5': log.codeClass = 'important'; break;
+    }
   }
 
-  log.referer = '-' == log.referer ? '' : log.referer;
-  log.referer_min = log.referer.replace(/^http(s)?:\/\//, '');
+  if (log.referer) {
+    log.referer = '-' == log.referer ? '' : log.referer;
+    log.referer_min = log.referer.replace(/^http(s)?:\/\//, '');
+  }
   return log;
 };

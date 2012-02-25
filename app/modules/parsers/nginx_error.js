@@ -24,11 +24,13 @@ exports.parse = function(log) {
 };
 
 exports.getPreviewContext = function(log) {
-  switch (log.level) {
-    case 'debug': log.levelClass = 'info'; break;
-    case 'info': log.levelClass = 'info'; break;
-    case 'warn': log.levelClass = 'warning'; break;
-    default: log.levelClass = 'important'; break;
+  if (log.level) {
+    switch (log.level) {
+      case 'debug': log.levelClass = 'info'; break;
+      case 'info': log.levelClass = 'info'; break;
+      case 'warn': log.levelClass = 'warning'; break;
+      default: log.levelClass = 'important'; break;
+    }
   }
   return log;
 };
