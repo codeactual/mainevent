@@ -4,7 +4,7 @@
 
 'use strict';
 
-var testutil = require(__dirname + '/testutil.js');
+var testutil = require(__dirname + '/modules/testutil.js');
 var parsers = helpers.requireModule('parsers/parsers');
 var storage = helpers.requireModule('storage/storage').load();
 

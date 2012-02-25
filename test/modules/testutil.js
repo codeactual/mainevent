@@ -4,7 +4,7 @@
 
 'use strict';
 
-GLOBAL.helpers = require(__dirname + '/../app/modules/helpers.js');
+GLOBAL.helpers = require(__dirname + '/../../app/modules/helpers.js');
 
 var fs = require('fs');
 var crypto = require('crypto');

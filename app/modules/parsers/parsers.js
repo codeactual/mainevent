@@ -25,10 +25,12 @@ exports.get = function(name) {
   * @param subject {String} Log line.
   * @param names {Array} Capture names, ex. 'time' or 'host'.
   * @param regex {RegExp} Pattern to capture all parts in 'names'.
+  * @param bulk {Boolean} If true, DB connection is not auto-closed.
   * @return {Object} Captured properties.
   */
-exports.parseAndInsert = function(source, lines, callback) {
+exports.parseAndInsert = function(source, lines, callback, bulk) {
   callback = callback || function() {};
+  lines = _.isArray(lines) ? lines : [lines];
 
   _.each(lines, function(line, index) {
     lines[index] = parsers[source.parser].parse(line);
@@ -41,16 +43,19 @@ exports.parseAndInsert = function(source, lines, callback) {
     }
   });
 
+  bulk = undefined === bulk ? false : bulk;
+
   helpers.walkAsync(
     lines,
     function (line, callback) {
-      var bulk = true;
-      storage.insertLog(source, line, callback, bulk);
+      storage.insertLog(source, line, callback, true);
     },
     null,
     function() {
       // Manually close -- insertLog won't when bulk=true.
-      storage.dbClose();
+      if (!bulk) {
+        storage.dbClose();
+      }
       callback();
     }
   );

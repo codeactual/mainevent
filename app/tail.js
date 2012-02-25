@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * `tail -F` all source paths in config/config.js.
  *
@@ -9,6 +10,7 @@
 
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 var parsers = helpers.requireModule('parsers/parsers');
+var storage = helpers.requireModule('storage/storage').load();
 var config = helpers.getConfig(process.argv[2]);
 var monitors = [];
 var spawn = require('child_process').spawn;
@@ -20,6 +22,7 @@ var monitorCleanup = function() {
   _.each(monitors, function(monitor) {
     monitor.kill('SIGKILL');
   });
+  storage.dbClose();
 };
 process.on('exit', monitorCleanup);
 process.on('uncaughtException', monitorCleanup);
@@ -35,7 +38,9 @@ _.each(config.sources, function(source) {
   cmd.stdout.on('data', function(data) {
     parsers.parseAndInsert(
       source,
-      data.toString().replace(/\n$/, '').split("\n")
+      data.toString().replace(/\n$/, '').split("\n"),
+      null,
+      true
     );
   });
 });

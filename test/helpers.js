@@ -4,7 +4,7 @@
 
 'use strict';
 
-var testutil = require(__dirname + '/testutil.js');
+var testutil = require(__dirname + '/modules/testutil.js');
 
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];
