@@ -7,6 +7,9 @@ var storage = helpers.requireModule('storage/storage').load();
 var parsers = {};
 _.each(config.sources, function(source) {
   parsers[source.parser] = require(__dirname + '/' + source.parser);
+
+  // Ex. allow json parser's getPreviewContext() to alter its behavior.
+  parsers[source.parser].previewAttr = source.previewAttr || [];
 });
 
 /**
@@ -96,12 +99,14 @@ exports.addPreview = function(logs, onAllDone) {
     logs,
     function(log, onSingleDone) {
       if (_.has(parsers[log.parser], 'getPreviewContext')) {
-        log = parsers[log.parser].getPreviewContext(log);
+        var context = parsers[log.parser].getPreviewContext(log);
+      } else {
+        var context = log;
       }
 
       // Use parser module's preview function, e.g. for parsers/json.js.
       if (_.has(parsers[log.parser], 'getPreview')) {
-        log.preview = parsers[log.parser].getPreview(log);
+        log.preview = parsers[log.parser].getPreview(context);
         updatedLogs.push(log);
         onSingleDone();
       // Use parser's template.
@@ -110,7 +115,7 @@ exports.addPreview = function(logs, onAllDone) {
         dust.loadSource(require('fs').readFileSync(__dirname + '/../../../public/templates/compiled.js'));
         dust.render(
           templateName,
-          log,
+          context,
           function(err, out) {
             log.preview = out;
             updatedLogs.push(log);
