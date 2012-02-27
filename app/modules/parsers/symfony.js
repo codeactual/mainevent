@@ -14,3 +14,15 @@ exports.parse = function(log) {
     }
   ]);
 };
+
+exports.getPreviewContext = function(log) {
+  if (log.level) {
+    switch (log.level) {
+      case 'DEBUG': log.levelClass = 'default'; break;
+      case 'INFO': log.levelClass = 'info'; break;
+      case 'WARNING': log.levelClass = 'warning'; break;
+      default: log.levelClass = 'important'; break;
+    }
+  }
+  return log;
+};
