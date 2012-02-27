@@ -70,6 +70,12 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
   );
 };
 
+/**
+ * Return a template name based on a log's attributes.
+ *
+  * @param log {Object} Parsed log line attributes.
+  * @return {String}
+ */
 exports.getPreviewTemplate = function(log) {
   return 'preview_' + log.parser + (undefined === log.parser_subtype ? '' : '_' + log.parser_subtype);
 };
