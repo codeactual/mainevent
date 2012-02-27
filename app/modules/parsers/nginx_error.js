@@ -1,7 +1,7 @@
 'use strict';
 
 exports.parse = function(log) {
-  return require('./parsers').candidate_capture(log, [
+  return require(__dirname + '/parsers').candidate_capture(log, [
     {
       // Ex. 2012/02/05 00:19:34 [error] 13816#0: *1 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: diana, request: "GET / HTTP/1.1", upstream: "fastcgi://unix:/path/to/php-fpm.sock:", host: "diana"
       names: ['time', 'level', 'errno', 'errstr', 'client', 'server', 'method', 'path', 'upstream', 'host'],
