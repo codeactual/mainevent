@@ -60,11 +60,15 @@ app.get('/event/:id', function(req, res) {
       if (err) {
         res.send({error: err});
       } else {
-        var list = [];
-        _.each(doc, function(value, key) {
-          list.push({key: key, value: value});
-        });
-        res.send({__list: list, parser: doc.parser});
+        if ('json' == doc.parser) {
+          var list = [];
+          _.each(doc, function(value, key) {
+            list.push({key: key, value: value});
+          });
+          res.send({__list: list, parser: doc.parser});
+        } else {
+          res.send(doc);
+        }
       }
     });
   } else {
