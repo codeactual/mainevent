@@ -5,7 +5,7 @@ exports.parse = function(log) {
     {
       'names': ['time', 'type', 'level', 'event', 'listener'],
       'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,
-      subtype: 'event_debug'
+      subtype: 'event'
     },
     {
       'names': ['time', 'type', 'level', 'class', 'message', 'file', 'line'],
