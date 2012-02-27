@@ -95,6 +95,22 @@ exports.addPreview = function(logs, onAllDone) {
 
   var views = require(__dirname + '/../views.js');
 
+  var updateLogFromTemplate = function(name, log, context, callback) {
+    dust.loadSource(
+      require('fs')
+        .readFileSync(__dirname + '/../../../public/templates/compiled.js')
+    );
+    dust.render(
+      name,
+      context,
+      function(err, out) {
+        log.preview = out;
+        updatedLogs.push(log);
+        callback();
+      }
+    );
+  };
+
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
@@ -109,18 +125,15 @@ exports.addPreview = function(logs, onAllDone) {
         log.preview = parsers[log.parser].getPreview(context);
         updatedLogs.push(log);
         onSingleDone();
+
+      // 'log' does not have a predictable structure.
+      } else if (log.__parse_error) {
+        updateLogFromTemplate('preview_parse_error', log, context, onSingleDone);
+
       // Use parser's template.
       } else {
-        var templateName = exports.getPreviewTemplate(log);
-        dust.loadSource(require('fs').readFileSync(__dirname + '/../../../public/templates/compiled.js'));
-        dust.render(
-          templateName,
-          context,
-          function(err, out) {
-            log.preview = out;
-            updatedLogs.push(log);
-            onSingleDone();
-          }
+        updateLogFromTemplate(
+          exports.getPreviewTemplate(log), log, context, onSingleDone
         );
       }
     },
