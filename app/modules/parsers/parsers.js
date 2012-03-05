@@ -1,16 +1,6 @@
 'use strict';
 
-var config = helpers.getConfig();
 var storage = helpers.requireModule('storage/storage').load();
-
-// Parser modules indexed by name, ex. 'nginx_access'.
-var parsers = {};
-_.each(config.sources, function(source) {
-  parsers[source.parser] = require(__dirname + '/' + source.parser);
-
-  // Ex. allow json parser's getPreviewContext() to alter its behavior.
-  parsers[source.parser].previewAttr = source.previewAttr || [];
-});
 
 /**
  * Return a named parser.
@@ -19,7 +9,7 @@ _.each(config.sources, function(source) {
  * @return {Object} Copy of a cached parser module.
  */
 exports.get = function(name) {
-  return _.clone(parsers[name]);
+  return require(__dirname + '/' + name + '.js');
 };
 
 /**
@@ -36,7 +26,7 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
   lines = _.isArray(lines) ? lines : [lines];
 
   _.each(lines, function(line, index) {
-    lines[index] = parsers[source.parser].parse(line);
+    lines[index] = exports.get(source.parser).parse(line);
 
     // Parse succeeded.
     if (_.size(lines[index])) {
@@ -44,6 +34,10 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
         lines[index].time = lines[index][source.timeAttr];
         delete lines[index][source.timeAttr];
       }
+
+      // Ex. allow json parser's getPreviewContext() to alter its behavior.
+      lines[index].previewAttr = source.previewAttr || [];
+
     // Parse failed. Store the line and mark it.
     } else {
       lines[index] = {
@@ -114,15 +108,15 @@ exports.addPreview = function(logs, onAllDone) {
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
-      if (_.has(parsers[log.parser], 'getPreviewContext')) {
-        var context = parsers[log.parser].getPreviewContext(log);
+      if (_.has(exports.get(log.parser), 'getPreviewContext')) {
+        var context = exports.get(log.parser).getPreviewContext(log);
       } else {
         var context = log;
       }
 
       // Use parser module's preview function, e.g. for parsers/json.js.
-      if (_.has(parsers[log.parser], 'getPreview')) {
-        log.preview = parsers[log.parser].getPreview(context);
+      if (_.has(exports.get(log.parser), 'getPreview')) {
+        log.preview = exports.get(log.parser).getPreview(context);
         updatedLogs.push(log);
         onSingleDone();
 

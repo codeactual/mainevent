@@ -109,7 +109,7 @@ exports.testSymfonyEventDebug = function(test) {
       level: 'DEBUG',
       event: 'kernel.response',
       listener: 'Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse',
-      parser_subtype: 'event_debug'
+      parser_subtype: 'event'
     }
   );
   test.done();
@@ -245,20 +245,41 @@ exports.testGetPreviewFromTemplate = function(test) {
 
 exports.testCustomTimeAttr = function(test) {
   var source = {parser: 'json', timeAttr: 'logtime'};
-  var parsed = {
+  var expected = {
     logtime: '14-Feb-2012 06:38:38 UTC',
     message: 'shutdown succeeded',
     run: testutil.getRandHash()  // Only for verification lookup.
   };
-  var log = JSON.stringify(parsed);
+  var log = JSON.stringify(expected);
 
   test.expect(3);
   parsers.parseAndInsert(source, [log], function() {
-    storage.getTimeline({run: parsed.run}, function(err, docs) {
-      test.equal(docs[0].message, parsed.message);
-      test.equal(docs[0].time, parsed.logtime);
+    storage.getTimeline({run: expected.run}, function(err, docs) {
+      test.equal(docs[0].message, expected.message);
+      test.equal(docs[0].time, expected.logtime);
       test.strictEqual(docs[0].logtime, undefined);
       test.done();
+    });
+  });
+};
+
+exports.testCustomPreviewAttr = function(test) {
+  var source = {parser: 'json', previewAttr: ['role']};
+  var expected = {
+    time: '14-Feb-2012 06:38:38 UTC',
+    role: 'db-slave',
+    message: 'log content',
+    run: testutil.getRandHash()  // Only for verification lookup.
+  };
+  var line = JSON.stringify(expected);
+
+  test.expect(1);
+  parsers.parseAndInsert(source, [line], function() {
+    storage.getTimeline({run: expected.run}, function(err, docs) {
+      parsers.addPreview(docs, function(actual) {
+        test.equal(actual[0].preview, '{"role":"db-slave"}');
+        test.done();
+      });
     });
   });
 };

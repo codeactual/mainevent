@@ -6,11 +6,12 @@ exports.parse = function(log) {
 
 exports.getPreviewContext = function(log) {
   // Only use keys selected in config.js 'previewAttr' lists.
-  if (this.previewAttr) {
+  if (log.previewAttr) {
+    log.previewAttr = _.isArray(log.previewAttr) ? log.previewAttr : [log.previewAttr];
+
     var context = {};
-    var previewAttr = this.previewAttr;
     _.each(log, function(value, key) {
-      if (-1 !== _.indexOf(previewAttr, key)) {
+      if (-1 !== _.indexOf(log.previewAttr, key)) {
         context[key] = value;
       }
     });
