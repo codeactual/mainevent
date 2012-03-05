@@ -262,3 +262,9 @@ exports.testCustomTimeAttr = function(test) {
     });
   });
 };
+
+exports.testNginxExtractTime = function(test) {
+  var str = '12/Mar/2012:09:03:31 +0000';
+  test.equal(parsers.get('nginx_access').extractTime(str), 1331543011000);
+  test.done();
+};
