@@ -30,12 +30,13 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
 
     // Parse succeeded.
     if (_.size(lines[index])) {
+      // Use a source-specific attribute for the canonical 'time' attribute:
       if (source.timeAttr && lines[index][source.timeAttr]) {
         lines[index].time = lines[index][source.timeAttr];
         delete lines[index][source.timeAttr];
       }
 
-      // Ex. allow json parser's getPreviewContext() to alter its behavior.
+      // Attach source-specific attributes:
       lines[index].previewAttr = source.previewAttr || [];
 
     // Parse failed. Store the line and mark it.
