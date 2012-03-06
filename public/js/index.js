@@ -158,23 +158,25 @@ $(function() {
 
           var context = {list: event.__list, parser: event.parser};
 
-          // Ex. remove internal attributes for display.
-          context.list = _.filter(context.list, function(pair, index) {
-            var blacklist = ['parser', 'previewAttr'];
-            return -1 == blacklist.indexOf(pair.key);
-          });
-
           // Ex. format the time attribute.
           context.list = _.map(context.list, function(pair, index) {
             if ('time' == pair.key) {
-              pair.value = formatTime(pair.value);
+              context.time = formatTime(pair.value);
+              context.timeFromNow = moment(pair.value * 1000).fromNow();
             }
             return pair;
+          });
+
+          // Ex. remove internal attributes for display.
+          context.list = _.filter(context.list, function(pair, index) {
+            var blacklist = ['parser', 'previewAttr', 'time'];
+            return -1 == blacklist.indexOf(pair.key);
           });
 
         // Attributes are in a one-dimensional object, ex. from nginx_access parser.
         } else {
           var context = event;
+          context.timeFromNow = moment(context.time * 1000).fromNow();
           context.time = formatTime(context.time);
           delete context.previewAttr;
         }
