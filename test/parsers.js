@@ -284,8 +284,20 @@ exports.testCustomPreviewAttr = function(test) {
   });
 };
 
-exports.testNginxExtractTime = function(test) {
-  var str = '12/Mar/2012:09:03:31 +0000';
-  test.equal(parsers.get('nginx_access').extractTime(str), 1331543011000);
+exports.testNginxAccessExtractTime = function(test) {
+  var date = '12/Mar/2012:09:03:31 +0000';
+  test.equal(parsers.get('nginx_access').extractTime(date), 1331543011000);
+  test.done();
+};
+
+exports.testNginxErrorExtractTime = function(test) {
+  var date = '2012/03/12 09:03:31';
+  test.equal(parsers.get('nginx_error').extractTime(date), 1331543011000);
+  test.done();
+};
+
+exports.testPhpExtractTime = function(test) {
+  var date = '12-Mar-2012 09:03:31 UTC';
+  test.equal(parsers.get('php').extractTime(date), 1331543011000);
   test.done();
 };

@@ -10,6 +10,9 @@
 
 GLOBAL._ = require('underscore');
 GLOBAL.util = require('util');
+GLOBAL.months = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
 
 /**
   * Iterate synchronously over a list with a async consumer, ex. insert 5 rows

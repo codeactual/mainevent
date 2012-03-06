@@ -26,11 +26,8 @@ exports.getPreviewContext = function(log) {
   return log;
 };
 
-exports.extractTime = function(str) {
-  var matches = str.match(/(\d+)\/([A-Za-z]+)\/(\d{4}):(\d{2}:\d{2}:\d{2} \+\d{4})/);
-  var months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+exports.extractTime = function(date) {
+  var matches = date.match(/(\d+)\/([A-Za-z]+)\/(\d{4}):(\d{2}:\d{2}:\d{2} \+\d{4})/);
   var parsable = util.format(
     '%d/%d/%d %s',
     months.indexOf(matches[2]) + 1,

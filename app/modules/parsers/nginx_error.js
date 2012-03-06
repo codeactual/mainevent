@@ -34,3 +34,7 @@ exports.getPreviewContext = function(log) {
   }
   return log;
 };
+
+exports.extractTime = function(date) {
+  return Date.parse(date);
+};
