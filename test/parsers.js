@@ -337,6 +337,34 @@ exports.testSyslogExtractTime = function(test) {
   test.done();
 };
 
+exports.testDirectTimeExtraction = function(test) {
+  var source = {parser: 'json', timeAttr: 't'};
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var log = {t: 1331543011, message: "something happened", run: run};
+  test.expect(2);
+  parsers.parseAndInsert(source, [JSON.stringify(log)], function() {
+    storage.getTimeline({run: run}, function(err, docs) {
+      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].message, log.message);
+      test.done();
+    });
+  });
+};
+
+exports.testDirectTimeParse = function(test) {
+  var source = {parser: 'json', timeAttr: 't'};
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var log = {t: "3/12/2012 09:03:31", message: "something happened", run: run};
+  test.expect(2);
+  parsers.parseAndInsert(source, [JSON.stringify(log)], function() {
+    storage.getTimeline({run: run}, function(err, docs) {
+      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].message, log.message);
+      test.done();
+    });
+  });
+};
+
 exports.testExtractedTimeInsertion = function(test) {
   var source = {parser: 'php'};
   var run = testutil.getRandHash();  // Only for verification lookup.

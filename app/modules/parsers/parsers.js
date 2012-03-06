@@ -41,8 +41,15 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
       if (_.has(parser, 'extractTime')) {
         lines[index].time = parser.extractTime(lines[index].time);
       } else {
-        // No custom extraction, try direct parsing.
-        lines[index].time = Date.parse(lines[index].time);
+        // No custom extraction, try direct parsing/extraction.
+        if (_.isNumber(lines[index].time)) {
+          if (lines[index].time < 10000000000) {
+            lines[index].time *= 1000;
+          }
+          lines[index].time = (new Date(lines[index].time)).getTime();
+        } else {
+          lines[index].time = Date.parse(lines[index].time);
+        }
       }
 
       // Fallback to the current time.
