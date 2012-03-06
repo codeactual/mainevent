@@ -156,7 +156,7 @@ $(function() {
             return true;
           });
 
-          var context = {list: event.__list};
+          var context = {list: event.__list, parser: event.parser};
 
           // Ex. remove internal attributes for display.
           context.list = _.filter(context.list, function(pair, index) {
