@@ -14,13 +14,15 @@ program
   .option('-P, --path <file>', 'Ex. /var/log/nginx/access.log')
   .option('-t, --tags [list]', 'Ex. tag1,tag2', function(list) { return list.split(','); })
   .option('-T, --timeAttr [name]', 'Ex. logtime')
+  .option('-r, --previewAttr [name]', 'Ex. message')
   .parse(process.argv);
 
 var source = {
   parser: program.parser,
   path: program.path,
   tags: program.tags,
-  timeAttr: program.timeAttr
+  timeAttr: program.timeAttr,
+  previewAttr: program.previewAttr
 };
 
 if (!source.parser || !source.path) {
