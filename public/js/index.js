@@ -13,6 +13,16 @@ $(function() {
   var cache = new clientsiiide('Diana');
 
   /**
+   * Convert a UNIX timestamp in seconds to string format.
+   *
+   * @param time {Number}
+   * @return {String}
+   */
+  var formatTime = function(time) {
+    return (new Date(time * 1000)).toUTCString();
+  };
+
+  /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
    */
@@ -147,9 +157,26 @@ $(function() {
           });
 
           var context = {list: event.__list};
+
+          // Ex. remove internal attributes for display.
+          context.list = _.filter(context.list, function(pair, index) {
+            var blacklist = ['parser', 'previewAttr'];
+            return -1 == blacklist.indexOf(pair.key);
+          });
+
+          // Ex. format the time attribute.
+          context.list = _.map(context.list, function(pair, index) {
+            if ('time' == pair.key) {
+              pair.value = formatTime(pair.value);
+            }
+            return pair;
+          });
+
         // Attributes are in a one-dimensional object, ex. from nginx_access parser.
         } else {
           var context = event;
+          context.time = formatTime(context.time);
+          delete context.previewAttr;
         }
 
         var parent = this.model.get('parent');
@@ -227,6 +254,7 @@ $(function() {
         this.model.bind('change', this.render, this);
       },
       render: function(callback) {
+        this.model.attributes.time = formatTime(this.model.attributes.time);
         dust.render(
           'timeline_table_row',
           this.model.toJSON(),
