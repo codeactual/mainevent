@@ -98,7 +98,7 @@ exports.testNginxError = function(test) {
   test.done();
 };
 
-exports.testSymfonyEventDebug = function(test) {
+exports.testSymfonyEvent = function(test) {
   assertParseValid(
     test,
     '[2012-02-12 09:03:31] event.DEBUG: Notified event "kernel.response" to listener "Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse". [] []',
