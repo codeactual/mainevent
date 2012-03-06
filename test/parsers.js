@@ -194,7 +194,7 @@ exports.testJson = function(test) {
   test.done();
 };
 
-exports.testUnparsable = function(test) {
+exports.testUnparsableLine = function(test) {
   var time = Math.round((new Date()).getTime() / 1000);
   var source = {parser: 'php', tags: ['a', 'b']};
   var message = testutil.getRandHash();  // Only for verification lookup.
@@ -204,7 +204,7 @@ exports.testUnparsable = function(test) {
       test.equal(docs[0].time.low_, 0);
       test.equal(docs[0].time.high_, time);
       test.deepEqual(docs[0].tags, source.tags);
-      test.equal(docs[0].__parse_error, 1);
+      test.equal(docs[0].__parse_error, 'line');
       test.done();
     });
   });
@@ -350,6 +350,23 @@ exports.testExtractedTimeInsertion = function(test) {
       test.equal(docs[0].message, run);
       test.equal(docs[0].time.low_, 0);
       test.equal(docs[0].time.high_, 1331543011);
+      test.done();
+    });
+  });
+};
+
+exports.testUnparsableTime = function(test) {
+  var time = Math.round((new Date()).getTime() / 1000);
+  var source = {parser: 'php', tags: ['a', 'b']};
+  var message = testutil.getRandHash();  // Only for verification lookup.
+  var line = '[invalid time] ' + message;
+  test.expect(4);
+  parsers.parseAndInsert(source, [line], function() {
+    storage.getTimeline({message: message}, function(err, docs) {
+      test.equal(docs[0].time.low_, 0);
+      test.equal(docs[0].time.high_, time);
+      test.deepEqual(docs[0].tags, source.tags);
+      test.equal(docs[0].__parse_error, 'time');
       test.done();
     });
   });

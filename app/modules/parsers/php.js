@@ -27,6 +27,10 @@ exports.getPreviewContext = function(log) {
 
 exports.extractTime = function(date) {
   var matches = date.match(/(\d+)-([A-Za-z]+)-(\d{4}) (\d{2}:\d{2}:\d{2} [A-Z]+)/);
+  if (!matches) {
+    return NaN;
+  }
+
   var parsable = util.format(
     '%d/%d/%d %s',
     months.indexOf(matches[2]) + 1,

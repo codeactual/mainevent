@@ -21,6 +21,10 @@ exports.extractTime = function(date, now) {
   }
 
   var matches = date.match(/([A-Za-z]+)\s+(\d+) (\d{2}:\d{2}:\d{2})/);
+  if (!matches) {
+    return NaN;
+  }
+
   var parsable = util.format(
     '%d/%d/%d %s',
     months.indexOf(matches[1]) + 1,

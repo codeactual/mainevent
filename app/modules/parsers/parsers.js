@@ -48,6 +48,7 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
       // Fallback to the current time.
       if (isNaN(lines[index].time)) {
         lines[index].time = (new Date()).getTime();
+        lines[index].__parse_error = 'time';
       }
 
       // Attach source-specific attributes.
@@ -58,7 +59,7 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
       lines[index] = {
         time: (new Date()).getTime(),
         message: line,
-        __parse_error: 1
+        __parse_error: 'line'
       };
     }
 
