@@ -18,12 +18,15 @@ var maxResultSize = 100;
  * @return {Array}
  */
 var unpackTime = function(docs) {
-  docs = _.isArray(docs) ? docs : [docs];
-  docs = _.map(docs, function(doc) {
-    doc.time = doc.time.high_;
-    return doc;
-  });
-  return docs;
+  if (_.isArray(docs)) {
+    return _.map(docs, function(doc) {
+      doc.time = doc.time.high_;
+      return doc;
+    });
+  } else {
+    docs.time = docs.time.high_;
+    return docs;
+  }
 };
 
 /**
