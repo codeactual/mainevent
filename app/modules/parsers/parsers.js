@@ -43,11 +43,11 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
       } else {
         // No custom extraction, try direct parsing.
         lines[index].time = Date.parse(lines[index].time);
+      }
 
-        // Fallback to the current time.
-        if (isNaN(lines[index].time)) {
-          lines[index].time = (new Date()).getTime();
-        }
+      // Fallback to the current time.
+      if (isNaN(lines[index].time)) {
+        lines[index].time = (new Date()).getTime();
       }
 
       // Attach source-specific attributes.
