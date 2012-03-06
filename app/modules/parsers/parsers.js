@@ -26,27 +26,43 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
   lines = _.isArray(lines) ? lines : [lines];
 
   _.each(lines, function(line, index) {
-    lines[index] = exports.get(source.parser).parse(line);
+    var parser = exports.get(source.parser);
+    lines[index] = parser.parse(line);
 
     // Parse succeeded.
     if (_.size(lines[index])) {
-      // Use a source-specific attribute for the canonical 'time' attribute:
+      // Use a source-specific attribute for the canonical 'time' attribute.
       if (source.timeAttr && lines[index][source.timeAttr]) {
         lines[index].time = lines[index][source.timeAttr];
         delete lines[index][source.timeAttr];
       }
 
-      // Attach source-specific attributes:
+      // Convert source-specific time formats to UNIX timestamps.
+      if (_.has(parser, 'extractTime')) {
+        lines[index].time = parser.extractTime(lines[index].time);
+      } else {
+        // No custom extraction, try direct parsing.
+        lines[index].time = Date.parse(lines[index].time);
+
+        // Fallback to the current time.
+        if (isNaN(lines[index].time)) {
+          lines[index].time = (new Date()).getTime();
+        }
+      }
+
+      // Attach source-specific attributes.
       lines[index].previewAttr = source.previewAttr || [];
 
     // Parse failed. Store the line and mark it.
     } else {
       lines[index] = {
-        time: new Date().toUTCString(),
+        time: (new Date()).getTime(),
         message: line,
         __parse_error: 1
       };
     }
+
+    lines[index].time = Math.round(lines[index].time / 1000);
   });
 
   helpers.walkAsync(

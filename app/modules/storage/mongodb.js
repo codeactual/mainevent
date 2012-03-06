@@ -50,6 +50,7 @@ exports.dbClose = function() {
 exports.insertLog = function(source, log, callback, bulk) {
   dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
+      log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
 

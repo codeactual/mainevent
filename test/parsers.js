@@ -195,13 +195,14 @@ exports.testJson = function(test) {
 };
 
 exports.testUnparsable = function(test) {
-  var time = new Date().toUTCString();
+  var time = Math.round((new Date()).getTime() / 1000);
   var source = {parser: 'php', tags: ['a', 'b']};
-  var message = 'log line with invalid format';
-  test.expect(3);
+  var message = testutil.getRandHash();  // Only for verification lookup.
+  test.expect(4);
   parsers.parseAndInsert(source, [message], function() {
-    storage.getTimeline({time: time}, function(err, docs) {
-      test.equal(docs[0].message, message);
+    storage.getTimeline({message: message}, function(err, docs) {
+      test.equal(docs[0].time.low_, 0);
+      test.equal(docs[0].time.high_, time);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 1);
       test.done();
@@ -262,17 +263,18 @@ exports.testGetPreviewFromTemplate = function(test) {
 exports.testCustomTimeAttr = function(test) {
   var source = {parser: 'json', timeAttr: 'logtime'};
   var expected = {
-    logtime: '14-Feb-2012 06:38:38 UTC',
+    logtime: '3/12/2012 09:03:31 UTC',
     message: 'shutdown succeeded',
     run: testutil.getRandHash()  // Only for verification lookup.
   };
   var log = JSON.stringify(expected);
 
-  test.expect(3);
+  test.expect(4);
   parsers.parseAndInsert(source, [log], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       test.equal(docs[0].message, expected.message);
-      test.equal(docs[0].time, expected.logtime);
+      test.equal(docs[0].time.low_, 0);
+      test.equal(docs[0].time.high_, 1331543011);
       test.strictEqual(docs[0].logtime, undefined);
       test.done();
     });
@@ -335,4 +337,20 @@ exports.testSyslogExtractTime = function(test) {
   now = new Date('1/01/2012 00:00:00');
   test.equal(parsers.get('syslog').extractTime(date, now), 1325372611000);
   test.done();
+};
+
+exports.testExtractedTimeInsertion = function(test) {
+  var source = {parser: 'php'};
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var log = '[12-Mar-2012 09:03:31 UTC] ' + run;
+
+  test.expect(3);
+  parsers.parseAndInsert(source, [log], function() {
+    storage.getTimeline({message: run}, function(err, docs) {
+      test.equal(docs[0].message, run);
+      test.equal(docs[0].time.low_, 0);
+      test.equal(docs[0].time.high_, 1331543011);
+      test.done();
+    });
+  });
 };
