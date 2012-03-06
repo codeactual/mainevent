@@ -165,6 +165,22 @@ exports.testPhpUserDefined = function(test) {
   test.done();
 };
 
+exports.testSyslog = function(test) {
+  assertParseValid(
+    test,
+    'Mar  5 21:36:00 diana kernel: [186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1',
+    'syslog',
+    {
+      time: 'Mar  5 21:36:00',
+      host: 'diana',
+      ident: 'kernel',
+      pid: null,
+      message: '[186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1'
+    }
+  );
+  test.done();
+};
+
 exports.testJson = function(test) {
   assertParseValid(
     test,
@@ -299,5 +315,24 @@ exports.testNginxErrorExtractTime = function(test) {
 exports.testPhpExtractTime = function(test) {
   var date = '12-Mar-2012 09:03:31 UTC';
   test.equal(parsers.get('php').extractTime(date), 1331543011000);
+  test.done();
+};
+
+exports.testSymfonyExtractTime = function(test) {
+  var date = '2012-03-12 09:03:31';
+  test.equal(parsers.get('symfony').extractTime(date), 1331543011000);
+  test.done();
+};
+
+exports.testSyslogExtractTime = function(test) {
+  // Event happened in the past, w/out year change since then.
+  var date = 'Mar  12 09:03:31';
+  var now = new Date('3/13/2012 00:00:00');
+  test.equal(parsers.get('syslog').extractTime(date, now), 1331543011000);
+
+  // Event happened in the past, with year change since then.
+  date = 'Dec  31 23:03:31';
+  now = new Date('1/01/2012 00:00:00');
+  test.equal(parsers.get('syslog').extractTime(date, now), 1325372611000);
   test.done();
 };

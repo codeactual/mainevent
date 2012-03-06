@@ -34,6 +34,5 @@ exports.extractTime = function(date) {
     matches[3],
     matches[4]
   );
-  console.log(parsable);
   return Date.parse(parsable);
 };
