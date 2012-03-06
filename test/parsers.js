@@ -198,11 +198,10 @@ exports.testUnparsableLine = function(test) {
   var time = Math.round((new Date()).getTime() / 1000);
   var source = {parser: 'php', tags: ['a', 'b']};
   var message = testutil.getRandHash();  // Only for verification lookup.
-  test.expect(4);
+  test.expect(3);
   parsers.parseAndInsert(source, [message], function() {
     storage.getTimeline({message: message}, function(err, docs) {
-      test.equal(docs[0].time.low_, 0);
-      test.equal(docs[0].time.high_, time);
+      test.equal(docs[0].time, time);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 'line');
       test.done();
@@ -269,12 +268,11 @@ exports.testCustomTimeAttr = function(test) {
   };
   var log = JSON.stringify(expected);
 
-  test.expect(4);
+  test.expect(3);
   parsers.parseAndInsert(source, [log], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       test.equal(docs[0].message, expected.message);
-      test.equal(docs[0].time.low_, 0);
-      test.equal(docs[0].time.high_, 1331543011);
+      test.equal(docs[0].time, 1331543011);
       test.strictEqual(docs[0].logtime, undefined);
       test.done();
     });
@@ -344,12 +342,11 @@ exports.testExtractedTimeInsertion = function(test) {
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = '[12-Mar-2012 09:03:31 UTC] ' + run;
 
-  test.expect(3);
+  test.expect(2);
   parsers.parseAndInsert(source, [log], function() {
     storage.getTimeline({message: run}, function(err, docs) {
       test.equal(docs[0].message, run);
-      test.equal(docs[0].time.low_, 0);
-      test.equal(docs[0].time.high_, 1331543011);
+      test.equal(docs[0].time, 1331543011);
       test.done();
     });
   });
@@ -360,11 +357,10 @@ exports.testUnparsableTime = function(test) {
   var source = {parser: 'php', tags: ['a', 'b']};
   var message = testutil.getRandHash();  // Only for verification lookup.
   var line = '[invalid time] ' + message;
-  test.expect(4);
+  test.expect(3);
   parsers.parseAndInsert(source, [line], function() {
     storage.getTimeline({message: message}, function(err, docs) {
-      test.equal(docs[0].time.low_, 0);
-      test.equal(docs[0].time.high_, time);
+      test.equal(docs[0].time, time);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 'time');
       test.done();

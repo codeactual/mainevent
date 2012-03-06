@@ -11,6 +11,22 @@ var collection = null;
 var maxResultSize = 100;
 
 /**
+ * In one or more documents, convert BSON Timestamp objects to their UNIX
+ * timestamp integer values.
+ *
+ * @param docs {Array|Object} Query result(s).
+ * @return {Array}
+ */
+var unpackTime = function(docs) {
+  docs = _.isArray(docs) ? docs : [docs];
+  docs = _.map(docs, function(doc) {
+    doc.time = doc.time.high_;
+    return doc;
+  });
+  return docs;
+};
+
+/**
  * Connect to the DB based on config.js. Reuse a link if available.
  *
  * @param callback {Function} Fired after connection attempted.
@@ -75,8 +91,9 @@ exports.getLog = function(id, callback) {
   dbConnectAndOpen(function(err, db) {
     db.collection(collection, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
-        callback(err, doc);
         exports.dbClose();
+        doc = unpackTime(doc);
+        callback(err, doc);
       });
     });
   });
@@ -117,9 +134,10 @@ exports.getTimeline = function(params, callback) {
         options.skip = parseInt(params.skip, 10);
         delete params.skip;
       }
-      collection.find(params, options).toArray(function(err, data) {
+      collection.find(params, options).toArray(function(err, docs) {
         exports.dbClose();
-        callback(err, data);
+        docs = unpackTime(docs);
+        callback(err, docs);
       });
     });
   });
