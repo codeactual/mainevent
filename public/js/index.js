@@ -26,9 +26,9 @@ $(function() {
   };
 
   /**
-   * Common error handler for all fetch() operations.
+   * Common error handler for all fetch/sync operations.
    */
-  var onFetchError = function(data, response) {
+  var onFetchError = function(response) {
     var context = {message: JSON.parse(response.responseText).__error};
     dust.render('error', context, function(err, out) {
       $(viewContainer).html(out);
@@ -117,7 +117,8 @@ $(function() {
               var write = {};
               write[cacheKey] = data;
               onMissDone(write);
-            }
+            },
+            error: onFetchError
           });
         }
       });
@@ -301,7 +302,7 @@ $(function() {
                 view.render();
               });
             },
-            error: onFetchError
+            error: function(collection, response) { onFetchError(response); }
           });
         };
         dust.render('timeline_table', null, onTemplateRendered);
