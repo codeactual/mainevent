@@ -295,12 +295,18 @@ $(function() {
           var timeline = new Timeline();
           timeline.fetch({
             success: function(collection, response) {
-              _.each(response, function(event) {
-                var model = new Event(event);
-                timeline.add(model);
-                var view = new TimelineEventView({ model: model });
-                view.render();
-              });
+              if (response.length) {
+                _.each(response, function(event) {
+                  var model = new Event(event);
+                  timeline.add(model);
+                  var view = new TimelineEventView({ model: model });
+                  view.render();
+                });
+              } else {
+                dust.render('timeline_no_results', null, function(err, out) {
+                  $(viewContainer).html(out);
+                });
+              }
             },
             error: function(collection, response) { onFetchError(response); }
           });

@@ -113,7 +113,9 @@ exports.getLog = function(id, callback) {
     dbCollection(db, collection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         exports.dbClose();
-        doc = unpackTime(doc);
+        if (doc) {
+          doc = unpackTime(doc);
+        }
         callback(err, doc);
       });
     });
@@ -157,7 +159,9 @@ exports.getTimeline = function(params, callback) {
       }
       collection.find(params, options).toArray(function(err, docs) {
         exports.dbClose();
-        docs = unpackTime(docs);
+        if (docs) {
+          docs = unpackTime(docs);
+        }
         callback(err, docs);
       });
     });

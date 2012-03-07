@@ -60,14 +60,18 @@ app.get('/event/:id', function(req, res) {
       if (err) {
         res.send({__error: err}, 500);
       } else {
-        if ('json' == doc.parser) {
-          var list = [];
-          _.each(doc, function(value, key) {
-            list.push({key: key, value: value});
-          });
-          res.send({__list: list, parser: doc.parser});
+        if (doc) {
+          if ('json' == doc.parser) {
+            var list = [];
+            _.each(doc, function(value, key) {
+              list.push({key: key, value: value});
+            });
+            res.send({__list: list, parser: doc.parser});
+          } else {
+            res.send(doc);
+          }
         } else {
-          res.send(doc);
+          res.send({__error: 'Event not found.'}, 404);
         }
       }
     });
