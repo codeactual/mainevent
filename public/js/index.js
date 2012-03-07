@@ -256,7 +256,7 @@ $(function() {
         this.model.bind('change', this.render, this);
       },
       render: function(callback) {
-        this.model.attributes.time = formatTime(this.model.attributes.time);
+        this.model.attributes.time = moment(this.model.attributes.time * 1000).fromNow();
         dust.render(
           'timeline_table_row',
           this.model.toJSON(),
