@@ -76,7 +76,7 @@ app.get('/event/:id', function(req, res) {
       }
     });
   } else {
-    res.send(null);
+    res.send({__error: 'Event not found.'}, 404);
   }
 });
 
