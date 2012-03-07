@@ -21,5 +21,12 @@ exports.getPreviewContext = function(log) {
 };
 
 exports.getPreview = function(parsed) {
-  return JSON.stringify(parsed).substr(0, 80);
+  var preview = '';
+  _.each(parsed, function(value, key) {
+    if (preview) {
+      preview += ', ';
+    }
+    preview += key + '=' + value;
+  });
+  return preview;
 };
