@@ -233,7 +233,13 @@ exports.testGetPreviewFromFunction = function(test) {
   parsers.addPreview(logs, function(actual) {
     test.equal(actual[0].time, logs[0].time);
     test.equal(actual[0].message, logs[0].message);
-    test.equal(actual[0].preview, JSON.stringify(logs[0]).substr(0, 80));
+    test.equal(
+      actual[0].preview,
+      util.format(
+        'time=%s, message=%s, parser=%s',
+        logs[0].time, logs[0].message, logs[0].parser
+      )
+    );
     test.done();
   });
 };
@@ -293,7 +299,7 @@ exports.testCustomPreviewAttr = function(test) {
   parsers.parseAndInsert(source, [line], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       parsers.addPreview(docs, function(actual) {
-        test.equal(actual[0].preview, '{"role":"db-slave"}');
+        test.equal(actual[0].preview, 'role=db-slave');
         test.done();
       });
     });
