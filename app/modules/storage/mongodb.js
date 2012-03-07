@@ -34,9 +34,9 @@ var unpackTime = function(docs) {
  *
  * @param callback {Function} Fired after connection attempted.
  */
-var dbConnectAndOpen = function(callback) {
+var dbConnectAndOpen = function(error, success) {
   if (link) {
-    callback(null, link);
+    success(null, link);
   } else {
     var config = helpers.getConfig().storage;
     collection = config.collection;
@@ -44,8 +44,26 @@ var dbConnectAndOpen = function(callback) {
       config.db,
       new mongodb.Server(config.host, config.port, {})
     );
-    link.open(callback);
+    link.open(function(err, db) {
+      if (err) {
+        exports.dbClose();
+        error('Could not access database.', null);
+      } else {
+        success(err, db);
+      }
+    });
   }
+};
+
+var dbCollection = function(db, collection, error, success) {
+  db.collection(collection, function(err, collection) {
+    if (err) {
+      exports.dbClose();
+      error('Could not access collection.', null);
+    } else {
+      success(err, collection);
+    }
+  });
 };
 
 /**
@@ -67,8 +85,8 @@ exports.dbClose = function() {
  * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
 exports.insertLog = function(source, log, callback, bulk) {
-  dbConnectAndOpen(function(err, db) {
-    db.collection(collection, function(err, collection) {
+  dbConnectAndOpen(callback, function(err, db) {
+    dbCollection(db, collection, callback, function(err, collection) {
       log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
@@ -91,8 +109,8 @@ exports.insertLog = function(source, log, callback, bulk) {
  * @param callback {Function} Fired after read attempted.
  */
 exports.getLog = function(id, callback) {
-  dbConnectAndOpen(function(err, db) {
-    db.collection(collection, function(err, collection) {
+  dbConnectAndOpen(callback, function(err, db) {
+    dbCollection(db, collection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         exports.dbClose();
         doc = unpackTime(doc);
@@ -114,8 +132,8 @@ exports.getLog = function(id, callback) {
  * @param callback {Function} Fired after read attempted.
  */
 exports.getTimeline = function(params, callback) {
-  dbConnectAndOpen(function(err, db) {
-    db.collection(collection, function(err, collection) {
+  dbConnectAndOpen(callback, function(err, db) {
+    dbCollection(db, collection, callback, function(err, collection) {
       var options = {};
       if (params.sort_attr) {
         if ('desc' == params.sort_dir) {

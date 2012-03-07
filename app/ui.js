@@ -41,7 +41,7 @@ app.get('/timeline', function(req, res) {
   var storage = helpers.requireModule('storage/mongodb');
   storage.getTimeline(req.query, function(err, docs) {
     if (err) {
-      res.send({error: err});
+      res.send({__error: err}, 500);
     } else if (docs.length) {
       // Augment each document object with preview text for the view table.
       helpers.requireModule('parsers/parsers').addPreview(docs, function(updated) {
@@ -58,7 +58,7 @@ app.get('/event/:id', function(req, res) {
     var storage = helpers.requireModule('storage/mongodb');
     storage.getLog(req.params.id, function(err, doc) {
       if (err) {
-        res.send({error: err});
+        res.send({__error: err}, 500);
       } else {
         if ('json' == doc.parser) {
           var list = [];
