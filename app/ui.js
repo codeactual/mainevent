@@ -76,4 +76,8 @@ app.get('/event/:id', function(req, res) {
   }
 });
 
+app.error(function(err, req, res, next) {
+  res.send({__error: err.message}, 500);
+});
+
 app.listen(8080, '127.0.0.1');

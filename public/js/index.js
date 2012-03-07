@@ -9,6 +9,9 @@
 'use strict';
 
 $(function() {
+  // Parent element for all backbone.js views.
+  var viewContainer = '#backbone-view';
+
   // localStorage cache for items like /event/:id responses.
   var cache = new clientsiiide('Diana');
 
@@ -20,6 +23,16 @@ $(function() {
    */
   var formatTime = function(time) {
     return (new Date(time * 1000)).toUTCString();
+  };
+
+  /**
+   * Common error handler for all fetch() operations.
+   */
+  var onFetchError = function(data, response) {
+    var context = {message: JSON.parse(response.responseText).__error};
+    dust.render('error', context, function(err, out) {
+      $(viewContainer).html(out);
+    });
   };
 
   /**
@@ -126,7 +139,7 @@ $(function() {
   var viewEvent = function(id) {
   // View of an individual event.
     window.EventView = Backbone.View.extend({
-      el: $('#backbone-view'),
+      el: $(viewContainer),
 
       initialize: function() {
         this.model = new Event({id: id});
@@ -272,11 +285,11 @@ $(function() {
      * fetches the result set based on router options.
      */
     window.TimelinePageView = Backbone.View.extend({
-      el: $('#backbone-view'),
+      el: $(viewContainer),
       initialize: function() {
         // Sync template with data fetched from server.
         var onTemplateRendered = function(err, out) {
-          $('#backbone-view').html(out);
+          $(viewContainer).html(out);
 
           var timeline = new Timeline();
           timeline.fetch({
@@ -287,7 +300,8 @@ $(function() {
                 var view = new TimelineEventView({ model: model });
                 view.render();
               });
-            }
+            },
+            error: onFetchError
           });
         };
         dust.render('timeline_table', null, onTemplateRendered);
