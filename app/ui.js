@@ -44,7 +44,7 @@ app.get('/timeline', function(req, res) {
       res.send({__error: err}, 500);
     } else if (docs.length) {
       // Augment each document object with preview text for the view table.
-      helpers.requireModule('parsers/parsers').addPreview(docs, function(updated) {
+      helpers.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
         res.send(updated);
       });
     } else {

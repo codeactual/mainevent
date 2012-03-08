@@ -108,7 +108,7 @@ exports.getPreviewTemplate = function(log) {
   * @param log {Array} List of objects describing parsed log lines.
   * @param onAllDone {Function} Called after all previews have been added.
  */
-exports.addPreview = function(logs, onAllDone) {
+exports.addPreviewContext = function(logs, onAllDone) {
   var dust = require('dust');
   var updatedLogs = [];
 

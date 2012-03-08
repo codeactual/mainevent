@@ -230,7 +230,7 @@ exports.testGetPreviewFromFunction = function(test) {
   }];
 
   test.expect(3);
-  parsers.addPreview(logs, function(actual) {
+  parsers.addPreviewContext(logs, function(actual) {
     test.equal(actual[0].time, logs[0].time);
     test.equal(actual[0].message, logs[0].message);
     test.equal(
@@ -257,7 +257,7 @@ exports.testGetPreviewFromTemplate = function(test) {
   expected[0].preview = 'foo';
 
   test.expect(5);
-  parsers.addPreview(logs, function(actual) {
+  parsers.addPreviewContext(logs, function(actual) {
     _.each(_.keys(expected[0]), function(key) {
       test.equal(actual[0][key], expected[0][key]);
     });
@@ -298,7 +298,7 @@ exports.testCustomPreviewAttr = function(test) {
   test.expect(1);
   parsers.parseAndInsert(source, [line], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
-      parsers.addPreview(docs, function(actual) {
+      parsers.addPreviewContext(docs, function(actual) {
         test.equal(actual[0].preview, 'role=db-slave');
         test.done();
       });
