@@ -13,14 +13,14 @@ exports.get = function(name) {
 };
 
 /**
-  * Parse each line according to its source parser. Tag unparsable.
-  *
-  * @param subject {String} Log line.
-  * @param names {Array} Capture names, ex. 'time' or 'host'.
-  * @param regex {RegExp} Pattern to capture all parts in 'names'.
-  * @param bulk {Boolean} If true, DB connection is not auto-closed.
-  * @return {Object} Captured properties.
-  */
+ * Parse each line according to its source parser. Tag unparsable.
+ *
+ * @param subject {String} Log line.
+ * @param names {Array} Capture names, ex. 'time' or 'host'.
+ * @param regex {RegExp} Pattern to capture all parts in 'names'.
+ * @param bulk {Boolean} If true, DB connection is not auto-closed.
+ * @return {Object} Captured properties.
+ */
 exports.parseAndInsert = function(source, lines, callback, bulk) {
   callback = callback || function() {};
   lines = _.isArray(lines) ? lines : [lines];
@@ -95,9 +95,9 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
 /**
  * Return a template name based on a log's attributes.
  *
-  * @param log {Object} Parsed log line attributes.
-  * @return {String}
- */
+ * @param log {Object} Parsed log line attributes.
+ * @return {String}
+*/
 exports.getPreviewTemplate = function(log) {
   return 'preview_' + log.parser + (undefined === log.parser_subtype ? '' : '_' + log.parser_subtype);
 };
@@ -105,8 +105,8 @@ exports.getPreviewTemplate = function(log) {
 /**
  * Augment each log object with preview HTML based on its parser subtype.
  *
-  * @param log {Array} List of objects describing parsed log lines.
-  * @param onAllDone {Function} Called after all previews have been added.
+ * @param log {Array} List of objects describing parsed log lines.
+ * @param onAllDone {Function} Called after all previews have been added.
  */
 exports.addPreviewContext = function(logs, onAllDone) {
   var dust = require('dust');
@@ -164,13 +164,13 @@ exports.addPreviewContext = function(logs, onAllDone) {
 };
 
 /**
-  * Apply a list of potential named capture regexes. First match wins.
-  *
-  * @param subject {String} Log line.
-  * @param names {Array} Capture names, ex. 'time' or 'host'.
-  * @param regex {RegExp} Pattern to capture all parts in 'names'.
-  * @return {Object} Captured properties.
-  */
+ * Apply a list of potential named capture regexes. First match wins.
+ *
+ * @param subject {String} Log line.
+ * @param names {Array} Capture names, ex. 'time' or 'host'.
+ * @param regex {RegExp} Pattern to capture all parts in 'names'.
+ * @return {Object} Captured properties.
+ */
 exports.namedCapture = function(subject, names, regex) {
   var captures = {};
   var matches = subject.match(regex);
@@ -184,14 +184,14 @@ exports.namedCapture = function(subject, names, regex) {
 };
 
 /**
-  * Apply a list of potential named capture regexes. First match wins.
-  *
-  * @param subject {String} Log line.
-  * @param candidates {Array} Objects, each describing a potential pattern match.
-  *   - names {Array} Capture names, ex. 'time' or 'host'.
-  *   - regex {RegExp} Pattern to capture all parts in 'names'.
-  * @return {Object}
-  */
+ * Apply a list of potential named capture regexes. First match wins.
+ *
+ * @param subject {String} Log line.
+ * @param candidates {Array} Objects, each describing a potential pattern match.
+ *   - names {Array} Capture names, ex. 'time' or 'host'.
+ *   - regex {RegExp} Pattern to capture all parts in 'names'.
+ * @return {Object}
+ */
 exports.candidateCapture = function(subject, candidates) {
   var captured = {};
   for (var c in candidates) {
