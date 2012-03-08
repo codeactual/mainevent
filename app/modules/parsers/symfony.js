@@ -1,7 +1,7 @@
 'use strict';
 
 exports.parse = function(log) {
-  return require(__dirname + '/parsers').candidate_capture(log, [
+  return require(__dirname + '/parsers').candidateCapture(log, [
     {
       'names': ['time', 'type', 'level', 'event', 'listener'],
       'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,

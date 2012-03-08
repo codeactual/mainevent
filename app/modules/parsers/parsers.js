@@ -171,7 +171,7 @@ exports.addPreview = function(logs, onAllDone) {
   * @param regex {RegExp} Pattern to capture all parts in 'names'.
   * @return {Object} Captured properties.
   */
-exports.named_capture = function(subject, names, regex) {
+exports.namedCapture = function(subject, names, regex) {
   var captures = {};
   var matches = subject.match(regex);
   if (matches) {
@@ -192,10 +192,10 @@ exports.named_capture = function(subject, names, regex) {
   *   - regex {RegExp} Pattern to capture all parts in 'names'.
   * @return {Object}
   */
-exports.candidate_capture = function(subject, candidates) {
+exports.candidateCapture = function(subject, candidates) {
   var captured = {};
   for (var c in candidates) {
-    captured = exports.named_capture(subject, candidates[c].names, candidates[c].regex);
+    captured = exports.namedCapture(subject, candidates[c].names, candidates[c].regex);
     if (_.size(captured)) {
       captured.parser_subtype = candidates[c].subtype;
       break;

@@ -1,7 +1,7 @@
 'use strict';
 
 exports.parse = function(log) {
-  return require(__dirname + '/parsers').named_capture(
+  return require(__dirname + '/parsers').namedCapture(
     log,
     ['host', 'user', 'time', 'method', 'path', 'code', 'size', 'referer', 'agent'],
     // From fluentd-0.10.9/lib/fluent/parser.rb:

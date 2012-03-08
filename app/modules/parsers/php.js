@@ -1,7 +1,7 @@
 'use strict';
 
 exports.parse = function(log) {
-  return require(__dirname + '/parsers').candidate_capture(log, [
+  return require(__dirname + '/parsers').candidateCapture(log, [
     {
       names: ['time', 'level', 'message', 'file', 'line'],
       regex : /^\[([^\]]+)\] PHP ([^:]+):\s+(?:(.*) in )(\/.*) on line (\d+)$/,
