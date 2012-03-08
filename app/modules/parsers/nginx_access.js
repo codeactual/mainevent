@@ -9,7 +9,7 @@ exports.parse = function(log) {
   );
 };
 
-exports.getPreviewContext = function(log) {
+exports.addPreviewContext = function(log) {
   if (log.code) {
     switch (log.code[0]) {
       case '2': log.codeClass = 'success'; break;
@@ -24,6 +24,10 @@ exports.getPreviewContext = function(log) {
     log.referer_min = log.referer.replace(/^http(s)?:\/\//, '');
   }
   return log;
+};
+
+exports.decorateFullContext = function(log) {
+  return exports.addPreviewContext(log);
 };
 
 exports.extractTime = function(date) {

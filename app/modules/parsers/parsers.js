@@ -133,15 +133,17 @@ exports.addPreviewContext = function(logs, onAllDone) {
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
-      if (_.has(exports.get(log.parser), 'getPreviewContext')) {
-        var context = exports.get(log.parser).getPreviewContext(log);
+      var parser = exports.get(log.parser);
+
+      if (_.has(parser, 'addPreviewContext')) {
+        var context = parser.addPreviewContext(log);
       } else {
         var context = log;
       }
 
       // Use parser module's preview function, e.g. for parsers/json.js.
-      if (_.has(exports.get(log.parser), 'getPreview')) {
-        log.preview = exports.get(log.parser).getPreview(context);
+      if (_.has(parser, 'getPreview')) {
+        log.preview = parser.getPreview(context);
         updatedLogs.push(log);
         onSingleDone();
 
@@ -161,6 +163,19 @@ exports.addPreviewContext = function(logs, onAllDone) {
       onAllDone(updatedLogs);
     }
   );
+};
+
+/**
+ * Augment/modify a log object for display based on its parser subtype.
+ *
+ * @param log {Object} Describes a parsed log line.
+ */
+exports.decorateFullContext = function(log) {
+  var parser = exports.get(log.parser);
+  if (_.has(parser, 'decorateFullContext')) {
+    return parser.decorateFullContext(log);
+  }
+  return log;
 };
 
 /**

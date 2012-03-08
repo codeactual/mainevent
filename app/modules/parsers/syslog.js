@@ -9,7 +9,7 @@ exports.parse = function(log) {
   );
 };
 
-exports.getPreviewContext = function(log) {
+exports.addPreviewContext = function(log) {
   delete log.pid;
   return log;
 };

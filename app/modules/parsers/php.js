@@ -15,7 +15,7 @@ exports.parse = function(log) {
   ]);
 };
 
-exports.getPreviewContext = function(log) {
+exports.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
       case 'Warning': log.levelClass = 'warning'; break;
