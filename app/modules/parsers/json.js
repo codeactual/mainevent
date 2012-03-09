@@ -21,12 +21,9 @@ exports.addPreviewContext = function(log) {
 };
 
 exports.getPreview = function(parsed) {
-  var preview = '';
+  var preview = [];
   _.each(parsed, function(value, key) {
-    if (preview) {
-      preview += ', ';
-    }
-    preview += key + '=' + value;
+    preview.push(key + '=' + value);
   });
-  return preview;
+  return preview.join(', ');
 };
