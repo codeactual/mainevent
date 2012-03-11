@@ -8,13 +8,17 @@
 
 var program = require('commander');
 
+var splitCsv = function(list) {
+  return list.split(',');
+}
+
 // Support all attributes normally defined by config.js.
 program
   .option('-p, --parser <name>', 'Ex. nginx_access')
   .option('-P, --path <file>', 'Ex. /var/log/nginx/access.log')
-  .option('-t, --tags [list]', 'Ex. tag1,tag2', function(list) { return list.split(','); })
+  .option('-t, --tags [list]', 'Ex. tag1,tag2', splitCsv)
   .option('-T, --timeAttr [name]', 'Ex. logtime')
-  .option('-r, --previewAttr [name]', 'Ex. message')
+  .option('-r, --previewAttr [name]', 'Ex. message', splitCsv)
   .parse(process.argv);
 
 var source = {
