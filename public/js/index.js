@@ -156,11 +156,16 @@ $(function() {
           return;
         }
 
+        var context = {};
+
         // Attributes are in an array of key/value pair objects, ex. from json parser.
         if (event.__list) {
           event.__list = _.filter(event.__list, function(pair) {
             // Omit database ID.
             if (pair.key == '_id') {
+              return false;
+            } else if (pair.key == 'tags') {
+              context.tags = pair.value;
               return false;
             }
             // Ex. avoid rendering empty 'tags' lists.
@@ -170,7 +175,8 @@ $(function() {
             return true;
           });
 
-          var context = {list: event.__list, parser: event.parser};
+          context.list = event.__list;
+          context.parser = event.parser;
 
           // Ex. format the time attribute.
           context.list = _.map(context.list, function(pair, index) {
@@ -194,6 +200,10 @@ $(function() {
           context.time = formatTime(context.time);
           delete context.previewAttr;
         }
+
+        context.tags = _.map(context.tags, function(value) {
+          return {name: value};
+        });
 
         var parent = this.model.get('parent');
         dust.render(
