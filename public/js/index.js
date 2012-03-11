@@ -22,7 +22,7 @@ $(function() {
    * @return {String}
    */
   var formatTime = function(time) {
-    return (new Date(time * 1000)).toUTCString();
+    return moment(new Date(time * 1000)).format('LLLL z');
   };
 
   /**
