@@ -63,7 +63,7 @@ exports.getConfig = function(file) {
   if (file) {
     file = require('fs').realpathSync(file);
   } else {
-    file = __dirname + '/../../config/config.js';
+    file = __dirname + '/../../config/app.js';
   }
   return require(file).read();
 }
