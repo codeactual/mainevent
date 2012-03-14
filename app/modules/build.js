@@ -1,5 +1,5 @@
 /**
- * Helpers related to views and templates.
+ * Helpers related to build steps like compiling templates and combining JS.
  */
 
 'use strict';
@@ -11,7 +11,7 @@ var path = require('path');
 /**
  * Compile all dust.js templates into a public directory.
  */
-exports.compile = function() {
+exports.compileViews = function() {
   var fd = fs.openSync(__dirname + '/../../public/templates/compiled.js', 'w');
 
   _.each(fs.readdirSync(__dirname + '/../views'), function(template) {

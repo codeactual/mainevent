@@ -112,8 +112,6 @@ exports.addPreviewContext = function(logs, onAllDone) {
   var dust = require('dust');
   var updatedLogs = [];
 
-  var views = require(__dirname + '/../views.js');
-
   var updateLogFromTemplate = function(name, log, context, callback) {
     dust.loadSource(
       require('fs')
