@@ -10,6 +10,7 @@
 
 $(function() {
   window.diana = window.diana || {};
+  var diana = window.diana;
 
   // Parent element for all backbone.js views.
   diana.viewContainer = '#backbone-view';
