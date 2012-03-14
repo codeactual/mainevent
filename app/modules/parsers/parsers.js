@@ -114,8 +114,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
 
   var updateLogFromTemplate = function(name, log, context, callback) {
     dust.loadSource(
-      require('fs')
-        .readFileSync(__dirname + '/../../../public/templates/compiled.js')
+      require('fs').readFileSync(helpers.requireModule('build').getTemplatesPath())
     );
     dust.render(
       name,

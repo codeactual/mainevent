@@ -1,2 +1,5 @@
-config/*.js
 *.log
+config/*.js
+public/js/libs.js
+public/js/mvc.js
+public/js/templates.js
