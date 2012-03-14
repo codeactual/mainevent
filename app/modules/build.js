@@ -28,6 +28,37 @@ exports.compileViews = function() {
       'utf8'
     );
   });
+
+  fs.closeSync(fd);
+};
+
+/**
+ * Minify and combine Javascript.
+ */
+exports.combineJavascript = function() {
+  var fd = fs.openSync(__dirname + '/../../public/js/mvc.js', 'w');
+
+  var backboneDirs = ['helpers', 'models', 'collections', 'views'];
+  var baseJsDir = __dirname + '/../../public/js/';
+  var first = true;
+
+  _.each(backboneDirs, function(dir) {
+    _.each(fs.readdirSync(baseJsDir + dir), function(jsFile) {
+      var content = fs.readFileSync(baseJsDir + dir + '/' + jsFile, 'UTF-8');
+      if (!first) {
+        content = content.replace(/^['"]use strict['"];\n/gm, '');
+      }
+      fs.writeSync(
+        fd,
+        content,
+        null,
+        'utf8'
+      );
+      first = false;
+    });
+  });
+
+  fs.closeSync(fd);
 };
 
 /**

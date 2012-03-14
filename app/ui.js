@@ -15,8 +15,8 @@ var express = require('express');
 var app = express.createServer();
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 
-// Make dust.js templates available to clientside JS.
 require(__dirname + '/modules/build.js').compileViews();
+require(__dirname + '/modules/build.js').combineJavascript();
 
 // Required for using *.html with res.render().
 app.register('.html', {

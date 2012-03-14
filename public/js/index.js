@@ -9,31 +9,13 @@
 'use strict';
 
 $(function() {
+  window.diana = window.diana || {};
+
   // Parent element for all backbone.js views.
-  var viewContainer = '#backbone-view';
+  diana.viewContainer = '#backbone-view';
 
   // localStorage cache for items like /event/:id responses.
-  var cache = new clientsiiide('Diana');
-
-  /**
-   * Convert a UNIX timestamp in seconds to string format.
-   *
-   * @param time {Number}
-   * @return {String}
-   */
-  var formatTime = function(time) {
-    return moment(new Date(time * 1000)).format('LLLL z');
-  };
-
-  /**
-   * Common error handler for all fetch/sync operations.
-   */
-  var onFetchError = function(response) {
-    var context = {message: JSON.parse(response.responseText).__error};
-    dust.render('error', context, function(err, out) {
-      $(viewContainer).html(out);
-    });
-  };
+  diana.cache = new clientsiiide('Diana');
 
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
@@ -89,43 +71,6 @@ $(function() {
   });
 
   /**
-   * Represents one logged event. Shared by multiple views.
-   * Attributes vary from one event to the next based on the parser.
-   */
-  window.Event = Backbone.Model.extend({
-    urlRoot: '/event',
-
-    sync: function(method, model, options) {
-      // Only override reads.
-      if ('read' != method) {
-        Backbone.sync.call(this, method, this, options);
-        return;
-      }
-
-      // Divert all reads through localStorage cache.
-      var cacheKey = 'id-' + model.id;
-      cache.get({
-        ns: 'event',
-        keys: cacheKey,
-        onDone: function(results) {
-          options.success(results[cacheKey]);
-        },
-        onMiss: function(keys, onMissDone) {
-          Backbone.sync.call(this, method, this, {
-            url: '/event/' + model.id,
-            success: function(data) {
-              var write = {};
-              write[cacheKey] = data;
-              onMissDone(write);
-            },
-            error: onFetchError
-          });
-        }
-      });
-    }
-  });
-
-  /**
    * Router handler for / requests.
    */
   var viewIndex = function() {
@@ -138,95 +83,16 @@ $(function() {
    * @param id {String} Database primary key.
    */
   var viewEvent = function(id) {
-  // View of an individual event.
-    window.EventView = Backbone.View.extend({
-      el: $(viewContainer),
-
-      initialize: function() {
-        this.model = new Event({id: id});
-        this.model.bind('change', this.render, this);
-        this.model.set('parent', this.el);
-        this.model.fetch();
-      },
-
-      // Populate parent element with processed event template.
-      render: function() {
-        var event = this.model.toJSON();
-        if (Object.keys(event).length < 3) {
-          return;
-        }
-
-        var context = {};
-
-        // Attributes are in an array of key/value pair objects, ex. from json parser.
-        if (event.__list) {
-          event.__list = _.filter(event.__list, function(pair) {
-            // Omit database ID.
-            if (pair.key == '_id') {
-              return false;
-            } else if (pair.key == 'tags') {
-              context.tags = pair.value;
-              return false;
-            }
-            // Ex. avoid rendering empty 'tags' lists.
-            if (pair.value === null) {
-              return false;
-            }
-            return true;
-          });
-
-          context.list = event.__list;
-          context.parser = event.parser;
-
-          // Ex. format the time attribute.
-          context.list = _.map(context.list, function(pair, index) {
-            if ('time' == pair.key) {
-              context.time = formatTime(pair.value);
-              context.timeFromNow = moment(pair.value * 1000).fromNow();
-            }
-            return pair;
-          });
-
-          // Ex. remove internal attributes for display.
-          context.list = _.filter(context.list, function(pair, index) {
-            var blacklist = ['parser', 'previewAttr', 'time'];
-            return -1 == blacklist.indexOf(pair.key);
-          });
-
-        // Attributes are in a one-dimensional object, ex. from nginx_access parser.
-        } else {
-          var context = event;
-          context.timeFromNow = moment(context.time * 1000).fromNow();
-          context.time = formatTime(context.time);
-          delete context.previewAttr;
-        }
-
-        context.tags = _.map(context.tags, function(value) {
-          return {name: value};
-        });
-
-        var parent = this.model.get('parent');
-        dust.render(
-          // ex. 'event_nginx_access'
-          'event_' + this.model.attributes.parser,
-          context,
-          function(err, out) {
-            $(parent).html(out);
-          }
-        );
-      }
-    });
-
-    window.EventPage = new EventView();
+    new diana.views.Event({id: id});
   };
 
   /**
    * Router handler for /#timeline* requests.
    *
-   * @param options {Object} Search/pagination options. See search_args below.
+   * @param options {Object} Search/pagination options. See searchArgs below.
    */
   var viewTimelineSearch = function(options) {
-    var search_args = {
+    var searchArgs = {
       // Holds all pairs with keys that do not match those below, ex. parser=php.
       conditions: {},
 
@@ -240,91 +106,32 @@ $(function() {
       // Ex. '/#timeline/limit=10;skip=20;host=127.0.0.1'.
       var parts = options.split(';');
       _.each(parts, function(part) {
-        // Ex. 'limit=10'. Push key/value pairs into search_args.
+        // Ex. 'limit=10'. Push key/value pairs into searchArgs.
         var assign_part = part.split('=');
         if (2 == assign_part.length) {
-          if (_.has(search_args, assign_part[0])) {
-            search_args[assign_part[0]] = assign_part[1];
+          if (_.has(searchArgs, assign_part[0])) {
+            searchArgs[assign_part[0]] = assign_part[1];
           } else {
-            search_args.conditions[assign_part[0]] = assign_part[1];
+            searchArgs.conditions[assign_part[0]] = assign_part[1];
           }
         }
       });
     }
 
-    // Move search_args.conditions properties into search_args.
-    _.each(search_args.conditions, function(value, key) {
-      search_args[key] = value;
+    // Move searchArgs.conditions properties into searchArgs.
+    _.each(searchArgs.conditions, function(value, key) {
+      searchArgs[key] = value;
     });
-    delete search_args.conditions;
+    delete searchArgs.conditions;
 
     // Remove unused options.
-    _.each(search_args, function(value, key) {
+    _.each(searchArgs, function(value, key) {
       if (null === value) {
-        delete search_args[key];
+        delete searchArgs[key];
       }
     });
 
-    /**
-     * Holds events from a timeline search result set.
-     */
-    window.Timeline = Backbone.Collection.extend({
-      url: '/timeline?' + $.param(search_args)
-    });
-
-    /**
-     * Displays a single <table> row for a single Event in the result set.
-     */
-    window.TimelineEventView = Backbone.View.extend({
-      initialize: function() {
-        this.model.bind('change', this.render, this);
-      },
-      render: function(callback) {
-        this.model.attributes.time = moment(this.model.attributes.time * 1000).fromNow();
-        dust.render(
-          'timeline_table_row',
-          this.model.toJSON(),
-          function(err, out) {
-            $('#timeline-table tbody').append(out);
-          }
-        );
-      }
-    });
-
-    /**
-     * Displays the <table> into which result sets are rendered. Automatically
-     * fetches the result set based on router options.
-     */
-    window.TimelinePageView = Backbone.View.extend({
-      el: $(viewContainer),
-      initialize: function() {
-        // Sync template with data fetched from server.
-        var onTemplateRendered = function(err, out) {
-          $(viewContainer).html(out);
-
-          var timeline = new Timeline();
-          timeline.fetch({
-            success: function(collection, response) {
-              if (response.length) {
-                _.each(response, function(event) {
-                  var model = new Event(event);
-                  timeline.add(model);
-                  var view = new TimelineEventView({ model: model });
-                  view.render();
-                });
-              } else {
-                dust.render('timeline_no_results', null, function(err, out) {
-                  $(viewContainer).html(out);
-                });
-              }
-            },
-            error: function(collection, response) { onFetchError(response); }
-          });
-        };
-        dust.render('timeline_table', null, onTemplateRendered);
-      }
-    });
-    window.TimelinePage = new TimelinePageView();
+    new diana.views.Timeline({searchArgs: searchArgs});
   };
 
   new Router();
