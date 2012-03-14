@@ -1,7 +1,7 @@
 /**
  * Serve HTTP requests for the backbone.js powered frontend, assets, and log JSON.
  *
- * Example usage: supervisor app/ui.js
+ * Example usage: supervisor --extensions 'js|html' app/ui.js
  *
  * Example flow:
  *   browser - GET /#event/4f44bc7ea679dd8866000002
