@@ -61,7 +61,8 @@ exports.combineJavascript = function() {
     'bootstrap-modal.js',
     'dust.js',
     'moment.js',
-    'clientsiiide.js'
+    'clientsiiide.js',
+    'socket.io.js'
   ];
   _.each(libs, function(jsFile) {
     fs.writeSync(fd, fs.readFileSync(baseJsDir + 'libs/' + jsFile, 'UTF-8') + "\n", null, 'utf8');
