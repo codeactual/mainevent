@@ -17,15 +17,32 @@
       var onTemplateRendered = function(err, out) {
         $(diana.viewContainer).html(out);
 
-        var timeline = new diana.collections.Timeline(null, {searchArgs: options.searchArgs});
+        var timeline = new diana.collections.Timeline(
+          null, {searchArgs: options.searchArgs}
+        );
         timeline.fetch({
           success: function(collection, response) {
             if (response.length) {
               _.each(response, function(event) {
                 var model = new diana.models.Event(event);
                 timeline.add(model);
-                var view = new diana.views.TimelineEvent({ model: model });
-                view.render();
+                (new diana.views.TimelineEvent({model: model})).render();
+              });
+
+              // Seed/start automatic updates with the result set's newest ID.
+              var socket = io.connect('http://localhost:8080');
+              socket.emit('startTimelineUpdate', response[0]._id);
+
+              // Update the view with automatic update results.
+              socket.on('timelineUpdate', function (data) {
+                if (!data) {
+                  return;
+                }
+                if (data.__socket_error) {
+                  // TODO: Update view.
+                } else {
+                  // TODO: Update view.
+                }
               });
             } else {
               dust.render('timeline_no_results', null, function(err, out) {

@@ -175,3 +175,17 @@ exports.getTimeline = function(params, callback) {
     });
   });
 };
+
+/**
+ * Retrieve the attributes of all logs newer than a given ID.
+ *
+ * @param id {String}
+ * @param callback {Function} Receives find() results.
+ */
+exports.getTimelineUpdates = function(id, callback) {
+  exports.getTimeline({
+    _id: {$gt: new BSON.ObjectID(id)},
+    sort_attr: '_id',
+    sort_dir: 'desc'
+  }, callback);
+};

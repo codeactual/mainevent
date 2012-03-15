@@ -88,4 +88,36 @@ app.error(function(err, req, res, next) {
   res.send({__error: err.message}, 500);
 });
 
+// Serve automatic timeline updates.
+var io = require('socket.io').listen(app);
+io.sockets.on('connection', function (socket) {
+
+  // Client seeds the update stream with the last-seen ID.
+  socket.on('startTimelineUpdate', function (id) {
+    var storage = helpers.requireModule('storage/mongodb');
+    var timelineUpdate = setInterval(function () {
+      if (!id) {
+        // Client never sent the ID for some reason -- don't stop the updates.
+        return;
+      }
+      storage.getTimelineUpdates(id, function(err, docs) {
+        if (err) {
+          docs = {__socket_error: err};
+        } else {
+          if (docs.length) {
+            id = docs[0]._id.toString();
+          }
+        }
+        socket.emit('timelineUpdate', docs);
+      });
+    }, helpers.getConfig().timelineUpdateDelay);
+  });
+
+  socket.on('disconnect', function () {
+    if ("undefined" != typeof timelineUpdate) {
+      clearInterval(timelineUpdate);
+    }
+  });
+});
+
 app.listen(8080, '127.0.0.1');
