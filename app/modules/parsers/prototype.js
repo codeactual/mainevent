@@ -74,15 +74,6 @@ Parser.prototype.parseAndInsert = function(source, lines, callback, bulk) {
 };
 
 /**
- * Augment/modify a log object for display based on its parser subtype.
- *
- * @param log {Object} Describes a parsed log line.
- */
-Parser.prototype.decorateFullContext = function(log) {
-  return this.decorateFullContext(log);
-};
-
-/**
  * Apply a list of potential named capture regexes. First match wins.
  *
  * @param subject {String} Log line.
@@ -123,23 +114,55 @@ Parser.prototype.candidateCapture = function(subject, candidates) {
   return captured;
 };
 
+/**
+ * Convert a log line string into an object of parsed key/value pairs
+ *
+ * @param log {String} Ex. web access log line.
+ * @return {Object} Parsed keys/values.
+ */
 Parser.prototype.parse = function(log) {
   return {};
 };
 
+/**
+ * Augment the context object sent to the preview template.
+ *
+ * - Used to assist either getPreview() or template-based preview building.
+ *
+ * @param log {Object} Parsed key/value pairs from the database.
+ * @return {Object} Augmented input.
+ */
 Parser.prototype.addPreviewContext = function(log) {
   return log;
 };
 
+/**
+ * Build a log preview string.
+ *
+ * - Alternative to using a preview template.
+ *
+ * @param log {Object} Parsed key/value pairs from the database.
+ * @return {String} Exact 'preview' attribute addPreviewContext() adds to each log object.
+ */
 Parser.prototype.getPreview = function(parsed) {
   return null;
 };
 
+/**
+ * Augment/modify a log object for display based on its parser subtype.
+ *
+ * @param log {Object} Describes a parsed log line.
+ */
 Parser.prototype.decorateFullContext = function(log) {
   return log;
 };
 
-// Convert source-specific time formats to UNIX timestamps.
+/**
+ * Convert a date/time string into a millisecond-based timestamp.
+ *
+ * @param date {String} Ex. '12/Mar/2012:09:03:31 +0000'
+ * @return {Number} Milliseconds since UNIX epoch.
+ */
 Parser.prototype.extractTime = function(date) {
   // No custom extraction, try direct parsing/extraction.
   if (_.isNumber(date)) {
