@@ -68,7 +68,10 @@ app.get('/event/:id', function(req, res) {
             });
             res.send({__list: list, parser: doc.parser});
           } else {
-            doc = helpers.requireModule('parsers/parsers').decorateFullContext(doc);
+            var parser =
+            doc = helpers.requireModule('parsers/parsers')
+              .createInstance(doc.parser)
+              .decorateFullContext(doc);
             res.send(doc);
           }
         } else {

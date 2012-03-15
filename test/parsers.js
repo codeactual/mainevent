@@ -17,7 +17,7 @@ var storage = helpers.requireModule('storage/storage').load();
  * @param expected {Object} Attributes from parse result.
  */
 var assertParseValid = function(test, log, parser, expected) {
-  var actual = parsers.get(parser).parse(log);
+  var actual = parsers.createInstance(parser).parse(log);
   var expectedKeys = Object.keys(expected);
 
   test.equal(Object.keys(actual).length, expectedKeys.length);
@@ -197,9 +197,10 @@ exports.testJson = function(test) {
 exports.testUnparsableLine = function(test) {
   var time = Math.round((new Date()).getTime() / 1000);
   var source = {parser: 'php', tags: ['a', 'b']};
+  var parser = parsers.createInstance('php');
   var message = testutil.getRandHash();  // Only for verification lookup.
   test.expect(3);
-  parsers.parseAndInsert(source, [message], function() {
+  parser.parseAndInsert(source, [message], function() {
     storage.getTimeline({message: message}, function(err, docs) {
       test.equal(docs[0].time, time);
       test.deepEqual(docs[0].tags, source.tags);
@@ -267,6 +268,7 @@ exports.testGetPreviewFromTemplate = function(test) {
 
 exports.testCustomTimeAttr = function(test) {
   var source = {parser: 'json', timeAttr: 'logtime'};
+  var parser = parsers.createInstance('json');
   var expected = {
     logtime: '3/12/2012 09:03:31 UTC',
     message: 'shutdown succeeded',
@@ -275,7 +277,7 @@ exports.testCustomTimeAttr = function(test) {
   var log = JSON.stringify(expected);
 
   test.expect(3);
-  parsers.parseAndInsert(source, [log], function() {
+  parser.parseAndInsert(source, [log], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       test.equal(docs[0].message, expected.message);
       test.equal(docs[0].time, 1331543011);
@@ -287,6 +289,7 @@ exports.testCustomTimeAttr = function(test) {
 
 exports.testCustomPreviewAttr = function(test) {
   var source = {parser: 'json', previewAttr: ['role']};
+  var parser = parsers.createInstance('json');
   var expected = {
     time: '14-Feb-2012 06:38:38 UTC',
     role: 'db-slave',
@@ -296,7 +299,7 @@ exports.testCustomPreviewAttr = function(test) {
   var line = JSON.stringify(expected);
 
   test.expect(1);
-  parsers.parseAndInsert(source, [line], function() {
+  parser.parseAndInsert(source, [line], function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       parsers.addPreviewContext(docs, function(actual) {
         test.equal(actual[0].preview, 'role=db-slave');
@@ -307,48 +310,55 @@ exports.testCustomPreviewAttr = function(test) {
 };
 
 exports.testNginxAccessExtractTime = function(test) {
+  var parser = parsers.createInstance('nginx_access');
   var date = '12/Mar/2012:09:03:31 +0000';
-  test.equal(parsers.get('nginx_access').extractTime(date), 1331543011000);
+  test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testNginxErrorExtractTime = function(test) {
+  var parser = parsers.createInstance('nginx_error');
   var date = '2012/03/12 09:03:31';
-  test.equal(parsers.get('nginx_error').extractTime(date), 1331543011000);
+  test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testPhpExtractTime = function(test) {
+  var parser = parsers.createInstance('php');
   var date = '12-Mar-2012 09:03:31 UTC';
-  test.equal(parsers.get('php').extractTime(date), 1331543011000);
+  test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testSymfonyExtractTime = function(test) {
+  var parser = parsers.createInstance('symfony');
   var date = '2012-03-12 09:03:31';
-  test.equal(parsers.get('symfony').extractTime(date), 1331543011000);
+  test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testSyslogExtractTime = function(test) {
+  var parser = parsers.createInstance('syslog');
+
   // Event happened in the past, w/out year change since then.
   var date = 'Mar  12 09:03:31';
   var now = new Date('3/13/2012 00:00:00');
-  test.equal(parsers.get('syslog').extractTime(date, now), 1331543011000);
+  test.equal(parser.extractTime(date, now), 1331543011000);
 
   // Event happened in the past, with year change since then.
   date = 'Dec  31 23:03:31';
   now = new Date('1/01/2012 00:00:00');
-  test.equal(parsers.get('syslog').extractTime(date, now), 1325372611000);
+  test.equal(parser.extractTime(date, now), 1325372611000);
   test.done();
 };
 
 exports.testDirectTimeExtraction = function(test) {
   var source = {parser: 'json', timeAttr: 't'};
+  var parser = parsers.createInstance('json');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: 1331543011, message: "something happened", run: run};
   test.expect(2);
-  parsers.parseAndInsert(source, [JSON.stringify(log)], function() {
+  parser.parseAndInsert(source, [JSON.stringify(log)], function() {
     storage.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].time, 1331543011);
       test.equal(docs[0].message, log.message);
@@ -359,10 +369,11 @@ exports.testDirectTimeExtraction = function(test) {
 
 exports.testDirectTimeParse = function(test) {
   var source = {parser: 'json', timeAttr: 't'};
+  var parser = parsers.createInstance('json');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: "3/12/2012 09:03:31", message: "something happened", run: run};
   test.expect(2);
-  parsers.parseAndInsert(source, [JSON.stringify(log)], function() {
+  parser.parseAndInsert(source, [JSON.stringify(log)], function() {
     storage.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].time, 1331543011);
       test.equal(docs[0].message, log.message);
@@ -373,11 +384,12 @@ exports.testDirectTimeParse = function(test) {
 
 exports.testExtractedTimeInsertion = function(test) {
   var source = {parser: 'php'};
+  var parser = parsers.createInstance('php');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = '[12-Mar-2012 09:03:31 UTC] ' + run;
 
   test.expect(2);
-  parsers.parseAndInsert(source, [log], function() {
+  parser.parseAndInsert(source, [log], function() {
     storage.getTimeline({message: run}, function(err, docs) {
       test.equal(docs[0].message, run);
       test.equal(docs[0].time, 1331543011);
@@ -389,10 +401,11 @@ exports.testExtractedTimeInsertion = function(test) {
 exports.testUnparsableTime = function(test) {
   var time = Math.round((new Date()).getTime() / 1000);
   var source = {parser: 'php', tags: ['a', 'b']};
+  var parser = parsers.createInstance('php');
   var message = testutil.getRandHash();  // Only for verification lookup.
   var line = '[invalid time] ' + message;
   test.expect(3);
-  parsers.parseAndInsert(source, [line], function() {
+  parser.parseAndInsert(source, [line], function() {
     storage.getTimeline({message: message}, function(err, docs) {
       test.equal(docs[0].time, time);
       test.deepEqual(docs[0].tags, source.tags);

@@ -1,7 +1,17 @@
 'use strict';
 
-exports.parse = function(log) {
-  return require(__dirname + '/parsers').candidateCapture(log, [
+exports.createInstance = function() {
+  return new NginxErrorParser();
+};
+
+var NginxErrorParser = function() {
+  Parser.call(this, 'nginx_error');
+};
+
+helpers.inheritPrototype(NginxErrorParser, Parser);
+
+NginxErrorParser.prototype.parse = function(log) {
+  return this.candidateCapture(log, [
     {
       // Ex. 2012/02/05 00:19:34 [error] 13816#0: *1 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: diana, request: "GET / HTTP/1.1", upstream: "fastcgi://unix:/path/to/php-fpm.sock:", host: "diana"
       names: ['time', 'level', 'errno', 'errstr', 'client', 'server', 'method', 'path', 'upstream', 'host'],
@@ -23,7 +33,7 @@ exports.parse = function(log) {
   ]);
 };
 
-exports.addPreviewContext = function(log) {
+NginxErrorParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
       case 'debug': log.levelClass = 'info'; break;
@@ -35,6 +45,6 @@ exports.addPreviewContext = function(log) {
   return log;
 };
 
-exports.extractTime = function(date) {
+NginxErrorParser.prototype.extractTime = function(date) {
   return Date.parse(date);
 };

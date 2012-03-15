@@ -1,7 +1,17 @@
 'use strict';
 
-exports.parse = function(log) {
-  return require(__dirname + '/parsers').namedCapture(
+exports.createInstance = function() {
+  return new NginxAccessParser();
+};
+
+var NginxAccessParser = function() {
+  Parser.call(this, 'nginx_access');
+};
+
+helpers.inheritPrototype(NginxAccessParser, Parser);
+
+NginxAccessParser.prototype.parse = function(log) {
+  return this.namedCapture(
     log,
     ['host', 'user', 'time', 'method', 'path', 'code', 'size', 'referer', 'agent'],
     // From fluentd-0.10.9/lib/fluent/parser.rb:
@@ -9,7 +19,7 @@ exports.parse = function(log) {
   );
 };
 
-exports.addPreviewContext = function(log) {
+NginxAccessParser.prototype.addPreviewContext = function(log) {
   if (log.code) {
     switch (log.code[0]) {
       case '2': log.codeClass = 'success'; break;
@@ -26,11 +36,11 @@ exports.addPreviewContext = function(log) {
   return log;
 };
 
-exports.decorateFullContext = function(log) {
-  return exports.addPreviewContext(log);
+NginxAccessParser.prototype.decorateFullContext = function(log) {
+  return this.addPreviewContext(log);
 };
 
-exports.extractTime = function(date) {
+NginxAccessParser.prototype.extractTime = function(date) {
   var matches = date.match(/(\d+)\/([A-Za-z]+)\/(\d{4}):(\d{2}:\d{2}:\d{2} \+\d{4})/);
   if (!matches) {
     return NaN;

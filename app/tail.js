@@ -27,6 +27,8 @@ var monitorCleanup = function() {
 process.on('exit', monitorCleanup);
 process.on('uncaughtException', monitorCleanup);
 
+var parserCache = {};
+
 /**
  * `tail -F` configured source paths and parse/insert its updates.
  */
@@ -36,7 +38,10 @@ _.each(config.sources, function(source) {
   monitors.push(cmd);
 
   cmd.stdout.on('data', function(data) {
-    parsers.parseAndInsert(
+    if (!parserCache[source.parser]) {
+      parserCache[source.parser] = parsers.createInstance(source.parser);
+    }
+    parserCache[source.parser].parseAndInsert(
       source,
       data.toString().replace(/\n$/, '').split("\n"),
       null,

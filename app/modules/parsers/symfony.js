@@ -1,7 +1,17 @@
 'use strict';
 
-exports.parse = function(log) {
-  return require(__dirname + '/parsers').candidateCapture(log, [
+exports.createInstance = function() {
+  return new SymfonyParser();
+};
+
+var SymfonyParser = function() {
+  Parser.call(this, 'symfony');
+};
+
+helpers.inheritPrototype(SymfonyParser, Parser);
+
+SymfonyParser.prototype.parse = function(log) {
+  return this.candidateCapture(log, [
     {
       'names': ['time', 'type', 'level', 'event', 'listener'],
       'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,
@@ -15,7 +25,7 @@ exports.parse = function(log) {
   ]);
 };
 
-exports.addPreviewContext = function(log) {
+SymfonyParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
       case 'DEBUG': log.levelClass = 'default'; break;
@@ -27,6 +37,6 @@ exports.addPreviewContext = function(log) {
   return log;
 };
 
-exports.extractTime = function(date) {
+SymfonyParser.prototype.extractTime = function(date) {
   return Date.parse(date.replace(/-/, '/'));
 };

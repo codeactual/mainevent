@@ -1,7 +1,17 @@
 'use strict';
 
-exports.parse = function(log) {
-  return require(__dirname + '/parsers').namedCapture(
+exports.createInstance = function() {
+  return new SyslogParser();
+};
+
+var SyslogParser = function() {
+  Parser.call(this, 'syslog');
+};
+
+helpers.inheritPrototype(SyslogParser, Parser);
+
+SyslogParser.prototype.parse = function(log) {
+  return this.namedCapture(
     log,
     ['time', 'host', 'ident', 'pid', 'message'],
     // From fluentd-0.10.9/lib/fluent/parser.rb:
@@ -9,12 +19,12 @@ exports.parse = function(log) {
   );
 };
 
-exports.addPreviewContext = function(log) {
+SyslogParser.prototype.addPreviewContext = function(log) {
   delete log.pid;
   return log;
 };
 
-exports.extractTime = function(date, now) {
+SyslogParser.prototype.extractTime = function(date, now) {
   // For unit testing.
   if (undefined === now) {
     now = new Date();

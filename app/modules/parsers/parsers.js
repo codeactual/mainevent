@@ -1,6 +1,7 @@
 'use strict';
 
-var storage = helpers.requireModule('storage/storage').load();
+// Load GLOBAL.Parser.
+require(__dirname + '/prototype.js');
 
 /**
  * Return a named parser.
@@ -8,88 +9,8 @@ var storage = helpers.requireModule('storage/storage').load();
  * @param name {String} Ex. 'nginx_access'
  * @return {Object} Copy of a cached parser module.
  */
-exports.get = function(name) {
-  return require(__dirname + '/' + name + '.js');
-};
-
-/**
- * Parse each line according to its source parser. Tag unparsable.
- *
- * @param subject {String} Log line.
- * @param names {Array} Capture names, ex. 'time' or 'host'.
- * @param regex {RegExp} Pattern to capture all parts in 'names'.
- * @param bulk {Boolean} If true, DB connection is not auto-closed.
- * @return {Object} Captured properties.
- */
-exports.parseAndInsert = function(source, lines, callback, bulk) {
-  callback = callback || function() {};
-  lines = _.isArray(lines) ? lines : [lines];
-
-  _.each(lines, function(line, index) {
-    var parser = exports.get(source.parser);
-    lines[index] = parser.parse(line);
-
-    // Parse succeeded.
-    if (_.size(lines[index])) {
-      // Use a source-specific attribute for the canonical 'time' attribute.
-      if (source.timeAttr && lines[index][source.timeAttr]) {
-        lines[index].time = lines[index][source.timeAttr];
-        delete lines[index][source.timeAttr];
-      }
-
-      // Convert source-specific time formats to UNIX timestamps.
-      if (_.has(parser, 'extractTime')) {
-        lines[index].time = parser.extractTime(lines[index].time);
-      } else {
-        // No custom extraction, try direct parsing/extraction.
-        if (_.isNumber(lines[index].time)) {
-          if (lines[index].time < 10000000000) {
-            lines[index].time *= 1000;
-          }
-          lines[index].time = (new Date(lines[index].time)).getTime();
-        } else {
-          lines[index].time = Date.parse(lines[index].time);
-        }
-      }
-
-      // Fallback to the current time.
-      if (isNaN(lines[index].time)) {
-        lines[index].time = (new Date()).getTime();
-        lines[index].__parse_error = 'time';
-      }
-
-      // Attach source-specific attributes.
-      lines[index].previewAttr = source.previewAttr || [];
-
-    // Parse failed. Store the line and mark it.
-    } else {
-      lines[index] = {
-        time: (new Date()).getTime(),
-        message: line,
-        __parse_error: 'line'
-      };
-    }
-
-    lines[index].time = Math.round(lines[index].time / 1000);
-  });
-
-  helpers.walkAsync(
-    lines,
-    function (line, callback) {
-      storage.insertLog(source, line, callback, true);
-    },
-    null,
-    function() {
-      // insertLog() is called above in bulk-mode, so we need to close the
-      // reused link after all lines are inserted. Only skip that step
-      // if parseAndInsert() itself is in bulk-mode, e.g. by tail.js.
-      bulk = undefined === bulk ? false : bulk;
-      if (!bulk) {
-        storage.dbClose();
-      }
-      callback();
-    }
-  );
+exports.createInstance = function(name) {
+  return require(__dirname + '/' + name + '.js').createInstance();
 };
 
 /**
@@ -97,7 +18,7 @@ exports.parseAndInsert = function(source, lines, callback, bulk) {
  *
  * @param log {Object} Parsed log line attributes.
  * @return {String}
-*/
+ */
 exports.getPreviewTemplate = function(log) {
   return 'preview_' + log.parser + (undefined === log.parser_subtype ? '' : '_' + log.parser_subtype);
 };
@@ -130,29 +51,26 @@ exports.addPreviewContext = function(logs, onAllDone) {
   helpers.walkAsync(
     logs,
     function(log, onSingleDone) {
-      var parser = exports.get(log.parser);
-
-      if (_.has(parser, 'addPreviewContext')) {
-        var context = parser.addPreviewContext(log);
-      } else {
-        var context = log;
-      }
-
-      // Use parser module's preview function, e.g. for parsers/json.js.
-      if (_.has(parser, 'getPreview')) {
-        log.preview = parser.getPreview(context);
-        updatedLogs.push(log);
-        onSingleDone();
+      var parser = exports.createInstance(log.parser);
+      var context = parser.addPreviewContext(log);
 
       // 'log' does not have a predictable structure.
-      } else if (log.__parse_error) {
+      if (log.__parse_error) {
         updateLogFromTemplate('preview_parse_error', log, context, onSingleDone);
 
       // Use parser's template.
       } else {
-        updateLogFromTemplate(
-          exports.getPreviewTemplate(log), log, context, onSingleDone
-        );
+        // Use parser module's preview function, e.g. for parsers/json.js.
+        log.preview = parser.getPreview(context);
+
+        if (_.isNull(log.preview)) {
+          updateLogFromTemplate(
+            exports.getPreviewTemplate(log), log, context, onSingleDone
+          );
+        } else {
+          updatedLogs.push(log);
+          onSingleDone();
+        }
       }
     },
     null,
@@ -160,58 +78,4 @@ exports.addPreviewContext = function(logs, onAllDone) {
       onAllDone(updatedLogs);
     }
   );
-};
-
-/**
- * Augment/modify a log object for display based on its parser subtype.
- *
- * @param log {Object} Describes a parsed log line.
- */
-exports.decorateFullContext = function(log) {
-  var parser = exports.get(log.parser);
-  if (_.has(parser, 'decorateFullContext')) {
-    return parser.decorateFullContext(log);
-  }
-  return log;
-};
-
-/**
- * Apply a list of potential named capture regexes. First match wins.
- *
- * @param subject {String} Log line.
- * @param names {Array} Capture names, ex. 'time' or 'host'.
- * @param regex {RegExp} Pattern to capture all parts in 'names'.
- * @return {Object} Captured properties.
- */
-exports.namedCapture = function(subject, names, regex) {
-  var captures = {};
-  var matches = subject.match(regex);
-  if (matches) {
-    matches.shift();
-    for (var n in names) {
-      captures[names[n]] = matches[n];
-    }
-  }
-  return captures;
-};
-
-/**
- * Apply a list of potential named capture regexes. First match wins.
- *
- * @param subject {String} Log line.
- * @param candidates {Array} Objects, each describing a potential pattern match.
- *   - names {Array} Capture names, ex. 'time' or 'host'.
- *   - regex {RegExp} Pattern to capture all parts in 'names'.
- * @return {Object}
- */
-exports.candidateCapture = function(subject, candidates) {
-  var captured = {};
-  for (var c in candidates) {
-    captured = exports.namedCapture(subject, candidates[c].names, candidates[c].regex);
-    if (_.size(captured)) {
-      captured.parser_subtype = candidates[c].subtype;
-      break;
-    }
-  }
-  return captured;
 };

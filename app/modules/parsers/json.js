@@ -1,10 +1,20 @@
 'use strict';
 
-exports.parse = function(log) {
+exports.createInstance = function() {
+  return new JsonParser();
+};
+
+var JsonParser = function() {
+  Parser.call(this, 'json');
+};
+
+helpers.inheritPrototype(JsonParser, Parser);
+
+JsonParser.prototype.parse = function(log) {
   return JSON.parse(log);
 };
 
-exports.addPreviewContext = function(log) {
+JsonParser.prototype.addPreviewContext = function(log) {
   // Only use keys selected in config.js 'previewAttr' lists.
   if (log.previewAttr) {
     log.previewAttr = _.isArray(log.previewAttr) ? log.previewAttr : [log.previewAttr];
@@ -20,7 +30,7 @@ exports.addPreviewContext = function(log) {
   return log;
 };
 
-exports.getPreview = function(parsed) {
+JsonParser.prototype.getPreview = function(parsed) {
   var preview = [];
   _.each(parsed, function(value, key) {
     preview.push(key + '=' + value);

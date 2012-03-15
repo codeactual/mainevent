@@ -1,7 +1,17 @@
 'use strict';
 
-exports.parse = function(log) {
-  return require(__dirname + '/parsers').candidateCapture(log, [
+exports.createInstance = function() {
+  return new PhpParser();
+};
+
+var PhpParser = function() {
+  Parser.call(this, 'php');
+};
+
+helpers.inheritPrototype(PhpParser, Parser);
+
+PhpParser.prototype.parse = function(log) {
+  return this.candidateCapture(log, [
     {
       names: ['time', 'level', 'message', 'file', 'line'],
       regex : /^\[([^\]]+)\] PHP ([^:]+):\s+(?:(.*) in )(\/.*) on line (\d+)$/,
@@ -15,7 +25,7 @@ exports.parse = function(log) {
   ]);
 };
 
-exports.addPreviewContext = function(log) {
+PhpParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
       case 'Warning': log.levelClass = 'warning'; break;
@@ -25,7 +35,7 @@ exports.addPreviewContext = function(log) {
   return log;
 };
 
-exports.extractTime = function(date) {
+PhpParser.prototype.extractTime = function(date) {
   var matches = date.match(/(\d+)-([A-Za-z]+)-(\d{4}) (\d{2}:\d{2}:\d{2} [A-Z]+)/);
   if (!matches) {
     return NaN;

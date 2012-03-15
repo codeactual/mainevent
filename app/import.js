@@ -35,7 +35,7 @@ if (!source.parser || !source.path) {
 }
 
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
-var parsers = helpers.requireModule('parsers/parsers');
+var parser = helpers.requireModule('parsers/parsers').createInstance(source.parser);
 
 var lazy = require('lazy');
 new lazy(require("fs").createReadStream(source.path))
@@ -46,5 +46,5 @@ new lazy(require("fs").createReadStream(source.path))
     return line !== 'undefined';
   })
   .join(function (lines) {
-    parsers.parseAndInsert(source, lines);
+    parser.parseAndInsert(source, lines);
   });
