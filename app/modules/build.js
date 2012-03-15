@@ -39,7 +39,9 @@ exports.combineJavascript = function() {
   var baseJsDir = __dirname + '/../../public/js/';
 
   var fd = fs.openSync(__dirname + '/../../public/js/mvc.js', 'w');
-  var backboneDirs = ['helpers', 'models', 'collections', 'views'];
+  var backboneDirs = [
+    'helpers', 'models', 'collections', 'views', 'observers', 'controllers'
+  ];
   var first = true;
   _.each(backboneDirs, function(dir) {
     _.each(fs.readdirSync(baseJsDir + dir), function(jsFile) {

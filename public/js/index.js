@@ -31,19 +31,19 @@ $(function() {
         */
       var routes = {
         '': {
-          handler: viewIndex,
+          handler: diana.controllers.ViewIndex,
           context: {sidebar: false, tab: 'nav-home'}
        },
         'timeline': {
-          handler: viewTimelineSearch,
+          handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
        },
         'timeline/:options': {
-          handler: viewTimelineSearch,
+          handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
        },
         'event/:id': {
-          handler: viewEvent,
+          handler: diana.controllers.ViewEvent,
           context: {sidebar: false, tab: 'nav-timeline'}
         }
       };
@@ -52,88 +52,24 @@ $(function() {
       _.each(routes, function(config, route) {
         // Register route.
         router.route(route, config.handler, function() {
-          var routeOptions = arguments;
+          var routeParams = arguments;
           // Apply 'context' options to the 'content' template, ex. show sidebar.
           dust.render(
             'content',
             config.context,
             function(err, out) {
-              // Apply context.tab option.
-              $('#nav-list > li').removeClass('active');
-              $('#' + config.context.tab).addClass('active');
+              // Allow observers to tweak the layout based on configuration.
+              $('#content').trigger('ContentPreRender', config.context);
+              // Display the rendered content container.
               $('#content').html(out);
-              // Pass routeOptions to the actual handler.
-              config.handler.apply(config.context, routeOptions);
+              // Pass the matched route parameters to the actual handler.
+              config.handler.apply(config.context, routeParams);
             }
           );
         });
       });
     }
   });
-
-  /**
-   * Router handler for / requests.
-   */
-  var viewIndex = function() {
-    // TBD
-  };
-
-  /**
-   * Router handler for /#event/:id requests.
-   *
-   * @param id {String} Database primary key.
-   */
-  var viewEvent = function(id) {
-    new diana.views.Event({id: id});
-  };
-
-  /**
-   * Router handler for /#timeline* requests.
-   *
-   * @param options {Object} Search/pagination options. See searchArgs below.
-   */
-  var viewTimelineSearch = function(options) {
-    var searchArgs = {
-      // Holds all pairs with keys that do not match those below, ex. parser=php.
-      conditions: {},
-
-      limit: null,
-      skip: null,
-      sort_attr: '_id',
-      sort_dir: 'desc'
-    };
-
-    if (undefined !== options) {
-      // Ex. '/#timeline/limit=10;skip=20;host=127.0.0.1'.
-      var parts = options.split(';');
-      _.each(parts, function(part) {
-        // Ex. 'limit=10'. Push key/value pairs into searchArgs.
-        var assign_part = part.split('=');
-        if (2 == assign_part.length) {
-          if (_.has(searchArgs, assign_part[0])) {
-            searchArgs[assign_part[0]] = assign_part[1];
-          } else {
-            searchArgs.conditions[assign_part[0]] = assign_part[1];
-          }
-        }
-      });
-    }
-
-    // Move searchArgs.conditions properties into searchArgs.
-    _.each(searchArgs.conditions, function(value, key) {
-      searchArgs[key] = value;
-    });
-    delete searchArgs.conditions;
-
-    // Remove unused options.
-    _.each(searchArgs, function(value, key) {
-      if (null === value) {
-        delete searchArgs[key];
-      }
-    });
-
-    new diana.views.Timeline({searchArgs: searchArgs});
-  };
 
   new Router();
   Backbone.history.start();
