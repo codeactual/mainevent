@@ -99,8 +99,8 @@ $(function() {
 
       limit: null,
       skip: null,
-      sort_attr: null,
-      sort_dir: null
+      sort_attr: 'time',
+      sort_dir: 'desc'
     };
 
     if (undefined !== options) {
