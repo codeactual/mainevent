@@ -68,25 +68,26 @@
      * @param initialId {String} All updates (if any) will be newer than this ID.
      */
     startTimelineUpdate: function(initialId) {
-      // On the first run, create a socket for automatic updates.
-      if (!socket) {
-        var view = this;
-        view.newestEventId = initialId;
-
-        socket = diana.helpers.Socket.reuse({
-          event: {
-            connect: function() {
-              // Start/restart automatic updates.
-              socket.emit('startTimelineUpdate', view.newestEventId);
-            }
-          }
-        });
-
-        // Update the view with events fresher than newestEventId.
-        socket.on('timelineUpdate', function(data) {
-          view.onTimelineUpdate.call(view, data);
-        });
+      if (socket || !diana.features.timelineUpdate) {
+        return;
       }
+
+      var view = this;
+      view.newestEventId = initialId;
+
+      socket = diana.helpers.Socket.reuse({
+        event: {
+          connect: function() {
+            // Start/restart automatic updates.
+            socket.emit('startTimelineUpdate', view.newestEventId);
+          }
+        }
+      });
+
+      // Update the view with events fresher than newestEventId.
+      socket.on('timelineUpdate', function(data) {
+        view.onTimelineUpdate.call(view, data);
+      });
     },
 
     /**

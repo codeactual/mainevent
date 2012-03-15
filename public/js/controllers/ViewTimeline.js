@@ -50,6 +50,11 @@
       }
     });
 
+    // Enable compatible feature(s).
+    if ('_id' == searchArgs.sort_attr && 'desc' == searchArgs.sort_dir) {
+      diana.features.timelineUpdate = true;
+    }
+
     new diana.views.Timeline({searchArgs: searchArgs});
   };
 })();

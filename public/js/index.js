@@ -18,6 +18,12 @@ $(function() {
   // localStorage cache for items like /event/:id responses.
   diana.cache = new clientsiiide('Diana');
 
+  // Feature switches.
+  diana.features = {
+    // Conditionally enabled later only for compatible search conditions.
+    timelineUpdate: false
+  };
+
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
