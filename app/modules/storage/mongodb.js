@@ -55,6 +55,14 @@ var dbConnectAndOpen = function(error, success) {
   }
 };
 
+/**
+ * Open a DB collection.
+ *
+ * @param db {Object} Connection link.
+ * @param collection {String} Collection name.
+ * @param error {Function} Fired on failed opening.
+ * @param error {Function} Fired on successful opening.
+ */
 var dbCollection = function(db, collection, error, success) {
   db.collection(collection, function(err, collection) {
     if (err) {
@@ -81,7 +89,7 @@ exports.dbClose = function() {
  *
  * @param source {Object} See config.js.dist for the structure.
  * @param log {Object} Output from a parser module's parse() function.
- * @param callback {Function} Fired after insert attempted.
+ * @param callback {Function} Receives insert() results.
  * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
 exports.insertLog = function(source, log, callback, bulk) {
@@ -106,7 +114,7 @@ exports.insertLog = function(source, log, callback, bulk) {
  * Retrieve a single log's attributes.
  *
  * @param id {String} Document ID.
- * @param callback {Function} Fired after read attempted.
+ * @param callback {Function} Receives findOne() results.
  */
 exports.getLog = function(id, callback) {
   dbConnectAndOpen(callback, function(err, db) {
@@ -131,7 +139,7 @@ exports.getLog = function(id, callback) {
  * - skip {Number} Amount of documents skipped.
  * - limit {Number} Maximum amount of documents retrieved.
  * - All other key/value pairs are considered conditions.
- * @param callback {Function} Fired after read attempted.
+ * @param callback {Function} Receives find() results.
  */
 exports.getTimeline = function(params, callback) {
   dbConnectAndOpen(callback, function(err, db) {
