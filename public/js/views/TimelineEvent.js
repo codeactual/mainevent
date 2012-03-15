@@ -12,13 +12,17 @@
     initialize: function() {
       this.model.bind('change', this.render, this);
     },
-    render: function(callback) {
+    render: function(prepend) {
       this.model.attributes.time = moment(this.model.attributes.time * 1000).fromNow();
       dust.render(
         'timeline_table_row',
         this.model.toJSON(),
         function(err, out) {
-          $('#timeline-table tbody').append(out);
+          if ("undefined" == typeof prepend || !prepend) {
+            $('#timeline-table tbody').append(out);
+          } else {
+            $('#timeline-table tbody').prepend(out);
+          }
         }
       );
     }

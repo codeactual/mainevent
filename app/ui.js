@@ -68,7 +68,6 @@ app.get('/event/:id', function(req, res) {
             });
             res.send({__list: list, parser: doc.parser});
           } else {
-            var parser =
             doc = helpers.requireModule('parsers/parsers')
               .createInstance(doc.parser)
               .decorateFullContext(doc);
@@ -95,6 +94,7 @@ io.sockets.on('connection', function (socket) {
   // Client seeds the update stream with the last-seen ID.
   socket.on('startTimelineUpdate', function (id) {
     var storage = helpers.requireModule('storage/mongodb');
+    var parsers = helpers.requireModule('parsers/parsers');
     var timelineUpdate = setInterval(function () {
       if (!id) {
         // Client never sent the ID for some reason -- don't stop the updates.
@@ -103,12 +103,17 @@ io.sockets.on('connection', function (socket) {
       storage.getTimelineUpdates(id, function(err, docs) {
         if (err) {
           docs = {__socket_error: err};
+          socket.emit('timelineUpdate', docs);
         } else {
           if (docs.length) {
             id = docs[0]._id.toString();
+            parsers.addPreviewContext(docs, function(docs) {
+              socket.emit('timelineUpdate', docs);
+            });
+          } else {
+            socket.emit('timelineUpdate', docs);
           }
         }
-        socket.emit('timelineUpdate', docs);
       });
     }, helpers.getConfig().timelineUpdateDelay);
   });

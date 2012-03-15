@@ -5,6 +5,8 @@
   window.diana.views = window.diana.views || {};
   var diana = window.diana;
 
+  var socket = null;
+
   /**
    * Displays the <table> into which result sets are rendered. Automatically
    * fetches the result set based on router options.
@@ -29,21 +31,28 @@
                 (new diana.views.TimelineEvent({model: model})).render();
               });
 
-              // Seed/start automatic updates with the result set's newest ID.
-              var socket = io.connect('http://localhost:8080');
-              socket.emit('startTimelineUpdate', response[0]._id);
+              if (!socket) {
+                socket = io.connect('http://localhost:8080');
 
-              // Update the view with automatic update results.
-              socket.on('timelineUpdate', function (data) {
-                if (!data) {
-                  return;
-                }
-                if (data.__socket_error) {
-                  // TODO: Update view.
-                } else {
-                  // TODO: Update view.
-                }
-              });
+                // Seed/start automatic updates with the result set's newest ID.
+                socket.emit('startTimelineUpdate', response[0]._id);
+
+                // Update the view with automatic update results.
+                socket.on('timelineUpdate', function (data) {
+                  if (!data) {
+                    return;
+                  }
+                  if (data.__socket_error) {
+                    // TODO: Update view.
+                  } else if (data.length) {
+                    _.each(data, function(event) {
+                      var model = new diana.models.Event(event);
+                      timeline.add(model);
+                      (new diana.views.TimelineEvent({model: model})).render(true);
+                    });
+                  }
+                });
+              }
             } else {
               dust.render('timeline_no_results', null, function(err, out) {
                 $(diana.viewContainer).html(out);
