@@ -127,6 +127,7 @@ Parser.prototype.parse = function(log) {
 /**
  * Augment the context object sent to the preview template.
  *
+ * - Used by addPreviewContext() in the parsers.js module to augment a list of objects.
  * - Used to assist either getPreview() or template-based preview building.
  *
  * @param log {Object} Parsed key/value pairs from the database.
