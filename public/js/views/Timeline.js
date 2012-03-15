@@ -61,6 +61,12 @@
       dust.render('timeline_table', null, onTemplateRendered);
     },
 
+    /**
+     * Creates the automatic updates socket. Also handles reconnection and diverts
+     * update payloads.
+     *
+     * @param initialId {String} All updates (if any) will be newer than this ID.
+     */
     startTimelineUpdate: function(initialId) {
       // On the first run, create a socket for automatic updates.
       if (!socket) {
@@ -83,6 +89,12 @@
       }
     },
 
+    /**
+     * Fires on received responses from the automatic updates socket.
+     *
+     * @param data {Array|Object} List of event objects on success.
+     * - On error, __socket_error string is set.
+     */
     onTimelineUpdate: function(data) {
       if (!data) {
         return;
