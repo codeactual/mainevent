@@ -20,7 +20,11 @@ exports.createInstance = function(name) {
  * @return {String}
  */
 exports.getPreviewTemplate = function(log) {
-  return 'preview_' + log.parser + (undefined === log.parser_subtype ? '' : '_' + log.parser_subtype);
+  return util.format(
+    'preview_%s%s',
+    log.parser,
+    undefined === log.parser_subtype ? '' : '_' + log.parser_subtype
+  );
 };
 
 /**
