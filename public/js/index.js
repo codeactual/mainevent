@@ -99,7 +99,7 @@ $(function() {
 
       limit: null,
       skip: null,
-      sort_attr: 'time',
+      sort_attr: '_id',
       sort_dir: 'desc'
     };
 
