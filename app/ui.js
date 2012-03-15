@@ -88,13 +88,13 @@ app.error(function(err, req, res, next) {
 });
 
 // Serve automatic timeline updates.
+var storage = helpers.requireModule('storage/mongodb');
+var parsers = helpers.requireModule('parsers/parsers');
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket) {
 
   // Client seeds the update stream with the last-seen ID.
   socket.on('startTimelineUpdate', function (id) {
-    var storage = helpers.requireModule('storage/mongodb');
-    var parsers = helpers.requireModule('parsers/parsers');
     var timelineUpdate = setInterval(function () {
       if (!id) {
         // Client never sent the ID for some reason -- don't stop the updates.
