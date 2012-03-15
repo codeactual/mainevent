@@ -94,12 +94,12 @@
         this.newestEventId = data[0]._id;
 
         // Same steps as for the initial payload except events are prepended
-        // to the <table> via render(true).
+        // to the <table> via render() options.
         var view = this;
         _.each(data, function(event) {
           var model = new diana.models.Event(event);
           view.collection.add(model);
-          (new diana.views.TimelineEvent({model: model})).render(true);
+          (new diana.views.TimelineEvent({model: model})).render({prepend: true});
         });
       }
     }
