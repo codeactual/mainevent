@@ -32,7 +32,7 @@
               });
 
               if (!socket) {
-                socket = io.connect('http://localhost:8080');
+                socket = diana.helpers.Socket.reuseConnection();
 
                 // Seed/start automatic updates with the result set's newest ID.
                 socket.emit('startTimelineUpdate', response[0]._id);
