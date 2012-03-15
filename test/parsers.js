@@ -337,17 +337,18 @@ exports.testSymfonyExtractTime = function(test) {
   test.done();
 };
 
-exports.testSyslogExtractTime = function(test) {
+exports.testSyslogExtractTimeFromCurrentYear = function(test) {
   var parser = parsers.createInstance('syslog');
-
-  // Event happened in the past, w/out year change since then.
   var date = 'Mar  12 09:03:31';
   var now = new Date('3/13/2012 00:00:00');
   test.equal(parser.extractTime(date, now), 1331543011000);
+  test.done();
+}
 
-  // Event happened in the past, with year change since then.
-  date = 'Dec  31 23:03:31';
-  now = new Date('1/01/2012 00:00:00');
+exports.testSyslogExtractTimeFromPriorYear = function(test) {
+  var parser = parsers.createInstance('syslog');
+  var date = 'Dec  31 23:03:31';
+  var now = new Date('1/01/2012 00:00:00');
   test.equal(parser.extractTime(date, now), 1325372611000);
   test.done();
 };
