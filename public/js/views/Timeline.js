@@ -142,7 +142,6 @@
       var view = this;
       _.each(data, function(event) {
         var model = new diana.models.Event(event);
-        view.collection.add(model);
         (new diana.views.TimelineEvent({model: model})).render({
           prepend: true,
           highlight: true
