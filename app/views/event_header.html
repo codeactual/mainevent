@@ -4,9 +4,7 @@
  <span class="label label-info">{name}</span>
 {/tags}
 </div>
-<div class="page-header">
-  <h1>{time} ({timeFromNow})</h1>
-</div>
+<h2>{time} ({timeFromNow})</h2>
 {#__parse_error}
 <div class="alert alert-error">
   This log's {__parse_error} could not be parsed. All recoverable data is shown below.

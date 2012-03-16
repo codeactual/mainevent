@@ -61,6 +61,7 @@ exports.combineJavascript = function() {
     'underscore.js',
     'backbone.js',
     'bootstrap-modal.js',
+    'bootstrap-alert.js',
     'dust.js',
     'moment.js',
     'clientsiiide.js',

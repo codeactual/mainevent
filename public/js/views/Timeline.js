@@ -97,30 +97,27 @@
      * - On error, __socket_error string is set.
      */
     onTimelineUpdate: function(data) {
-      if (!data) {
+      if (!data || !data.length) {
         return;
       }
-      if (data.__socket_error) {
-        // TODO: Display a fading alert and continue waiting.
-      } else if (data.length) {
-        // Advance the manual cursor.
-        this.newestEventId = data[0]._id;
 
-        // Un-highlight any past updates.
-        $('.timeline-update').removeClass('timeline-update');
+      // Advance the manual cursor.
+      this.newestEventId = data[0]._id;
 
-        // Same steps as for the initial payload except events are prepended
-        // to the <table> via render() options.
-        var view = this;
-        _.each(data, function(event) {
-          var model = new diana.models.Event(event);
-          view.collection.add(model);
-          (new diana.views.TimelineEvent({model: model})).render({
-            prepend: true,
-            highlight: true
-          });
+      // Un-highlight any past updates.
+      $('.timeline-update').removeClass('timeline-update');
+
+      // Same steps as for the initial payload except events are prepended
+      // to the <table> via render() options.
+      var view = this;
+      _.each(data, function(event) {
+        var model = new diana.models.Event(event);
+        view.collection.add(model);
+        (new diana.views.TimelineEvent({model: model})).render({
+          prepend: true,
+          highlight: true
         });
-      }
+      });
     }
   });
 })();
