@@ -154,7 +154,7 @@
       // Same steps as for the initial payload except events are prepended
       // to the <table> via render() options.
       var view = this;
-      _.each(data, function(event) {
+      _.each(data.reverse(), function(event) {
         view.renderEvent(event, {prepend: true, highlight: true});
       });
     }
