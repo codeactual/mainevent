@@ -8,8 +8,6 @@
   // Reuse the socket if the view is reopened w/out a page refresh.
   var socket = null;
 
-  //var newestEventId = null;
-
   /**
    * Displays the <table> into which result sets are rendered. Automatically
    * fetches the result set based on router options passed via initialize().
@@ -44,9 +42,7 @@
 
             // Append a new <tr> for each event.
             _.each(response, function(event) {
-              var model = new diana.models.Event(event);
-              view.collection.add(model);
-              (new diana.views.TimelineEvent({model: model})).render();
+              view.renderEvent(event);
             });
 
             view.startTimelineUpdate.call(view, response[0]._id);
@@ -59,6 +55,40 @@
       };
 
       dust.render('timeline_table', null, onTemplateRendered);
+    },
+
+    /**
+     * Render a single event in the timeline table.
+     *
+     * @param event {Object}
+     * @param options {Object}
+     * - prepend {Boolean} If true, row is prepended (default=false).
+     */
+    renderEvent: function(event, options) {
+      options = options || {
+        prepend: false,
+        highlight: false
+      };
+
+      event.time = moment(event.time * 1000).fromNow();
+
+      dust.render(
+        'timeline_table_row',
+        event,
+        function(err, out) {
+          if (options.prepend) {
+            var update = $(out);
+
+            if (options.highlight) {
+              update.addClass('timeline-update');
+            }
+
+            $('#timeline-table tbody').prepend(update);
+          } else {
+            $('#timeline-table tbody').append(out);
+          }
+        }
+      );
     },
 
     /**
