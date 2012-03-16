@@ -38,6 +38,10 @@ app.get('/', function(req, res) {
 });
 
 app.get('/timeline', function(req, res) {
+  if ('_id' == req.query['sort_attr'] && 'desc' == req.query['sort_dir']) {
+    res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
+  }
+
   var storage = helpers.requireModule('storage/mongodb');
   storage.getTimeline(req.query, function(err, docs) {
     if (err) {
