@@ -106,6 +106,9 @@
         // Advance the manual cursor.
         this.newestEventId = data[0]._id;
 
+        // Un-highlight any past updates.
+        $('.timeline-update').removeClass('timeline-update');
+
         // Same steps as for the initial payload except events are prepended
         // to the <table> via render() options.
         var view = this;

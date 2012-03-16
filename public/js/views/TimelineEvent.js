@@ -36,7 +36,6 @@
             var update = $(out);
 
             if (options.highlight) {
-              $('.timeline-update').removeClass('timeline-update');
               update.addClass('timeline-update');
             }
 
