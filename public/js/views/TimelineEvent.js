@@ -22,16 +22,25 @@
      */
     render: function(options) {
       options = options || {
-        prepend: false
+        prepend: false,
+        highlight: false
       };
 
       this.model.attributes.time = moment(this.model.attributes.time * 1000).fromNow();
+
       dust.render(
         'timeline_table_row',
         this.model.toJSON(),
         function(err, out) {
           if (options.prepend) {
-            $('#timeline-table tbody').prepend(out);
+            var update = $(out);
+
+            if (options.highlight) {
+              $('.timeline-update').removeClass('timeline-update');
+              update.addClass('timeline-update');
+            }
+
+            $('#timeline-table tbody').prepend(update);
           } else {
             $('#timeline-table tbody').append(out);
           }
