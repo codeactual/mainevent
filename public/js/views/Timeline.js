@@ -25,36 +25,50 @@
       var onTemplateRendered = function(err, out) {
         // Display the empty table.
         $(diana.viewContainer).html(out);
-
-        // Supply search filters/options for the collection's URL generation.
-        view.collection = new diana.collections.Timeline(
-          null, {searchArgs: options.searchArgs}
-        );
-
-        view.collection.fetch({
-          success: function(collection, response) {
-            if (!response.length) {
-              dust.render('timeline_no_results', null, function(err, out) {
-                $(diana.viewContainer).html(out);
-              });
-              return;
-            }
-
-            // Append a new <tr> for each event.
-            _.each(response, function(event) {
-              view.renderEvent(event);
-            });
-
-            view.startTimelineUpdate.call(view, response[0]._id);
-          },
-
-          error: function(collection, response) {
-            diana.helpers.Event.onFetchError(response);
-          }
-        });
       };
 
-      dust.render('timeline_table', null, onTemplateRendered);
+      $.when(
+        diana.helpers.ViewCache.deferRender(
+          'timeline_table', null, onTemplateRendered
+        )
+      ).done(function() {
+        view.renderTimeline.call(view);
+      });
+    },
+
+    renderTimeline: function() {
+      var view = this;
+
+      // Supply search filters/options for the collection's URL generation.
+      view.collection = new diana.collections.Timeline(
+        null, {searchArgs: view.options.searchArgs}
+      );
+
+      view.collection.fetch({
+        success: function(collection, response) {
+          if (!response.length) {
+            dust.render('timeline_no_results', null, function(err, out) {
+              $(diana.viewContainer).html(out);
+            });
+            return;
+          }
+
+          // Append a new <tr> for each event.
+          var renderings = [];
+          _.each(response, function(event) {
+            renderings.push(view.renderEvent(event));
+          });
+
+          $.when(renderings).done(function() {
+            view.options.cacheSetter($('*', diana.viewContainer).clone());
+            view.startTimelineUpdate.call(view, response[0]._id);
+          });
+        },
+
+        error: function(collection, response) {
+          diana.helpers.Event.onFetchError(response);
+        }
+      });
     },
 
     /**
@@ -72,7 +86,7 @@
 
       event.time = moment(event.time * 1000).fromNow();
 
-      dust.render(
+      return diana.helpers.ViewCache.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
@@ -141,11 +155,7 @@
       // to the <table> via render() options.
       var view = this;
       _.each(data, function(event) {
-        var model = new diana.models.Event(event);
-        (new diana.views.TimelineEvent({model: model})).render({
-          prepend: true,
-          highlight: true
-        });
+        view.renderEvent(event, {prepend: true, highlight: true});
       });
     }
   });

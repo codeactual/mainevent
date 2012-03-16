@@ -24,6 +24,9 @@ $(function() {
     timelineUpdate: false
   };
 
+  // Ephemeral view HTML cache.
+  diana.viewCache = {};
+
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
@@ -32,25 +35,26 @@ $(function() {
     initialize: function(options) {
       /**
         * 'context' options:
+        * - cache: {Boolean} Cache view HTML between route changes. (ephemeral)
         * - sidebar {Boolean} Display sidebar in layout.
         * - tab {String} DOM ID of active navigation tab.
         */
       var routes = {
         '': {
           handler: diana.controllers.ViewIndex,
-          context: {sidebar: false, tab: 'nav-home'}
+          context: {cache: true, sidebar: false, tab: 'nav-home'}
        },
         'timeline': {
           handler: diana.controllers.ViewTimeline,
-          context: {sidebar: false, tab: 'nav-timeline'}
+          context: {cache: true, sidebar: false, tab: 'nav-timeline'}
        },
         'timeline/:options': {
           handler: diana.controllers.ViewTimeline,
-          context: {sidebar: false, tab: 'nav-timeline'}
+          context: {cache: true, sidebar: false, tab: 'nav-timeline'}
        },
         'event/:id': {
           handler: diana.controllers.ViewEvent,
-          context: {sidebar: false, tab: 'nav-timeline'}
+          context: {cache: true, sidebar: false, tab: 'nav-timeline'}
         }
       };
 
@@ -66,8 +70,20 @@ $(function() {
             function(err, out) {
               // Allow observers to tweak the layout based on configuration.
               $('#content').trigger('ContentPreRender', config.context);
+
               // Display the rendered content container.
               $('#content').html(out);
+
+              if (config.context.cache) {
+                var cachedView = diana.helpers.ViewCache.get(route, routeParams);
+                if (cachedView) {
+                  $(diana.viewContainer).append(cachedView);
+                  return;
+                }
+
+                config.context.cacheSetter = diana.helpers.ViewCache.createSetter(route, routeParams);
+              }
+
               // Pass the matched route parameters to the actual handler.
               config.handler.apply(config.context, routeParams);
             }
