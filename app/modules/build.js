@@ -9,6 +9,16 @@ var fs = require('fs');
 var path = require('path');
 
 /**
+ * Remove strict directive from a string.
+ *
+ * @param script {String}
+ * @return {String}
+ */
+var stripStrict = function(str) {
+  return str.replace(/^['"]use strict['"];\n/gm, '');
+};
+
+/**
  * Compile all dust.js templates into a public directory.
  */
 exports.compileViews = function() {
@@ -42,15 +52,13 @@ exports.combineClientJavascript = function() {
   var backboneDirs = [
     'helpers', 'models', 'collections', 'views', 'observers', 'controllers'
   ];
-  var first = true;
   _.each(backboneDirs, function(dir) {
-    _.each(fs.readdirSync(baseJsDir + dir), function(jsFile) {
+    _.each(fs.readdirSync(baseJsDir + dir), function(jsFile, fileNum) {
       var content = fs.readFileSync(baseJsDir + dir + '/' + jsFile, 'UTF-8');
-      if (!first) {
-        content = content.replace(/^['"]use strict['"];\n/gm, '');
+      if (fileNum) {
+        content = stripStrict(content);
       }
       fs.writeSync(fd, content, null, 'utf8');
-      first = false;
     });
   });
   fs.closeSync(fd);
@@ -81,8 +89,12 @@ exports.combineAndLoadSharedJavascript = function() {
   var outputFile = __dirname + '/../../public/js/shared.js';
 
   var fd = fs.openSync(outputFile, 'w');
-  _.each(fs.readdirSync(baseJsDir), function(jsFile) {
-    fs.writeSync(fd, fs.readFileSync(baseJsDir + jsFile, 'UTF-8') + "\n", null, 'utf8');
+  _.each(fs.readdirSync(baseJsDir), function(jsFile, fileNum) {
+      var content = fs.readFileSync(baseJsDir + jsFile, 'UTF-8');
+      if (fileNum) {
+        content = stripStrict(content);
+      }
+    fs.writeSync(fd, content + "\n", null, 'utf8');
   });
   fs.closeSync(fd);
 
