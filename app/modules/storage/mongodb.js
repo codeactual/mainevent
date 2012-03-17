@@ -1,6 +1,6 @@
 /**
-  * MongoDB storage implementation.
-  */
+ * MongoDB storage implementation.
+ */
 
 'use strict';
 
@@ -180,12 +180,12 @@ exports.getTimeline = function(params, callback) {
  * Retrieve the attributes of all logs newer than a given ID.
  *
  * @param id {String}
+ * @param params {Object} getTimeline() compatible parameters.
  * @param callback {Function} Receives find() results.
  */
-exports.getTimelineUpdates = function(id, callback) {
-  exports.getTimeline({
-    _id: {$gt: new BSON.ObjectID(id)},
-    sort_attr: '_id',
-    sort_dir: 'desc'
-  }, callback);
+exports.getTimelineUpdates = function(id, params, callback) {
+  params._id = {$gt: new BSON.ObjectID(id)};
+  params.sort_attr = '_id';
+  params.sort_dir = 'desc';
+  exports.getTimeline(params, callback);
 };

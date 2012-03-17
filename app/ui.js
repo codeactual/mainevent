@@ -94,19 +94,19 @@ app.get('/event/:id', function(req, res) {
 io.sockets.on('connection', function (socket) {
 
   // Client seeds the update stream with the last-seen ID.
-  socket.on('startTimelineUpdate', function (id) {
+  socket.on('startTimelineUpdate', function (options) {
     var timelineUpdate = setInterval(function () {
-      if (!id) {
+      if (!options.newestEventId) {
         // Client never sent the ID for some reason -- don't stop the updates.
         return;
       }
-      storage.getTimelineUpdates(id, function(err, docs) {
+      storage.getTimelineUpdates(options.newestEventId, options.searchArgs, function(err, docs) {
         if (err) {
           docs = {__socket_error: err};
           socket.emit('timelineUpdate', docs);
         } else {
           if (docs.length) {
-            id = docs[0]._id.toString();
+            options.newestEventId = docs[0]._id.toString();
             parsers.addPreviewContext(docs, function(docs) {
               socket.emit('timelineUpdate', docs);
             });

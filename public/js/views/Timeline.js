@@ -161,7 +161,10 @@
         event: {
           connect: function() {
             // Start/restart automatic updates.
-            socket.emit('startTimelineUpdate', view.newestEventId);
+            socket.emit('startTimelineUpdate', {
+              newestEventId: view.newestEventId,
+              searchArgs: view.options.searchArgs
+            });
           }
         }
       });
