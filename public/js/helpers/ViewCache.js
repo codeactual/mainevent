@@ -24,7 +24,6 @@
      */
     get: function(route, args) {
       if (cache[route] && _.isEqual(cache[route].args, args)) {
-        console.log('hit', route, args);
         return cache[route].view;
       }
       return null;
@@ -36,7 +35,6 @@
      * @param view {Object} jQuery clone() output.
      */
     set: function(route, args, view) {
-      console.log('setting', route, args);
       cache[route] = {args: args, view: view};
     },
 
