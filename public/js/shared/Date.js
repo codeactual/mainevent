@@ -1,6 +1,8 @@
 'use strict';
 
-var moment = require('moment');
+if ('undefined' != typeof require) {
+  var moment = require('moment');
+}
 
 (function() {
   var root = "undefined" == typeof window ? GLOBAL : window;
