@@ -46,5 +46,7 @@ new lazy(require("fs").createReadStream(source.path))
     return line !== 'undefined';
   })
   .join(function (lines) {
-    parser.parseAndInsert(source, lines);
+    if (lines.length) {
+      parser.parseAndInsert(source, lines);
+    }
   });
