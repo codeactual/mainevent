@@ -73,6 +73,9 @@
      * Render a set of events.
      *
      * @param events {Array}
+     * @param options {Object}
+      * - prepend {Boolean} If true, row is prepended (default=false).
+      * - highlight {Boolean} If true, row receives styled class (default=false).
      */
     renderTimeline: function(events, options) {
       if (!events.length) {
@@ -85,10 +88,17 @@
       };
 
       var view = this;
+
+      // This function is used for both initial fetch and automatic updates.
+      // Initial <tbody> is built off-screen and appended as a whole.
+      // Automatic updates' <tr> nodes are added individually to an existing <tbody>.
       var existingTbody = $('#timeline-table tbody');
       var tbody = (existingTbody.length ? existingTbody : null) || $('<tbody>');
+
+      // Deferred dust.render() calls later executed by $.when().
       var renderPromises = [];
 
+      // Add empty <tr> nodes to the off-screen or live <tbody>.
       _.each(events, function(event) {
         var tr = $('<tr>');
         if (options.prepend) {
@@ -118,6 +128,7 @@
      * Render a single event in the timeline table.
      *
      * @param event {Object}
+     * @param tr {Object} <tr> parent element.
      * @return {Object} jQuery Promise.
      */
     renderEvent: function(event, tr) {
