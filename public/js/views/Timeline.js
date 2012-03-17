@@ -18,24 +18,28 @@
     // Track the most recent event ID seen by initial fetch() and automatic updates.
     newestEventId: null,
 
+    /**
+     * Render the base timeline template.
+     */
     initialize: function(options) {
       var view = this;
 
-      // Fires after dust.render() builds the empty <table>.
-      var onTemplateRendered = function(err, out) {
-        // Display the empty table.
-        $(diana.viewContainer).html(out);
-      };
-
       $.when(
         diana.helpers.ViewCache.deferRender(
-          'timeline_table', null, onTemplateRendered
+          'timeline_table',
+          null,
+          function(err, out) {
+            $(diana.viewContainer).html(out);
+          }
         )
       ).done(function() {
         view.renderTimeline.call(view);
       });
     },
 
+    /**
+     * Render timeline rows into a preexisting table.
+     */
     renderTimeline: function() {
       var view = this;
 
