@@ -43,7 +43,7 @@ PhpParser.prototype.extractTime = function(date) {
 
   var parsable = util.format(
     '%d/%d/%d %s',
-    months.indexOf(matches[2]) + 1,
+    diana.shared.Date.monthNameToNum(matches[2]),
     matches[1],
     matches[3],
     matches[4]
