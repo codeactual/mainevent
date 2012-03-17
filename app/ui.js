@@ -13,10 +13,12 @@
 
 var express = require('express');
 var app = express.createServer();
-GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
+require(__dirname + '/modules/diana.js');
 
-require(__dirname + '/modules/build.js').compileViews();
-require(__dirname + '/modules/build.js').combineClientJavascript();
+// Merge/compile/combine HTML and JS assets.
+var build = diana.requireModule('build');
+build.compileViews();
+build.combineClientJavascript();
 
 // Required for using *.html with res.render().
 app.register('.html', {
@@ -42,13 +44,13 @@ app.get('/timeline', function(req, res) {
     res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
   }
 
-  var storage = helpers.requireModule('storage/mongodb');
+  var storage = diana.requireModule('storage/mongodb');
   storage.getTimeline(req.query, function(err, docs) {
     if (err) {
       res.send({__error: err}, 500);
     } else if (docs.length) {
       // Augment each document object with preview text for the view table.
-      helpers.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
+      diana.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
         res.send(updated);
       });
     } else {
@@ -59,7 +61,7 @@ app.get('/timeline', function(req, res) {
 
 app.get('/event/:id', function(req, res) {
   if (req.params.id.match(/^[a-z0-9]{24}$/)) {
-    var storage = helpers.requireModule('storage/mongodb');
+    var storage = diana.requireModule('storage/mongodb');
     storage.getLog(req.params.id, function(err, doc) {
       if (err) {
         res.send({__error: err}, 500);
@@ -72,7 +74,7 @@ app.get('/event/:id', function(req, res) {
             });
             res.send({__list: list, parser: doc.parser});
           } else {
-            doc = helpers.requireModule('parsers/parsers')
+            doc = diana.requireModule('parsers/parsers')
               .createInstance(doc.parser)
               .decorateFullContext(doc);
             res.send(doc);
@@ -92,8 +94,8 @@ app.error(function(err, req, res, next) {
 });
 
 // Serve automatic timeline updates.
-var storage = helpers.requireModule('storage/mongodb');
-var parsers = helpers.requireModule('parsers/parsers');
+var storage = diana.requireModule('storage/mongodb');
+var parsers = diana.requireModule('parsers/parsers');
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket) {
 
@@ -119,7 +121,7 @@ io.sockets.on('connection', function (socket) {
           }
         }
       });
-    }, helpers.getConfig().timelineUpdateDelay);
+    }, diana.getConfig().timelineUpdateDelay);
   });
 
   socket.on('disconnect', function () {

@@ -12,7 +12,7 @@ var ExampleParser = function() {
   Parser.call(this, 'example');
 };
 
-helpers.inheritPrototype(ExampleParser, Parser);
+diana.shared.Lang.inheritPrototype(ExampleParser, Parser);
 
 /**
  * REQUIRED: Convert a log line string into an object of parsed key/value pairs

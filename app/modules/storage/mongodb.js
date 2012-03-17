@@ -38,7 +38,7 @@ var dbConnectAndOpen = function(error, success) {
   if (link) {
     success(null, link);
   } else {
-    var config = helpers.getConfig().storage;
+    var config = diana.getConfig().storage;
     collection = config.collection;
     link = new mongodb.Db(
       config.db,

@@ -4,7 +4,7 @@
 
 'use strict';
 
-GLOBAL.helpers = require(__dirname + '/../../app/modules/helpers.js');
+require(__dirname + '/../../app/modules/diana.js');
 
 var fs = require('fs');
 var crypto = require('crypto');

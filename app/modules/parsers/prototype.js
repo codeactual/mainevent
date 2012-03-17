@@ -4,7 +4,7 @@ GLOBAL.Parser = function(name) {
   this.name = name;
 };
 
-var storage = helpers.requireModule('storage/storage').load();
+var storage = diana.requireModule('storage/storage').load();
 
 /**
  * Parse each line according to its source parser. Tag unparsable.

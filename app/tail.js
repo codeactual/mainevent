@@ -8,10 +8,10 @@
 
 'use strict';
 
-GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
-var parsers = helpers.requireModule('parsers/parsers');
-var storage = helpers.requireModule('storage/storage').load();
-var config = helpers.getConfig(process.argv[2]);
+require(__dirname + '/modules/diana.js');
+var parsers = diana.requireModule('parsers/parsers');
+var storage = diana.requireModule('storage/storage').load();
+var config = diana.getConfig(process.argv[2]);
 var monitors = [];
 var spawn = require('child_process').spawn;
 

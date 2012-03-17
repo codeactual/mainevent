@@ -34,8 +34,8 @@ if (!source.parser || !source.path) {
   process.exit(1);
 }
 
-GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
-var parser = helpers.requireModule('parsers/parsers').createInstance(source.parser);
+require(__dirname + '/modules/diana.js');
+var parser = diana.requireModule('parsers/parsers').createInstance(source.parser);
 
 var lazy = require('lazy');
 new lazy(require("fs").createReadStream(source.path))

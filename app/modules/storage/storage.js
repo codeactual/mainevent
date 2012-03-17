@@ -4,8 +4,8 @@
 
 'use strict';
 
-var config = helpers.getConfig();
+var config = diana.getConfig();
 
 exports.load = function() {
-  return helpers.requireModule('storage/' + config.storage.module);
+  return diana.requireModule('storage/' + config.storage.module);
 };

@@ -47,7 +47,7 @@
         // Ex. format the time attribute.
         context.list = _.map(context.list, function(pair, index) {
           if ('time' == pair.key) {
-            context.time = diana.helpers.Date.formatTime(pair.value);
+            context.time = diana.shared.Date.formatTime(pair.value);
             context.timeFromNow = moment(pair.value * 1000).fromNow();
           }
           return pair;
@@ -63,7 +63,7 @@
       } else {
         var context = event;
         context.timeFromNow = moment(context.time * 1000).fromNow();
-        context.time = diana.helpers.Date.formatTime(context.time);
+        context.time = diana.shared.Date.formatTime(context.time);
         delete context.previewAttr;
       }
 
