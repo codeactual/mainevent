@@ -62,7 +62,7 @@ $(function() {
       _.each(routes, function(config, route) {
         // Register route.
         router.route(route, config.handler, function() {
-          var routeParams = arguments;
+          var routeArgs = arguments;
           // Apply 'context' options to the 'content' template, ex. show sidebar.
           dust.render(
             'content',
@@ -75,17 +75,20 @@ $(function() {
               $('#content').html(out);
 
               if (config.context.cache) {
-                var cachedView = diana.helpers.ViewCache.get(route, routeParams);
+                var cachedView = diana.helpers.ViewCache.get(route, routeArgs);
                 if (cachedView) {
                   $(diana.viewContainer).append(cachedView);
                   return;
                 }
 
-                config.context.cacheSetter = diana.helpers.ViewCache.createSetter(route, routeParams);
+                // Customize a view cache API for the current route.
+                config.context.cacheSetter = diana.helpers.ViewCache.createSetter(
+                  route, routeArgs
+                );
               }
 
               // Pass the matched route parameters to the actual handler.
-              config.handler.apply(config.context, routeParams);
+              config.handler.apply(config.context, routeArgs);
             }
           );
         });
