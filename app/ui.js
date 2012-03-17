@@ -14,6 +14,9 @@
 var express = require('express');
 var app = express.createServer();
 require(__dirname + '/modules/diana.js');
+var storage = diana.requireModule('storage/mongodb');
+var parsers = diana.requireModule('parsers/parsers');
+var io = require('socket.io').listen(app);
 
 // Merge/compile/combine HTML and JS assets.
 var build = diana.requireModule('build');
@@ -44,7 +47,6 @@ app.get('/timeline', function(req, res) {
     res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
   }
 
-  var storage = diana.requireModule('storage/mongodb');
   storage.getTimeline(req.query, function(err, docs) {
     if (err) {
       res.send({__error: err}, 500);
@@ -61,7 +63,6 @@ app.get('/timeline', function(req, res) {
 
 app.get('/event/:id', function(req, res) {
   if (req.params.id.match(/^[a-z0-9]{24}$/)) {
-    var storage = diana.requireModule('storage/mongodb');
     storage.getLog(req.params.id, function(err, doc) {
       if (err) {
         res.send({__error: err}, 500);
@@ -89,14 +90,7 @@ app.get('/event/:id', function(req, res) {
   }
 });
 
-app.error(function(err, req, res, next) {
-  res.send({__error: err.message}, 500);
-});
-
 // Serve automatic timeline updates.
-var storage = diana.requireModule('storage/mongodb');
-var parsers = diana.requireModule('parsers/parsers');
-var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket) {
 
   // Client seeds the update stream with the last-seen ID.
@@ -129,6 +123,10 @@ io.sockets.on('connection', function (socket) {
       clearInterval(timelineUpdate);
     }
   });
+});
+
+app.error(function(err, req, res, next) {
+  res.send({__error: err.message}, 500);
 });
 
 app.listen(8080, '127.0.0.1');
