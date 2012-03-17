@@ -33,9 +33,9 @@ exports.compileViews = function() {
 };
 
 /**
- * Minify and combine Javascript.
+ * Combine client-side Javascript.
  */
-exports.combineJavascript = function() {
+exports.combineClientJavascript = function() {
   var baseJsDir = __dirname + '/../../public/js/';
 
   var fd = fs.openSync(__dirname + '/../../public/js/mvc.js', 'w');
@@ -71,6 +71,22 @@ exports.combineJavascript = function() {
     fs.writeSync(fd, fs.readFileSync(baseJsDir + 'libs/' + jsFile, 'UTF-8') + "\n", null, 'utf8');
   });
   fs.closeSync(fd);
+};
+
+/**
+ * Combine Javascript shared by client and server. Load into server-side.
+ */
+exports.combineAndLoadSharedJavascript = function() {
+  var baseJsDir = __dirname + '/../../public/js/shared/';
+  var outputFile = __dirname + '/../../public/js/shared.js';
+
+  var fd = fs.openSync(outputFile, 'w');
+  _.each(fs.readdirSync(baseJsDir), function(jsFile) {
+    fs.writeSync(fd, fs.readFileSync(baseJsDir + jsFile, 'UTF-8') + "\n", null, 'utf8');
+  });
+  fs.closeSync(fd);
+
+  require(outputFile);
 };
 
 /**

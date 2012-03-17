@@ -52,7 +52,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
     );
   };
 
-  helpers.walkAsync(
+  diana.shared.Async.runOrdered(
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);

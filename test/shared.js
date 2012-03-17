@@ -1,10 +1,12 @@
 /**
- * Test the global helpers module.
+ * Test the Javascript helpers shared client-side and server-side.
  */
 
 'use strict';
 
-var testutil = require(__dirname + '/modules/testutil.js');
+var helpers = require(__dirname + '/../app/modules/helpers.js');
+var build = helpers.requireModule('build');
+build.combineSharedJavascript();
 
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];
@@ -27,5 +29,5 @@ exports.testWalkAsync = function(test) {
   };
 
   test.expect(2);
-  helpers.walkAsync(list, consumer, consumerCallback, onDone);
+  diana.shared.Async.runOrdered(list, consumer, consumerCallback, onDone);
 };

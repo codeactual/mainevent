@@ -16,7 +16,8 @@ var app = express.createServer();
 GLOBAL.helpers = require(__dirname + '/modules/helpers.js');
 
 require(__dirname + '/modules/build.js').compileViews();
-require(__dirname + '/modules/build.js').combineJavascript();
+require(__dirname + '/modules/build.js').combineAndLoadSharedJavascript();
+require(__dirname + '/modules/build.js').combineSharedJavascript();
 
 // Required for using *.html with res.render().
 app.register('.html', {

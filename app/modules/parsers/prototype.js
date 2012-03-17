@@ -54,7 +54,7 @@ Parser.prototype.parseAndInsert = function(source, lines, callback, bulk) {
     lines[index].time = Math.round(lines[index].time / 1000);
   });
 
-  helpers.walkAsync(
+  diana.shared.Async.runOrdered(
     lines,
     function (line, callback) {
       storage.insertLog(source, line, callback, true);
