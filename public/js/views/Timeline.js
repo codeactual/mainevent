@@ -33,14 +33,17 @@
           }
         )
       ).done(function() {
-        view.renderTimeline.call(view);
+        view.fetchTimeline.call(view, view.renderTimeline);
       });
     },
 
     /**
-     * Render timeline rows into a preexisting table.
+     * Fetch all log events matching the search arguments passed to the view.
+     *
+     * @param callback {Function} Fires on success/error.
+     * - Receives an array with zero or more event objects.
      */
-    renderTimeline: function() {
+    fetchTimeline: function(callback) {
       var view = this;
 
       // Supply search filters/options for the collection's URL generation.
@@ -56,22 +59,57 @@
             });
             return;
           }
-
-          // Append a new <tr> for each event.
-          var renderings = [];
-          _.each(response, function(event) {
-            renderings.push(view.renderEvent(event));
-          });
-
-          $.when(renderings).done(function() {
-            view.options.cacheSetter($('*', diana.viewContainer).clone());
-            view.startTimelineUpdate.call(view, response[0]._id);
-          });
+          callback.call(view, response);
         },
 
         error: function(collection, response) {
           diana.helpers.Event.onFetchError(response);
+          callback.call(view, []);
         }
+      });
+    },
+
+    /**
+     * Render a set of events.
+     *
+     * @param events {Array}
+     */
+    renderTimeline: function(events, options) {
+      if (!events.length) {
+        return;
+      }
+
+      options = options || {
+        prepend: false,
+        highlight: false
+      };
+
+      var view = this;
+      var existingTbody = $('#timeline-table tbody');
+      var tbody = (existingTbody.length ? existingTbody : null) || $('<tbody>');
+      var renderPromises = [];
+
+      _.each(events, function(event) {
+        var tr = $('<tr>');
+        if (options.prepend) {
+          if (options.highlight) {
+            tr.addClass('timeline-update');
+          }
+          tbody.prepend(tr);
+        } else {
+          tbody.append(tr);
+        }
+        renderPromises.push(view.renderEvent(event, tr));
+      });
+
+      $.when(renderPromises).done(function() {
+        if (existingTbody.length) {
+          // tbody was already part of the DOM, so above rows were added live.
+        } else {
+          $('#timeline-table').append(tbody);
+        }
+        view.options.cacheSetter($('*', diana.viewContainer).clone());
+        view.startTimelineUpdate.call(view, events[0]._id);
       });
     },
 
@@ -79,32 +117,16 @@
      * Render a single event in the timeline table.
      *
      * @param event {Object}
-     * @param options {Object}
-     * - prepend {Boolean} If true, row is prepended (default=false).
+     * @return {Object} jQuery Promise.
      */
-    renderEvent: function(event, options) {
-      options = options || {
-        prepend: false,
-        highlight: false
-      };
-
+    renderEvent: function(event, tr) {
       event.time = moment(event.time * 1000).fromNow();
 
       return diana.helpers.ViewCache.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
-          if (options.prepend) {
-            var update = $(out);
-
-            if (options.highlight) {
-              update.addClass('timeline-update');
-            }
-
-            $('#timeline-table tbody').prepend(update);
-          } else {
-            $('#timeline-table tbody').append(out);
-          }
+          $(tr).append(out);
         }
       );
     },
@@ -155,12 +177,7 @@
       // Un-highlight any past updates.
       $('.timeline-update').removeClass('timeline-update');
 
-      // Same steps as for the initial payload except events are prepended
-      // to the <table> via render() options.
-      var view = this;
-      _.each(data.reverse(), function(event) {
-        view.renderEvent(event, {prepend: true, highlight: true});
-      });
+      this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
     }
   });
 })();
