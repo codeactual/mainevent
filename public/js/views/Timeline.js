@@ -107,9 +107,10 @@
           // tbody was already part of the DOM, so above rows were added live.
         } else {
           $('#timeline-table').append(tbody);
+          view.startTimelineUpdate.call(view, events[0]._id);
         }
+
         view.options.cacheSetter($('*', diana.viewContainer).clone());
-        view.startTimelineUpdate.call(view, events[0]._id);
       });
     },
 
