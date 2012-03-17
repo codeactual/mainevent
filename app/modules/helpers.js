@@ -38,27 +38,4 @@ exports.getConfig = function(file) {
   return require(file).read();
 }
 
-/**
- * Prototypal inheritance by Douglas Crockford.
- *
- * @param o {Object}
- */
-exports.object = function(o) {
-  function F() {};
-  F.prototype = o;
-  return new F();
-};
-
-/**
- * Parasitic combination inheritance by Nicholas Zakas.
- *
- * @param subType {Object}
- * @param superType {Object}
- */
-exports.inheritPrototype = function(subType, superType) {
-  var prototype = exports.object(superType.prototype);
-  prototype.constructor = subType;
-  subType.prototype = prototype;
-};
-
 exports.requireModule('build').combineAndLoadSharedJavascript();

@@ -8,7 +8,7 @@ var SymfonyParser = function() {
   Parser.call(this, 'symfony');
 };
 
-helpers.inheritPrototype(SymfonyParser, Parser);
+diana.shared.Lang.inheritPrototype(SymfonyParser, Parser);
 
 SymfonyParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [

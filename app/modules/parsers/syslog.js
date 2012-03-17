@@ -8,7 +8,7 @@ var SyslogParser = function() {
   Parser.call(this, 'syslog');
 };
 
-helpers.inheritPrototype(SyslogParser, Parser);
+diana.shared.Lang.inheritPrototype(SyslogParser, Parser);
 
 SyslogParser.prototype.parse = function(log) {
   return this.namedCapture(

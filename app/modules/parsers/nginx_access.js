@@ -8,7 +8,7 @@ var NginxAccessParser = function() {
   Parser.call(this, 'nginx_access');
 };
 
-helpers.inheritPrototype(NginxAccessParser, Parser);
+diana.shared.Lang.inheritPrototype(NginxAccessParser, Parser);
 
 NginxAccessParser.prototype.parse = function(log) {
   return this.namedCapture(

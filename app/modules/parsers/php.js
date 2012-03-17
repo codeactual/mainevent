@@ -8,7 +8,7 @@ var PhpParser = function() {
   Parser.call(this, 'php');
 };
 
-helpers.inheritPrototype(PhpParser, Parser);
+diana.shared.Lang.inheritPrototype(PhpParser, Parser);
 
 PhpParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [

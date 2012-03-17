@@ -8,7 +8,7 @@ var NginxErrorParser = function() {
   Parser.call(this, 'nginx_error');
 };
 
-helpers.inheritPrototype(NginxErrorParser, Parser);
+diana.shared.Lang.inheritPrototype(NginxErrorParser, Parser);
 
 NginxErrorParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [
