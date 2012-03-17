@@ -4,9 +4,7 @@
 
 'use strict';
 
-var helpers = require(__dirname + '/../app/modules/helpers.js');
-var build = helpers.requireModule('build');
-build.combineSharedJavascript();
+var testutil = require(__dirname + '/modules/testutil.js');
 
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];

@@ -60,3 +60,5 @@ exports.inheritPrototype = function(subType, superType) {
   prototype.constructor = subType;
   subType.prototype = prototype;
 };
+
+exports.requireModule('build').combineAndLoadSharedJavascript();
