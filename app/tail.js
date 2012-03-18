@@ -91,7 +91,7 @@
       createMonitor(source);
 
       if (program.test) {
-        console.log('MONITOR_RESTART');
+        process.send('MONITOR_RESTART');
       }
     });
   };
