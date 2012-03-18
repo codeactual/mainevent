@@ -12,32 +12,37 @@ require(__dirname + '/modules/diana.js');
 var parsers = diana.requireModule('parsers/parsers');
 var storage = diana.requireModule('storage/storage').load();
 var config = diana.getConfig(process.argv[2]);
-var monitors = [];
+var monitors = {};
+var parserCache = {};
 var spawn = require('child_process').spawn;
 
 /**
- * Kill all `tail` processes spawned below.
+ * Kill all `tail` processes.
  */
-var monitorCleanup = function() {
+var cleanupMonitors = function() {
   _.each(monitors, function(monitor) {
     monitor.kill('SIGKILL');
   });
   storage.dbClose();
 };
-process.on('exit', monitorCleanup);
-process.on('uncaughtException', monitorCleanup);
-
-var parserCache = {};
+process.on('exit', cleanupMonitors);
+process.on('uncaughtException', cleanupMonitors);
 
 /**
- * `tail -F` configured source paths and parse/insert its updates.
+ * Start a new `tail` instance and attach event handlers.
+ *
+ * @param source {Object} Source properties from config.js.
  */
-_.each(config.sources, function(source) {
+var createMonitor = function(source) {
   // --bytes=0 to skip preexisting lines
-  var cmd = spawn('tail', ['--bytes=0', '-F', source.path]);
-  monitors.push(cmd);
+  monitors[source.path] = spawn('tail', ['--bytes=0', '-F', source.path]);
 
-  cmd.stdout.on('data', function(data) {
+  /**
+   * Parse and insert each output line.
+   *
+   * @param data {Object} Buffer instance.
+   */
+  monitors[source.path].stdout.on('data', function(data) {
     if (!parserCache[source.parser]) {
       parserCache[source.parser] = parsers.createInstance(source.parser);
     }
@@ -48,4 +53,24 @@ _.each(config.sources, function(source) {
       true
     );
   });
+
+  /**
+   * Restart any `tail` that closes prematurely.
+   *
+   * - It's not clear why this happens (sometimes immediately on launch,
+   *   other times much later).
+   *
+   * @param code {Number} Status code.
+   */
+  monitors[source.path].on('exit', function(code) {
+    // Make sure any lingering structures/events are cleaned up.
+    monitors[source.path].kill();
+    monitors[source.path] = null;
+
+    createMonitor(source);
+  });
+};
+
+_.each(config.sources, function(source) {
+  createMonitor(source);
 });
