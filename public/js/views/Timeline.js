@@ -25,7 +25,7 @@
       var view = this;
 
       $.when(
-        diana.helpers.ViewCache.deferRender(
+        diana.helpers.View.deferRender(
           'timeline_table',
           null,
           function(err, out) {
@@ -119,10 +119,6 @@
           $('#timeline-table').append(tbody);
           view.startTimelineUpdate.call(view, events[0]._id);
         }
-
-        if (!_.isUndefined(view.options.cacheSetter)) {
-          view.options.cacheSetter($('*', diana.viewContainer).clone());
-        }
       });
     },
 
@@ -136,7 +132,7 @@
     renderEvent: function(event, tr) {
       event.time = moment(event.time * 1000).fromNow();
 
-      return diana.helpers.ViewCache.deferRender(
+      return diana.helpers.View.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
