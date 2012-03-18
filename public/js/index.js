@@ -21,7 +21,8 @@ $(function() {
   // Feature switches.
   diana.features = {
     // Conditionally enabled later only for compatible search conditions.
-    timelineUpdate: false
+    timelineUpdate: false,
+    viewCache: false
   };
 
   // Ephemeral view HTML cache.
@@ -74,7 +75,7 @@ $(function() {
               // Display the rendered content container.
               $('#content').html(out);
 
-              if (config.context.cache) {
+              if (diana.features.viewCache && config.context.cache) {
                 var cachedView = diana.helpers.ViewCache.get(route, routeArgs);
                 if (cachedView) {
                   $(diana.viewContainer).append(cachedView);

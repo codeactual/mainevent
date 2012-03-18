@@ -120,7 +120,9 @@
           view.startTimelineUpdate.call(view, events[0]._id);
         }
 
-        view.options.cacheSetter($('*', diana.viewContainer).clone());
+        if (!_.isUndefined(view.options.cacheSetter)) {
+          view.options.cacheSetter($('*', diana.viewContainer).clone());
+        }
       });
     },
 
