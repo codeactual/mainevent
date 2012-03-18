@@ -82,6 +82,8 @@
     /**
      * Render a set of events.
      *
+     * - Used for both the intiial fetch and socket.io update payloads.
+     *
      * @param events {Array}
      * @param options {Object}
       * - prepend {Boolean} If true, row is prepended (default=false).
