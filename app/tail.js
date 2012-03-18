@@ -1,30 +1,46 @@
 #!/usr/bin/env node
 
 /**
- * `tail -F` all source paths in config/config.js.
+ * `tail -F` one or more log files.
  *
- * Example usage: supervisor app/tail.js
+ * Use config/config.js sources: app/tail.js
+ * Use external config.js sources: app/tail.js path/to/config.js
  */
 
 'use strict';
 
 (function() {
+  var program = require('commander');
+  program
+    .option('-c, --config <file>', '/path/to/config.js', null)
+    .option('-t, --test <#>', 'Exit after # expected lines for unit tests', Number, 0)
+    .parse(process.argv);
+
   require(__dirname + '/modules/diana.js');
   var parsers = diana.requireModule('parsers/parsers');
   var storage = diana.requireModule('storage/storage').load();
-  var config = diana.getConfig(process.argv[2]);
+  var config = diana.getConfig(program.config);
   var monitors = {};
   var parserCache = {};
   var spawn = require('child_process').spawn;
+
+  // To support maximum line count for --test.
+  var lineCount = 0;
 
   /**
    * Kill all `tail` processes.
    */
   var cleanupMonitors = function() {
-    _.each(monitors, function(monitor) {
-      monitor.kill('SIGKILL');
-    });
-    storage.dbClose();
+    if (monitors) {
+      _.each(monitors, function(monitor) {
+        monitor.kill('SIGKILL');
+      });
+      monitors = null;
+    }
+    if (storage) {
+      storage.dbClose();
+      storage = null;
+    }
   };
   process.on('exit', cleanupMonitors);
   process.on('uncaughtException', cleanupMonitors);
@@ -47,12 +63,16 @@
       if (!parserCache[source.parser]) {
         parserCache[source.parser] = parsers.createInstance(source.parser);
       }
-      parserCache[source.parser].parseAndInsert(
-        source,
-        data.toString().replace(/\n$/, '').split("\n"),
-        null,
-        true
-      );
+
+      var lines = data.toString().replace(/\n$/, '').split("\n");
+      lineCount += lines.length;
+
+      parserCache[source.parser].parseAndInsert(source, lines, function() {
+        // Support maximum line count for --test.
+        if (program.test > 0 && lineCount >= program.test) {
+          process.exit();
+        }
+      }, true);
     });
 
     /**
@@ -75,4 +95,8 @@
   _.each(config.sources, function(source) {
     createMonitor(source);
   });
+
+  if (program.test) {
+    console.log('START_TEST');
+  }
 })();
