@@ -73,7 +73,7 @@
         },
 
         error: function(collection, response) {
-          diana.helpers.Event.onFetchError(response);
+          diana.helpers.Event.trigger('CritFetchError', response);
           callback.call(view, []);
         }
       });

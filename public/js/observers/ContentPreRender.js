@@ -14,6 +14,6 @@
   });
 
   _.each(observers, function(observer) {
-    diana.event.on('ContentPreRender', observer);
+    diana.helpers.Event.on('ContentPreRender', observer);
   });
 })();

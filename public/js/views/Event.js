@@ -12,6 +12,12 @@
       this.model = new diana.models.Event({id: options.id});
       this.model.bind('change', this.render, this);
       this.model.set('parent', this.el);
+
+      // Bubble up the model error.
+      diana.helpers.Event.on('EventSyncError', function(response) {
+        diana.helpers.Event.trigger('CritFetchError', response);
+      });
+
       this.model.fetch();
     },
 

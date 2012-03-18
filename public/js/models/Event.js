@@ -35,7 +35,9 @@
               write[cacheKey] = data;
               onMissDone(write);
             },
-            error: diana.helpers.Event.onFetchError
+            error: function(response) {
+              diana.helpers.Event.trigger('EventSyncError', response);
+            }
           });
         }
       });

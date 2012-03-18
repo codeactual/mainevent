@@ -81,7 +81,7 @@ $(function() {
             config.context,
             function(err, out) {
               // Allow observers to tweak the layout based on configuration.
-              diana.event.trigger('ContentPreRender', config.context);
+              diana.helpers.Event.trigger('ContentPreRender', config.context);
 
               // Display the rendered content container.
               $('#content').html(out);
@@ -99,6 +99,18 @@ $(function() {
         });
       });
     }
+  });
+
+  /**
+   * Common error handler for all fetch/sync operations.
+   *
+   * @param response {Object} AJAX response.
+   */
+  diana.helpers.Event.on('CritFetchError', function(response) {
+    var context = {message: JSON.parse(response.responseText).__error};
+    dust.render('error', context, function(err, out) {
+      $(diana.viewContainer).html(out);
+    });
   });
 
   new Router();
