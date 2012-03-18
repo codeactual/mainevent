@@ -89,6 +89,10 @@
       monitors[source.path] = null;
 
       createMonitor(source);
+
+      if (program.test) {
+        console.log('MONITOR_RESTART');
+      }
     });
   };
 
