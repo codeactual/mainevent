@@ -58,6 +58,6 @@
       diana.features.timelineUpdate = true;
     }
 
-    new diana.views.Timeline({searchArgs: searchArgs});
+    diana.mainView = new diana.views.Timeline({searchArgs: searchArgs});
   };
 })();

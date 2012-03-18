@@ -24,6 +24,22 @@ $(function() {
     timelineUpdate: false
   };
 
+  // Used to close() the preexisting view during a route change.
+  diana.mainView = null;
+
+  /**
+   * Add default shutdown/GC to all views.
+   *
+   * @author Derick Bailey http://goo.gl/JD3DQ
+   */
+  Backbone.View.prototype.close = function() {
+    this.remove();
+    this.unbind();
+    if (this.onClose){
+      this.onClose();
+    }
+  };
+
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
@@ -69,6 +85,12 @@ $(function() {
 
               // Display the rendered content container.
               $('#content').html(out);
+
+              // Let the preexisting view clean itself up.
+              if (diana.mainView) {
+                diana.mainView.close();
+                diana.mainView = null;
+              }
 
               // Pass the matched route parameters to the actual handler.
               config.handler.apply(config.context, routeArgs);

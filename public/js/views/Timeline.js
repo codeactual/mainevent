@@ -5,9 +5,6 @@
   window.diana.views = window.diana.views || {};
   var diana = window.diana;
 
-  // Reuse the socket if the view is reopened w/out a page refresh.
-  var socket = null;
-
   /**
    * Displays the <table> into which result sets are rendered. Automatically
    * fetches the result set based on router options passed via initialize().
@@ -17,6 +14,9 @@
 
     // Track the most recent event ID seen by initial fetch() and automatic updates.
     newestEventId: null,
+
+    // socket.io connection.
+    socket: null,
 
     /**
      * Render the base timeline template.
@@ -148,18 +148,18 @@
      * @param initialId {String} All updates (if any) will be newer than this ID.
      */
     startTimelineUpdate: function(initialId) {
-      if (socket || !diana.features.timelineUpdate) {
+      if (!diana.features.timelineUpdate) {
         return;
       }
 
       var view = this;
       view.newestEventId = initialId;
 
-      socket = diana.helpers.Socket.reuse({
+      this.socket = diana.helpers.Socket.create({
         event: {
           connect: function() {
             // Start/restart automatic updates.
-            socket.emit('startTimelineUpdate', {
+            view.socket.emit('startTimelineUpdate', {
               newestEventId: view.newestEventId,
               searchArgs: view.options.searchArgs
             });
@@ -168,7 +168,7 @@
       });
 
       // Update the view with events fresher than newestEventId.
-      socket.on('timelineUpdate', function(data) {
+      this.socket.on('timelineUpdate', function(data) {
         view.onTimelineUpdate.call(view, data);
       });
     },
@@ -191,6 +191,14 @@
       $('.timeline-update').removeClass('timeline-update');
 
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
-    }
+    },
+
+    /**
+     * Clean up view-specific resources.
+     */
+     onClose: function() {
+       this.socket.disconnect();
+       this.socket = null;
+     }
   });
 })();

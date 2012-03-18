@@ -5,8 +5,6 @@
   window.diana.helpers = window.diana.helpers || {};
   var diana = window.diana;
 
-  var sharedSocket = null;
-
   diana.helpers.Socket = {
 
     /**
@@ -34,7 +32,10 @@
       options.socket = options.socket || {
         'reconnect': true,
         'reconnection delay': 500,
-        'max reconnection attempts': 10
+        'max reconnection attempts': 10,
+
+        // Required to allow views to close sockets onClose().
+        'force new connection': true
       };
     },
 
@@ -60,28 +61,6 @@
       });
 
       return socket;
-    },
-
-    /**
-     * Reuse an existing socket; create one if needed.
-     *
-     * @param options {Object} See create().
-     * @return {Object} io.connect() output.
-     */
-    reuse: function(options) {
-      if (!sharedSocket) {
-        this.initOptions(options);
-
-        // Clean up shared link on disconnection.
-        var actualDisconnectHandler = options.event.disconnect;
-        options.event.disconnect = function() {
-          sharedSocket = null;
-          actualDisconnectHandler();
-        };
-
-        sharedSocket = this.create(options);
-      }
-      return sharedSocket;
     }
   };
 })();
