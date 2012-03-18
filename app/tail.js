@@ -3,8 +3,9 @@
 /**
  * `tail -F` one or more log files.
  *
- * Use config/config.js sources: app/tail.js
- * Use external config.js sources: app/tail.js path/to/config.js
+ * - Use config/config.js sources: app/tail.js
+ * - Use external config.js sources: app/tail.js path/to/config.js
+ * - process.send() is used to coordinate flow with test scripts.
  */
 
 'use strict';
