@@ -5,6 +5,13 @@
   window.diana.helpers = window.diana.helpers || {};
   var diana = window.diana;
 
+  /**
+   * Global dispatch object.
+   *
+   * @author SendHub http://goo.gl/mEMwr
+   */
+  diana.event = _.extend({}, Backbone.Events);
+
   diana.helpers.Event = {
     /**
      * Common error handler for all fetch/sync operations.

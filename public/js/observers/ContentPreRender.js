@@ -8,12 +8,12 @@
   var observers  = [];
 
   // Apply context.tab option.
-  observers.push(function(event, config) {
+  observers.push(function(config) {
     $('#nav-list > li').removeClass('active');
     $('#' + config.tab).addClass('active');
   });
 
   _.each(observers, function(observer) {
-    $('#content').bind('ContentPreRender', observer);
+    diana.event.on('ContentPreRender', observer);
   });
 })();

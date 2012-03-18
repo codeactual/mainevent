@@ -81,7 +81,7 @@ $(function() {
             config.context,
             function(err, out) {
               // Allow observers to tweak the layout based on configuration.
-              $('#content').trigger('ContentPreRender', config.context);
+              diana.event.trigger('ContentPreRender', config.context);
 
               // Display the rendered content container.
               $('#content').html(out);
