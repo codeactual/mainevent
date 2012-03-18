@@ -7,6 +7,7 @@
 var fs = require('fs');
 var testutil = require(__dirname + '/modules/testutil.js');
 var spawn = require('child_process').spawn;
+var fork = require('child_process').fork;
 var exec = require('child_process').exec;
 var storage = diana.requireModule('storage/storage').load();
 
@@ -17,14 +18,13 @@ var path = testConfig.sources[0].path;
 exports.testMonitoring = function(test) {
   var run = testutil.getRandHash();
   var log = JSON.stringify({path: path, run: run});
-
-  test.expect(1);
+  var fd = fs.openSync(path, 'a');
 
   // -t will enable test mode and force exit after 1 line.
-  var tailJs = spawn(__dirname + '/../app/tail.js', [
+  var tailJs = fork(__dirname + '/../app/tail.js', [
     '-c', testConfigFile,
     '-t', 1
-  ]);
+  ], {env: process.env});
 
   tailJs.on('exit', function(code) {
     storage.getTimeline({path: path, run: run}, function(err, docs) {
@@ -34,11 +34,15 @@ exports.testMonitoring = function(test) {
   });
 
   // Wait until we know tail.js has started watching 'path' to add a line.
-  tailJs.stdout.on('data', function(data) {
-    if ("START_TEST\n" == data.toString()) {
-      fs.writeFileSync(path, log);
+  tailJs.on('message', function(message) {
+    if ('MONITORS_STARTED' == message) {
+      test.expect(1);
+      fs.writeSync(fd, log);
+      fs.closeSync(fd);
     }
   });
+
+  tailJs.send('START_TEST');
 };
 
 exports.testAutoRestart = function(test) {
@@ -67,7 +71,9 @@ exports.testAutoRestart = function(test) {
     } else if ("MONITOR_RESTART\n" == data.toString()) {
       exec(pgrepCmd, [], function(code, stdout, stderr) {
         // Force tail.js to exit.
-        fs.writeFileSync(path, log);
+        var fd = fs.openSync(path, 'a');
+        fs.writeSync(fd, log);
+        fs.closeSync(fd);
 
         test.ok(parseInt(stdout.toString(), 10) > 0);
         test.done();

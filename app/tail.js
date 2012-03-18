@@ -96,11 +96,20 @@
     });
   };
 
-  _.each(config.sources, function(source) {
-    createMonitor(source);
-  });
+  var createMonitors = function() {
+    _.each(config.sources, function(source) {
+      createMonitor(source);
+    });
+  };
 
   if (program.test) {
-    console.log('START_TEST');
+    process.on('message', function(message) {
+      if ('START_TEST' == message) {
+        createMonitors();
+        process.send('MONITORS_STARTED');
+      }
+    });
+  } else {
+    createMonitors();
   }
 })();
