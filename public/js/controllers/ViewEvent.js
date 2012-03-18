@@ -9,8 +9,9 @@
    * Handler for /#event/:id requests.
    *
    * @param id {String} Event ID.
+   * @return {Object} View object.
    */
   diana.controllers.ViewEvent = function(id) {
-    new diana.views.Event({id: id});
+   return new diana.views.Event({id: id});
   };
 })();

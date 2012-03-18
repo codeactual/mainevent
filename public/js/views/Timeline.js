@@ -38,6 +38,16 @@
     },
 
     /**
+     * Clean up view-specific resources.
+     */
+     onClose: function() {
+       if (this.socket) {
+         this.socket.disconnect();
+         this.socket = null;
+       }
+     },
+
+    /**
      * Fetch all log events matching the search arguments passed to the view.
      *
      * @param callback {Function} Fires on success/error.
@@ -191,14 +201,6 @@
       $('.timeline-update').removeClass('timeline-update');
 
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
-    },
-
-    /**
-     * Clean up view-specific resources.
-     */
-     onClose: function() {
-       this.socket.disconnect();
-       this.socket = null;
-     }
+    }
   });
 })();

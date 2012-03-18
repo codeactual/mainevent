@@ -93,7 +93,7 @@ $(function() {
               }
 
               // Pass the matched route parameters to the actual handler.
-              config.handler.apply(config.context, routeArgs);
+              diana.mainView = config.handler.apply(config.context, routeArgs);
             }
           );
         });

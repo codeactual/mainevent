@@ -7,7 +7,10 @@
 
   /**
    * Handler for / requests.
+   *
+   * @return {Object} View object.
    */
   diana.controllers.ViewIndex = function() {
+    return null;
   };
 })();

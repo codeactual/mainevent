@@ -15,6 +15,10 @@
       this.model.fetch();
     },
 
+    close: function() {
+      this.model.unbind('change', this.render);
+    },
+
     // Populate parent element with processed event template.
     render: function() {
       var event = this.model.toJSON();

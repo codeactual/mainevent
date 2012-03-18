@@ -9,6 +9,7 @@
    * Handler for /#timeline* requests.
    *
    * @param options {Object} Search/pagination options. See searchArgs below.
+   * @return {Object} View object.
    */
   diana.controllers.ViewTimeline = function(options) {
     var searchArgs = {
@@ -58,6 +59,6 @@
       diana.features.timelineUpdate = true;
     }
 
-    diana.mainView = new diana.views.Timeline({searchArgs: searchArgs});
+    return new diana.views.Timeline({searchArgs: searchArgs});
   };
 })();
