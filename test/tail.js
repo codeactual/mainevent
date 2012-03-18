@@ -26,7 +26,7 @@ exports.testMonitoring = function(test) {
   ], {env: process.env});
 
   tailJs.on('exit', function(code) {
-    storage.getTimeline({path: path, run: run}, function(err, docs) {
+    storage.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].run, run);
       test.done();
     });
