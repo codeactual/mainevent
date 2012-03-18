@@ -58,6 +58,6 @@
       diana.features.timelineUpdate = true;
     }
 
-    new diana.views.Timeline({searchArgs: searchArgs, cacheSetter: this.cacheSetter});
+    new diana.views.Timeline({searchArgs: searchArgs});
   };
 })();
