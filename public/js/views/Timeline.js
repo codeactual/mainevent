@@ -10,8 +10,6 @@
    * fetches the result set based on router options passed via initialize().
    */
   diana.views.Timeline = Backbone.View.extend({
-    el: $(diana.viewContainer),
-
     // Track the most recent event ID seen by initial fetch() and automatic updates.
     newestEventId: null,
 
@@ -29,7 +27,7 @@
           'timeline_table',
           null,
           function(err, out) {
-            $(diana.viewContainer).html(out);
+            view.$el.html(out);
           }
         )
       ).done(function() {
@@ -65,7 +63,7 @@
         success: function(collection, response) {
           if (!response.length) {
             dust.render('timeline_no_results', null, function(err, out) {
-              $(diana.viewContainer).html(out);
+              view.$el.html(out);
             });
             return;
           }
