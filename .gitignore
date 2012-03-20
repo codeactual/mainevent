@@ -1,6 +1,7 @@
 *.log
 config/*.js
 public/js/libs.js
+public/js/libs/backbone-full.js
 public/js/mvc.js
 public/js/shared.js
 public/js/templates.js
