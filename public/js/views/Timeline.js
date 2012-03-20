@@ -33,6 +33,12 @@
       ).done(function() {
         view.fetchTimeline.call(view, view.renderTimeline);
       });
+
+      $(document).keyup(function(event) {
+        switch (event.which) {
+          case 83: view.openSearch(event); break; // 's'
+        }
+      });
     },
 
     onClose: function() {
@@ -53,14 +59,18 @@
      */
     openSearch: function(event) {
       diana.helpers.Widget.closeDropdown(event);
+
+      var modal = $('#timeline-search-modal');
       if (this.searchView) {
-          $('#timeline-search-modal').modal('show');
+          modal.modal('show');
       } else {
         this.searchView = new diana.views.TimelineSearch({
-          el: $('#timeline-search-modal'),
+          el: modal,
           searchArgs: this.options.searchArgs
         });
       }
+
+      modal.find('.condition-pair:first-child input:first-child').focus().select();
     },
 
     /**
