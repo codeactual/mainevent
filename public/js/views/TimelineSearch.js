@@ -21,12 +21,11 @@
     },
 
     render: function() {
-      var view = this;
       var body = this.$('.modal-body');
 
       // Add text boxes for each 'x = y' condition.
       var condCount = 0;
-      var condPairModel = view.$('.condition-pair');
+      var condPairModel = this.$('.condition-pair');
       _.each(this.options.searchArgs, function(value, key) {
         // Reuse markup for the 1st pair.
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;
