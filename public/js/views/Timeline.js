@@ -34,14 +34,20 @@
         view.fetchTimeline.call(view, view.renderTimeline);
       });
 
-      $(document).keyup(function(event) {
-        switch (event.which) {
-          case 83: view.openSearch(event); break; // 's'
-        }
-      });
+      if (!this.searchView) {
+        $(document).on('keyup', {view: this}, view.onKey);
+      }
+    },
+
+    onKey: function(event) {
+      switch (event.which) {
+        case 83: event.data.view.openSearch(event); break; // 's'
+      }
     },
 
     onClose: function() {
+      $(document).off('keyup', this.onKey);
+
       if (this.socket) {
         this.socket.disconnect();
         this.socket = null;
@@ -67,7 +73,7 @@
       }
 
       if (this.searchView) {
-          modal.modal('show');
+        modal.modal('show');
       } else {
         this.searchView = new diana.views.TimelineSearch({
           el: modal,

@@ -10,6 +10,13 @@
    */
   diana.views.TimelineSearch = Backbone.View.extend({
     initialize: function(options) {
+      var view = this;
+
+      // Auto-expand the 'x = y' <input> rows.
+      $(this.el).delegate('.condition-pair:last-child', 'focus', function() {
+        view.addConditionRow();
+      });
+
       this.render();
     },
 
@@ -33,6 +40,17 @@
 
     events: {
       'submit': 'submit'
+    },
+
+    /**
+     * Append a pair of text boxes for defining 'x = y' conditions.
+     */
+    addConditionRow: function() {
+      var body = this.$('.modal-body');
+      var condPair = this.$('.condition-pair:first-child').clone();
+      $('input:nth-child(1)', condPair).val('');
+      $('input:nth-child(2)', condPair).val('');
+      body.append(condPair);
     },
 
     /**
@@ -61,7 +79,9 @@
       diana.helpers.Widget.closeModal(event);
       var urlArgs = [];
       _.each(this.getSearchArgs(), function(value, key) {
-        urlArgs.push(key + '=' + value);
+        if (key.length && value.length) {
+          urlArgs.push(key + '=' + value);
+        }
       });
       diana.navigate('timeline/' + urlArgs.join(';'));
     }
