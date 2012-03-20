@@ -16,6 +16,9 @@
     // socket.io connection.
     socket: null,
 
+    // Modal sub-view.
+    searchView: null,
+
     initialize: function(options) {
       var view = this;
 
@@ -50,10 +53,14 @@
      */
     openSearch: function(event) {
       diana.helpers.Widget.closeDropdown(event);
-      new diana.views.TimelineSearch({
-        el: $('#timeline-search-modal'),
-        searchArgs: this.options.searchArgs
-      });
+      if (this.searchView) {
+          $('#timeline-search-modal').modal('show');
+      } else {
+        this.searchView = new diana.views.TimelineSearch({
+          el: $('#timeline-search-modal'),
+          searchArgs: this.options.searchArgs
+        });
+      }
     },
 
     /**
