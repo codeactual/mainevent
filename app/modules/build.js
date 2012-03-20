@@ -50,6 +50,7 @@ exports.combineCss = function() {
   var fd = fs.openSync(baseCssDir + 'all.css', 'w');
   var cssFiles = [
     'bootstrap.css',
+    'jquery-ui.css',
     'jquery-ui-timepicker-addon.css',
     'index.css'
   ];

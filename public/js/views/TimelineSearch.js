@@ -17,6 +17,9 @@
         view.addConditionRow();
       });
 
+      $('#from-time').datetimepicker({});
+      $('#to-time').datetimepicker({});
+
       this.render();
     },
 
@@ -46,7 +49,7 @@
      */
     addConditionRow: function() {
       var body = this.$('.modal-body');
-      var condPair = this.$('.condition-pair:first-child').clone();
+      var condPair = body.find('.condition-pair:last-child').clone();
       $('input:nth-child(1)', condPair).val('');
       $('input:nth-child(2)', condPair).val('');
       body.append(condPair);
@@ -59,6 +62,9 @@
      */
     getSearchArgs: function() {
       var args = {};
+
+      args.from_time = (new Date($('#from-time').val())).getTime() / 1000;
+      args.to_time = (new Date($('#to-time').val())).getTime() / 1000;
 
       // Collect all arbitrary 'x=y' condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
@@ -78,7 +84,7 @@
       diana.helpers.Widget.closeModal(event);
       var urlArgs = [];
       _.each(this.getSearchArgs(), function(value, key) {
-        if (key.length && value.length) {
+        if (key.toString().length && value.toString().length) {
           urlArgs.push(key + '=' + value);
         }
       });

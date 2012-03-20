@@ -1,3 +1,6 @@
+.form-inline .form-row {
+  margin-bottom: 8px;
+}
 .taglist .label {
   margin-right: 0.25em;
 }
