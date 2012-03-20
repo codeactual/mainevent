@@ -12,6 +12,6 @@
    * @return {Object} View object.
    */
   diana.controllers.ViewEvent = function(id) {
-   return new diana.views.Event({id: id});
+   return new diana.views.Event({id: id, el: $('#content')});
   };
 })();

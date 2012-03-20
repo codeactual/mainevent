@@ -8,10 +8,8 @@
   // View of an individual event.
   diana.views.Event = Backbone.View.extend({
     initialize: function(options) {
-      this.el = $(diana.viewContainer);
       this.model = new diana.models.Event({id: options.id});
       this.model.bind('change', this.render, this);
-      this.model.set('parent', this.el);
 
       // Bubble up the model error.
       diana.helpers.Event.on('EventSyncError', function(response) {
@@ -25,7 +23,6 @@
       this.model.unbind('change', this.render);
     },
 
-    // Populate parent element with processed event template.
     render: function() {
       var event = this.model.toJSON();
       if (Object.keys(event).length < 3) {
@@ -81,13 +78,13 @@
         return {name: value};
       });
 
-      var parent = this.model.get('parent');
+      var view = this;
       dust.render(
         // ex. 'event_nginx_access'
         'event_' + this.model.attributes.parser,
         context,
         function(err, out) {
-          $(parent).html(out);
+          view.$el.html(out);
         }
       );
     }
