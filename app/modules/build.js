@@ -43,6 +43,24 @@ exports.compileViews = function() {
 };
 
 /**
+ * Combine CSS.
+ */
+exports.combineCss = function() {
+  var baseCssDir = __dirname + '/../../public/css/';
+  var fd = fs.openSync(baseCssDir + 'all.css', 'w');
+  var cssFiles = [
+    'bootstrap.css',
+    'jquery-ui-timepicker-addon.css',
+    'index.css'
+  ];
+  _.each(cssFiles, function(cssFile) {
+    var content = fs.readFileSync(baseCssDir + '/' + cssFile, 'UTF-8');
+    fs.writeSync(fd, content, null, 'utf8');
+  });
+  fs.closeSync(fd);
+}
+
+/**
  * Combine client-side Javascript.
  */
 exports.combineClientJavascript = function() {
@@ -66,6 +84,8 @@ exports.combineClientJavascript = function() {
   fd = fs.openSync(__dirname + '/../../public/js/libs.js', 'w');
   var libs = [
     'jquery.js',
+    'jquery-ui.js',
+    'jquery-ui-timepicker-addon.js',
     'underscore.js',
     'backbone.js',
     'bootstrap-modal.js',

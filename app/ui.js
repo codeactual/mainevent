@@ -21,6 +21,7 @@ var io = require('socket.io').listen(app);
 // Merge/compile/combine HTML and JS assets.
 var build = diana.requireModule('build');
 build.compileViews();
+build.combineCss();
 build.combineClientJavascript();
 
 // Required for using *.html with res.render().
