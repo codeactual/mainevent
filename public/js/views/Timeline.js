@@ -61,6 +61,11 @@
       diana.helpers.Widget.closeDropdown(event);
 
       var modal = $('#timeline-search-modal');
+
+      if (modal.is(':visible')) {
+        return;
+      }
+
       if (this.searchView) {
           modal.modal('show');
       } else {
