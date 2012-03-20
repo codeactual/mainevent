@@ -59,6 +59,6 @@
       diana.features.timelineUpdate = true;
     }
 
-    return new diana.views.Timeline({searchArgs: searchArgs, el: $('#content')});
+    return new diana.views.Timeline({searchArgs: searchArgs, el: $('#backbone-view')});
   };
 })();
