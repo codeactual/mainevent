@@ -70,6 +70,7 @@ exports.combineClientJavascript = function() {
     'backbone.js',
     'bootstrap-modal.js',
     'bootstrap-alert.js',
+    'bootstrap-dropdown.js',
     'dust.js',
     'moment.js',
     'clientsiiide.js',

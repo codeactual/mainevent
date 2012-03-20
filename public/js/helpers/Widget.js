@@ -24,6 +24,30 @@
       element.append('[' + moment().format(config.alert.format) + '] ' + message);
       $('#alert').prepend(element);
       $('#alert div:nth-child(' + (config.alert.max + 1) + ')').remove();
+    },
+
+    /**
+     * Close (any) open Twitter Bootstrap dropdown.
+     *
+     * - Intended as first step in a click handler.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    closeDropdown: function(event) {
+      event.preventDefault();
+      $('.dropdown-toggle').parent().removeClass('open');
+    },
+
+    /**
+     * Close (any) open Twitter Bootstrap modal.
+     *
+     * - Intended as first step in a click/submit handler.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    closeModal: function(event) {
+      event.preventDefault();
+      $('.modal').modal('hide');
     }
   };
 })();

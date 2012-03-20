@@ -12,9 +12,6 @@ $(function() {
   window.diana = window.diana || {};
   var diana = window.diana;
 
-  // Parent element for all backbone.js views.
-  diana.viewContainer = '#backbone-view';
-
   // localStorage cache for items like /event/:id responses.
   diana.cache = new clientsiiide('Diana');
 
@@ -26,6 +23,13 @@ $(function() {
 
   // Used to close() the preexisting view during a route change.
   diana.mainView = null;
+
+  // Auto-triggering fragment navigation.
+  diana.navigate = function(fragment, options) {
+    options = options || {};
+    options.trigger = true;
+    Backbone.history.navigate(fragment, options);
+  };
 
   /**
    * Add default shutdown/GC to all views.
@@ -93,7 +97,10 @@ $(function() {
               }
 
               // Pass the matched route parameters to the actual handler.
-              diana.mainView = config.handler.apply(config.context, routeArgs);
+              var mainView = config.handler.apply(config.context, routeArgs);
+              if (mainView) {
+                diana.mainView = mainView;
+              }
             }
           );
         });
@@ -109,7 +116,7 @@ $(function() {
   diana.helpers.Event.on('CritFetchError', function(response) {
     var context = {message: JSON.parse(response.responseText).__error};
     dust.render('error', context, function(err, out) {
-      $(diana.viewContainer).html(out);
+      $('#content').html(out);
     });
   });
 

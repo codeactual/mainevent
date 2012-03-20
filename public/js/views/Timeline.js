@@ -38,12 +38,47 @@
     /**
      * Clean up view-specific resources.
      */
-     onClose: function() {
-       if (this.socket) {
-         this.socket.disconnect();
-         this.socket = null;
-       }
-     },
+    onClose: function() {
+      if (this.socket) {
+        this.socket.disconnect();
+        this.socket = null;
+      }
+    },
+
+    events: {
+      'click #timeline-open-search': 'openSearch',
+      'submit #timeline-search-modal form': 'submitSearch'
+    },
+
+    /**
+     * Open search modal.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    openSearch: function(event) {
+      diana.helpers.Widget.closeDropdown(event);
+      $('#timeline-search-modal').modal('show');
+    },
+
+    /**
+     * Submit search modal filters.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    submitSearch: function(event) {
+      diana.helpers.Widget.closeModal(event);
+
+      var urlArgs = [];
+
+      // Collect all arbitrary 'x=y' condition pairs.
+      var condPairs = $('#timeline-search-modal .condition-pair');
+      condPairs.each(function(pair) {
+        var input = $('input', pair);
+        urlArgs.push($(input[0]).val() + '=' + $(input[1]).val());
+      });
+
+      diana.navigate('timeline/' + urlArgs.join(';'));
+    },
 
     /**
      * Fetch all log events matching the search arguments passed to the view.
