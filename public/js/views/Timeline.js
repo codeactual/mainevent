@@ -16,9 +16,6 @@
     // socket.io connection.
     socket: null,
 
-    /**
-     * Render the base timeline template.
-     */
     initialize: function(options) {
       var view = this;
 
@@ -35,9 +32,6 @@
       });
     },
 
-    /**
-     * Clean up view-specific resources.
-     */
     onClose: function() {
       if (this.socket) {
         this.socket.disconnect();
@@ -46,8 +40,7 @@
     },
 
     events: {
-      'click #timeline-open-search': 'openSearch',
-      'submit #timeline-search-modal form': 'submitSearch'
+      'click #timeline-open-search': 'openSearch'
     },
 
     /**
@@ -57,27 +50,10 @@
      */
     openSearch: function(event) {
       diana.helpers.Widget.closeDropdown(event);
-      $('#timeline-search-modal').modal('show');
-    },
-
-    /**
-     * Submit search modal filters.
-     *
-     * @param event {Object} jQuery event object.
-     */
-    submitSearch: function(event) {
-      diana.helpers.Widget.closeModal(event);
-
-      var urlArgs = [];
-
-      // Collect all arbitrary 'x=y' condition pairs.
-      var condPairs = $('#timeline-search-modal .condition-pair');
-      condPairs.each(function(pair) {
-        var input = $('input', pair);
-        urlArgs.push($(input[0]).val() + '=' + $(input[1]).val());
+      new diana.views.TimelineSearch({
+        el: $('#timeline-search-modal'),
+        searchArgs: this.options.searchArgs
       });
-
-      diana.navigate('timeline/' + urlArgs.join(';'));
     },
 
     /**
