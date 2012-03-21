@@ -99,7 +99,7 @@ exports.insertLog = function(source, log, callback, bulk) {
       log.parser = source.parser;
       log.tags = source.tags;
 
-      collection.insert(log, { safe: true }, function(err, docs) {
+      collection.insert(log, {safe: true}, function(err, docs) {
         // close() required after one-time insert to avoid hang.
         if (!bulk) {
           exports.dbClose();
@@ -165,6 +165,22 @@ exports.getTimeline = function(params, callback) {
         options.skip = parseInt(params.skip, 10);
         delete params.skip;
       }
+      _.each(params, function(value, key) {
+        var matches = null;
+        if ((matches = key.match(/^(.*)-gte$/))) {
+          if ('time' == matches[1]) {
+            value = new mongodb.Timestamp(null, value);
+          }
+          params[matches[1]] = {$gte: value};
+          delete params[key];
+        } else if ((matches = key.match(/^(.*)-gt$/))) {
+          if ('time' == matches[1]) {
+            value = new mongodb.Timestamp(null, value);
+          }
+          params[matches[1]] = {$gt: value};
+          delete params[key];
+        }
+      });
       collection.find(params, options).toArray(function(err, docs) {
         exports.dbClose();
         if (docs) {

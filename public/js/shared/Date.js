@@ -30,7 +30,17 @@ if ('undefined' != typeof require) {
      */
     monthNameToNum: function(name) {
       return moment(name + ' 1 2012').month() + 1;
-    }
+    },
+
+    /**
+     * Convert a string date/time to UNIX timestamp in seconds.
+     *
+     * @param str {String}
+     * @return {Number}
+     */
+     strtotime: function(str) {
+       return (new Date(str)).getTime() / 1000;
+     }
   };
 })();
 
