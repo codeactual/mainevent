@@ -24,7 +24,18 @@
     },
 
     render: function() {
+      var view = this;
       var body = this.$('.modal-body');
+
+      var basicArgNames = ['from-time', 'to-time', 'sort_attr', 'sort_dir'];
+      console.log('args', view.options.searchArgs);
+      _.each(basicArgNames, function(name) {
+        if (view.options.searchArgs[name]) {
+          console.log('name', view.options.searchArgs[name]);
+          view.$('#' + name).val(view.options.searchArgs[name]);
+          delete view.options.searchArgs[name];
+        }
+      });
 
       // Add text boxes for each 'x = y' condition.
       var condCount = 0;
@@ -72,6 +83,11 @@
         args[$(input[0]).val()] = $(input[1]).val();
       });
 
+      args.sort_attr = $('#sort_attr').val();
+      if (args.sort_attr) {
+        args.sort_dir = $('#sort_dir').val();
+      }
+
       return args;
     },
 
@@ -84,11 +100,16 @@
       diana.helpers.Widget.closeModal(event);
       var urlArgs = [];
       _.each(this.getSearchArgs(), function(value, key) {
-        if (key.toString().length && value.toString().length) {
-          urlArgs.push(key + '=' + value);
+        if (!key.toString().length || !value.toString().length) {
+          return;
         }
+        if (_.isNaN(value)) {
+          return;
+        }
+        urlArgs.push(key + '=' + value);
       });
-      diana.navigate('timeline/' + urlArgs.join(';'));
+      urlArgs = urlArgs.join(';');
+      diana.navigate('timeline' + (urlArgs ? '/' + urlArgs : ''));
     }
   });
 })();

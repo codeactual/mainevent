@@ -7,3 +7,6 @@
 .timeline-update {
   font-weight: bold;
 }
+.modal-footer select + button {
+  margin-left: 8px;
+}
