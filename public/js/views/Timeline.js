@@ -179,7 +179,7 @@
      * @return {Object} jQuery Promise.
      */
     renderEvent: function(event, tr) {
-      event.time = moment(event.time * 1000).fromNow();
+      event.relTime = moment(event.time * 1000).fromNow();
 
       return diana.helpers.View.deferRender(
         'timeline_table_row',
@@ -238,6 +238,12 @@
 
       // Un-highlight any past updates.
       $('.timeline-update').removeClass('timeline-update');
+
+      // Update relative dates.
+      this.$('td:first-child a').each(function() {
+        var a = $(this);
+        a.text(moment(a.data('time') * 1000).fromNow());
+      });
 
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
     }
