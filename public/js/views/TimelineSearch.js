@@ -56,6 +56,7 @@
       });
 
       this.$el.modal('show');
+      this.$('#parser').focus().select();
     },
 
     events: {

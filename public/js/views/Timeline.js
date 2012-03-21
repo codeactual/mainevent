@@ -88,8 +88,6 @@
           searchArgs: this.options.searchArgs
         });
       }
-
-      modal.find('.condition-pair:first-child input:first-child').focus().select();
     },
 
     /**
