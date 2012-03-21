@@ -123,7 +123,7 @@
         }
         urlArgs.push(key + '=' + value);
       });
-      urlArgs = urlArgs.join(';');
+      urlArgs = urlArgs.join('&');
       diana.navigate('timeline' + (urlArgs ? '/' + urlArgs : ''));
     }
   });

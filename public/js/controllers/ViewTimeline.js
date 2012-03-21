@@ -24,7 +24,7 @@
 
     if (undefined !== options) {
       // Ex. '/#timeline/limit=10;skip=20;host=127.0.0.1'.
-      var parts = options.split(';');
+      var parts = options.split('&');
       _.each(parts, function(part) {
         // Ex. 'limit=10'. Push key/value pairs into searchArgs.
         var assign_part = part.split('=');
