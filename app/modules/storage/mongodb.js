@@ -134,8 +134,8 @@ exports.getLog = function(id, callback) {
  * Retrieve the attributes of all matching logs.
  *
  * @param params {Object}
- * - sort_dir {String} 'desc' or 'asc'
- * - sort_attr {String} Ex. 'time'
+ * - sort-dir {String} 'desc' or 'asc'
+ * - sort-attr {String} Ex. 'time'
  * - skip {Number} Amount of documents skipped.
  * - limit {Number} Maximum amount of documents retrieved.
  * - All other key/value pairs are considered conditions.
@@ -145,15 +145,15 @@ exports.getTimeline = function(params, callback) {
   dbConnectAndOpen(callback, function(err, db) {
     dbCollection(db, collection, callback, function(err, collection) {
       var options = {};
-      if (params.sort_attr) {
-        if ('desc' == params.sort_dir) {
-          options.sort = [[params.sort_attr, 'desc']];
-          delete params.sort_dir;
-        } else if ('asc' == params.sort_dir) {
-          options.sort = [[params.sort_attr, 'asc']];
-          delete params.sort_dir;
+      if (params['sort-attr']) {
+        if ('desc' == params['sort-dir']) {
+          options.sort = [[params['sort-attr'], 'desc']];
+          delete params['sort-dir'];
+        } else if ('asc' == params['sort-dir']) {
+          options.sort = [[params['sort-attr'], 'asc']];
+          delete params['sort-dir'];
         }
-        delete params.sort_attr;
+        delete params['sort-attr'];
       }
       if (params.limit) {
         options.limit = Math.min(parseInt(params.limit, 10), maxResultSize);
@@ -196,7 +196,7 @@ exports.getTimeline = function(params, callback) {
  */
 exports.getTimelineUpdates = function(id, params, callback) {
   params._id = {$gt: new BSON.ObjectID(id)};
-  params.sort_attr = '_id';
-  params.sort_dir = 'desc';
+  params['sort-attr'] = '_id';
+  params['sort-dir'] = 'desc';
   exports.getTimeline(params, callback);
 };

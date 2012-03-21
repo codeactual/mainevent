@@ -18,8 +18,8 @@
 
       limit: null,
       skip: null,
-      sort_attr: '_id',
-      sort_dir: 'desc'
+      'sort-attr': '_id',
+      'sort-dir': 'desc'
     };
 
     if (undefined !== options) {
@@ -55,7 +55,7 @@
     });
 
     // Enable compatible feature(s).
-    if ('_id' == searchArgs.sort_attr && 'desc' == searchArgs.sort_dir) {
+    if ('_id' == searchArgs['sort-attr'] && 'desc' == searchArgs['sort-dir']) {
       diana.features.timelineUpdate = true;
     }
 

@@ -33,7 +33,7 @@
         parser.append('<option value="' + name + '">' + name + '</option>');
       });
 
-      var basicArgNames = ['time-gte', 'time-lte', 'sort_attr', 'sort_dir', 'parser'];
+      var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
       _.each(basicArgNames, function(name) {
         if (view.options.searchArgs[name]) {
           if (('time-gte' == name || 'time-lte' == name)) {
@@ -98,9 +98,9 @@
         }
       });
 
-      args.sort_attr = $('#sort_attr').val();
-      if (args.sort_attr) {
-        args.sort_dir = $('#sort_dir').val();
+      args['sort-attr'] = $('#sort-attr').val();
+      if (args['sort-attr']) {
+        args['sort-dir'] = $('#sort-dir').val();
       }
 
       return args;
