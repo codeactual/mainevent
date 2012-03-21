@@ -17,8 +17,8 @@
         view.addConditionRow();
       });
 
-      $('#from-time').datetimepicker({});
-      $('#to-time').datetimepicker({});
+      $('#time-gte').datetimepicker({});
+      $('#time-lte').datetimepicker({});
 
       this.render();
     },
@@ -27,7 +27,7 @@
       var view = this;
       var body = this.$('.modal-body');
 
-      var basicArgNames = ['from-time', 'to-time', 'sort_attr', 'sort_dir'];
+      var basicArgNames = ['time-gte', 'time-lte', 'sort_attr', 'sort_dir'];
       console.log('args', view.options.searchArgs);
       _.each(basicArgNames, function(name) {
         if (view.options.searchArgs[name]) {
@@ -74,8 +74,8 @@
     getSearchArgs: function() {
       var args = {};
 
-      args.from_time = (new Date($('#from-time').val())).getTime() / 1000;
-      args.to_time = (new Date($('#to-time').val())).getTime() / 1000;
+      args.from_time = (new Date($('#time-gte').val())).getTime() / 1000;
+      args.to_time = (new Date($('#time-lte').val())).getTime() / 1000;
 
       // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
