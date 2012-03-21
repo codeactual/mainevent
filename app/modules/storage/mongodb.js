@@ -179,6 +179,24 @@ exports.getTimeline = function(params, callback) {
           }
           params[matches[1]] = {$gt: value};
           delete params[key];
+        } else if ((matches = key.match(/^(.*)-lte$/))) {
+          if ('time' == matches[1]) {
+            value = new mongodb.Timestamp(null, value);
+          }
+          params[matches[1]] = {$lte: value};
+          delete params[key];
+        } else if ((matches = key.match(/^(.*)-lt$/))) {
+          if ('time' == matches[1]) {
+            value = new mongodb.Timestamp(null, value);
+          }
+          params[matches[1]] = {$lt: value};
+          delete params[key];
+        } else if ((matches = key.match(/^(.*)-ne$/))) {
+          if ('time' == matches[1]) {
+            value = new mongodb.Timestamp(null, value);
+          }
+          params[matches[1]] = {$ne: value};
+          delete params[key];
         }
       });
       collection.find(params, options).toArray(function(err, docs) {

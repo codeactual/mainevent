@@ -37,7 +37,7 @@ var verifyTimelineResults = function(test, logs, params, expected) {
   });
 };
 
-exports.testGetTimelineGteRange = function(test) {
+exports.testGetTimelineGte = function(test) {
   var run = testutil.getRandHash();  // Only for verification lookup.
   var logs =[
     {time: "3/12/2012 09:00:00", run: run},
@@ -50,6 +50,76 @@ exports.testGetTimelineGteRange = function(test) {
     {run: run, 'time-gte': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
     [
       diana.shared.Date.strtotime(logs[1].time),
+      diana.shared.Date.strtotime(logs[2].time)
+    ]
+  );
+};
+
+exports.testGetTimelineGt = function(test) {
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+  verifyTimelineResults(
+    test,
+    logs,
+    {run: run, 'time-gt': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    [
+      diana.shared.Date.strtotime(logs[2].time)
+    ]
+  );
+};
+
+exports.testGetTimelineLte = function(test) {
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+  verifyTimelineResults(
+    test,
+    logs,
+    {run: run, 'time-lte': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    [
+      diana.shared.Date.strtotime(logs[0].time),
+      diana.shared.Date.strtotime(logs[1].time)
+    ]
+  );
+};
+
+exports.testGetTimelineLt = function(test) {
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+  verifyTimelineResults(
+    test,
+    logs,
+    {run: run, 'time-lt': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    [
+      diana.shared.Date.strtotime(logs[0].time)
+    ]
+  );
+};
+
+exports.testGetTimelineNe = function(test) {
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+  verifyTimelineResults(
+    test,
+    logs,
+    {run: run, 'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    [
+      diana.shared.Date.strtotime(logs[0].time),
       diana.shared.Date.strtotime(logs[2].time)
     ]
   );
