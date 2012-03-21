@@ -51,7 +51,7 @@
         // Reuse markup for the 1st pair.
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;
         $('input:nth-child(1)', condPair).val(key);
-        $('input:nth-child(2)', condPair).val(value);
+        $('input:nth-child(3)', condPair).val(value);
         body.append(condPair);
       });
 
@@ -69,7 +69,7 @@
       var body = this.$('.modal-body');
       var condPair = body.find('.condition-pair:last-child').clone();
       $('input:nth-child(1)', condPair).val('');
-      $('input:nth-child(2)', condPair).val('');
+      $('input:nth-child(3)', condPair).val('');
       body.append(condPair);
     },
 
