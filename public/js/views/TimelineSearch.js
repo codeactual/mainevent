@@ -27,11 +27,13 @@
       var view = this;
       var body = this.$('.modal-body');
 
+
       var basicArgNames = ['time-gte', 'time-lte', 'sort_attr', 'sort_dir'];
-      console.log('args', view.options.searchArgs);
       _.each(basicArgNames, function(name) {
         if (view.options.searchArgs[name]) {
-          console.log('name', view.options.searchArgs[name]);
+          if (('time-gte' == name || 'time-lte' == name)) {
+            view.options.searchArgs[name] = moment(view.options.searchArgs[name] * 1000).format('MM-DD-YYYY HH:mm:ss');
+          }
           view.$('#' + name).val(view.options.searchArgs[name]);
           delete view.options.searchArgs[name];
         }
@@ -74,8 +76,8 @@
     getSearchArgs: function() {
       var args = {};
 
-      args.from_time = (new Date($('#time-gte').val())).getTime() / 1000;
-      args.to_time = (new Date($('#time-lte').val())).getTime() / 1000;
+      args['time-gte'] = (new Date($('#time-gte').val())).getTime() / 1000;
+      args['time-lte'] = (new Date($('#time-lte').val())).getTime() / 1000;
 
       // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
