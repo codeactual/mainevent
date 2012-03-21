@@ -19,8 +19,16 @@
     // Modal sub-view.
     searchView: null,
 
+    // Default preferences.
+    prefs: {
+      autoUpdate: true
+    },
+
     initialize: function(options) {
       var view = this;
+
+      var savedPrefs = diana.helpers.Prefs.get('TimelineSearch');
+      this.prefs = _.isEmpty(savedPrefs) ? this.prefs : savedPrefs;
 
       $.when(
         diana.helpers.View.deferRender(
@@ -31,6 +39,9 @@
           }
         )
       ).done(function() {
+        $('#timeline-toggle-updates').text(
+          (view.prefs.autoUpdate ? 'Disable' : 'Enable') + ' Updates'
+        );
         view.fetchTimeline.call(view, view.renderTimeline);
       });
 
@@ -47,15 +58,12 @@
 
     onClose: function() {
       $(document).off('keyup', this.onKey);
-
-      if (this.socket) {
-        this.socket.disconnect();
-        this.socket = null;
-      }
+      this.closeSocket();
     },
 
     events: {
-      'click #timeline-open-search': 'openSearch'
+      'click #timeline-open-search': 'openSearch',
+      'click #timeline-toggle-updates': 'toggleUpdates'
     },
 
     /**
@@ -82,6 +90,33 @@
       }
 
       modal.find('.condition-pair:first-child input:first-child').focus().select();
+    },
+
+    /**
+     * Toggle automatic updates.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    toggleUpdates: function(event) {
+      diana.helpers.Widget.closeDropdown(event);
+      this.prefs.autoUpdate = !this.prefs.autoUpdate;
+      diana.helpers.Prefs.set('TimelineSearch', this.prefs);
+
+      if (this.prefs.autoUpdate) {
+        this.startTimelineUpdate(this.newestEventId);
+      } else {
+        this.closeSocket();
+      }
+    },
+
+    /**
+     * Close auto-update socket.
+     */
+    closeSocket: function() {
+      if (this.socket) {
+        this.socket.disconnect();
+        this.socket = null;
+      }
     },
 
     /**
@@ -197,12 +232,12 @@
      * @param initialId {String} All updates (if any) will be newer than this ID.
      */
     startTimelineUpdate: function(initialId) {
-      if (!diana.features.timelineUpdate) {
-        return;
-      }
-
       var view = this;
       view.newestEventId = initialId;
+
+      if (!this.prefs.autoUpdate || !diana.features.timelineUpdate) {
+        return;
+      }
 
       this.socket = diana.helpers.Socket.create({
         event: {
