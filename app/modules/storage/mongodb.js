@@ -167,35 +167,12 @@ exports.getTimeline = function(params, callback) {
       }
       _.each(params, function(value, key) {
         var matches = null;
-        if ((matches = key.match(/^(.*)-gte$/))) {
+        if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
           if ('time' == matches[1]) {
             value = new mongodb.Timestamp(null, value);
           }
-          params[matches[1]] = {$gte: value};
-          delete params[key];
-        } else if ((matches = key.match(/^(.*)-gt$/))) {
-          if ('time' == matches[1]) {
-            value = new mongodb.Timestamp(null, value);
-          }
-          params[matches[1]] = {$gt: value};
-          delete params[key];
-        } else if ((matches = key.match(/^(.*)-lte$/))) {
-          if ('time' == matches[1]) {
-            value = new mongodb.Timestamp(null, value);
-          }
-          params[matches[1]] = {$lte: value};
-          delete params[key];
-        } else if ((matches = key.match(/^(.*)-lt$/))) {
-          if ('time' == matches[1]) {
-            value = new mongodb.Timestamp(null, value);
-          }
-          params[matches[1]] = {$lt: value};
-          delete params[key];
-        } else if ((matches = key.match(/^(.*)-ne$/))) {
-          if ('time' == matches[1]) {
-            value = new mongodb.Timestamp(null, value);
-          }
-          params[matches[1]] = {$ne: value};
+          params[matches[1]] = {};
+          params[matches[1]]['$' + matches[2]] = value;
           delete params[key];
         }
       });
