@@ -83,3 +83,16 @@ exports.addPreviewContext = function(logs, onAllDone) {
     }
   );
 };
+
+/**
+ * Get all parsers selected in app/config.js.
+ *
+ * @return {Array}
+ */
+exports.getConfiguredParsers = function() {
+  var parsers = {};
+  _.each(diana.getConfig().sources, function(source) {
+    parsers[source.parser] = 1;
+  });
+  return _.keys(parsers);
+};

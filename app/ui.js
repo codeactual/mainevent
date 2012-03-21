@@ -27,7 +27,9 @@ build.combineClientJavascript();
 // Required for using *.html with res.render().
 app.register('.html', {
   compile: function(str, options) {
-    return function() { return str; };
+    return function() {
+      return _.template(str)(options);
+    };
   }
 });
 
@@ -36,11 +38,13 @@ app.use(express.static(__dirname + '/../public'));
 
 // Prepended to relative paths given to res.render().
 app.set('views', __dirname + '/views');
-app.set('view options', { layout: false });
+app.set('view options', {layout: false});
 
 // Serve the backbone.js MVC app.
 app.get('/', function(req, res) {
-  res.render('index.html');
+  res.render('index.html', {
+    parsers: JSON.stringify(parsers.getConfiguredParsers())
+  });
 });
 
 app.get('/timeline', function(req, res) {

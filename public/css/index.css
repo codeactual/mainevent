@@ -13,3 +13,6 @@
 .condition-pair select {
   width: 50px;
 }
+select#parser {
+  width: 120px;
+}
