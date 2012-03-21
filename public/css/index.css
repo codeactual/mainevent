@@ -10,3 +10,6 @@
 .modal-footer select + button {
   margin-left: 8px;
 }
+.condition-pair select {
+  width: 50px;
+}

@@ -77,10 +77,17 @@
       args.from_time = (new Date($('#from-time').val())).getTime() / 1000;
       args.to_time = (new Date($('#to-time').val())).getTime() / 1000;
 
-      // Collect all arbitrary 'x=y' condition pairs.
+      // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
         var input = $('input', pair);
-        args[$(input[0]).val()] = $(input[1]).val();
+        var conditional = $('select', pair).val();  // Ex. 'gte'
+        if (conditional) {
+          // Ex. args['code-gte'] = 302
+          args[$(input[0]).val() + '-' + conditional] = $(input[1]).val();
+        } else {
+          // Ex. args['code'] = 302
+          args[$(input[0]).val()] = $(input[1]).val();
+        }
       });
 
       args.sort_attr = $('#sort_attr').val();
