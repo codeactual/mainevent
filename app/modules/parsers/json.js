@@ -20,9 +20,9 @@ JsonParser.prototype.addPreviewContext = function(log) {
     log.previewAttr = _.isArray(log.previewAttr) ? log.previewAttr : [log.previewAttr];
 
     var updated = {};
-    _.each(log, function(value, key) {
-      if (-1 !== _.indexOf(log.previewAttr, key)) {
-        updated[key] = value;
+    _.each(log.previewAttr, function(name) {
+      if (log[name]) {
+        updated[name] = log[name];
       }
     });
     return updated;
