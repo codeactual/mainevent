@@ -13,7 +13,6 @@
   diana.helpers.Event = _.extend({}, Backbone.Events);
 
   $('body').delegate('.modal', 'show', function() {
-    console.log('open');
     diana.helpers.Event.trigger('ModalOpen');
   });
   $('body').delegate('.modal', 'hide', function() {
