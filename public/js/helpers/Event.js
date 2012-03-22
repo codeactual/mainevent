@@ -18,5 +18,8 @@
   $('body').delegate('.modal', 'hide', function() {
     diana.helpers.Event.trigger('ModalClose');
   });
+  $('body').delegate('a.disabled', 'click', function(event) {
+    event.preventDefault();
+  });
 })();
 
