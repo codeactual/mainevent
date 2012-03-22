@@ -55,11 +55,10 @@
     });
 
     // Enable compatible feature(s).
-    if ('_id' == searchArgs['sort-attr']
+    diana.features.timelineUpdate =
+      '_id' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
-      && !_.has(searchArgs, 'skip')) {
-      diana.features.timelineUpdate = true;
-    }
+      && !_.has(searchArgs, 'skip');
 
     return new diana.views.Timeline({searchArgs: searchArgs, el: $('#backbone-view')});
   };
