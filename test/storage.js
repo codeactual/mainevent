@@ -124,3 +124,38 @@ exports.testGetTimelineNe = function(test) {
     ]
   );
 };
+
+exports.testNextPageDetection = function(test) {
+  var source = {parser: 'json'};
+  var parser = parsers.createInstance('json');
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+
+  var lines = [];
+  _.each(logs, function(log) {
+    lines.push(JSON.stringify(log));
+  });
+
+  test.expect(4);
+  parser.parseAndInsert(source, lines, function() {
+
+    // Expect no next page.
+    var params = {run: run, 'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')};
+    storage.getTimeline(params, function(err, docs, info) {
+      test.equal(docs.length, 2);
+      test.ok(false === info.nextPage);
+
+      // Expect another page.
+      params.limit = 1;
+      storage.getTimeline(params, function(err, docs, info) {
+        test.equal(docs.length, 1);
+        test.ok(info.nextPage);
+        test.done();
+      });
+    });
+  });
+};

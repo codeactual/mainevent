@@ -8,7 +8,7 @@ var mongodb = require('mongodb');
 var BSON = mongodb.BSONPure;
 var link = null;
 var collection = null;
-var maxResultSize = 100;
+var config = diana.getConfig().storage;
 
 /**
  * In one or more documents, convert BSON Timestamp objects to their UNIX
@@ -38,7 +38,6 @@ var dbConnectAndOpen = function(error, success) {
   if (link) {
     success(null, link);
   } else {
-    var config = diana.getConfig().storage;
     collection = config.collection;
     link = new mongodb.Db(
       config.db,
@@ -140,6 +139,10 @@ exports.getLog = function(id, callback) {
  * - limit {Number} Maximum amount of documents retrieved.
  * - All other key/value pairs are considered conditions.
  * @param callback {Function} Receives find() results.
+ * - {String} MongoDB driver error message.
+ * - {Array} Result set.
+ * - {Object} Additional result details.
+ *   'nextPage' {Boolean} True if additional documents exist.
  */
 exports.getTimeline = function(params, callback) {
   dbConnectAndOpen(callback, function(err, db) {
@@ -156,10 +159,10 @@ exports.getTimeline = function(params, callback) {
         delete params['sort-attr'];
       }
       if (params.limit) {
-        options.limit = Math.min(parseInt(params.limit, 10), maxResultSize);
+        options.limit = Math.min(parseInt(params.limit, 10), config.maxResultSize);
         delete params.limit;
       } else {
-        options.limit = maxResultSize;
+        options.limit = config.maxResultSize;
       }
       if (params.skip) {
         options.skip = parseInt(params.skip, 10);
@@ -176,12 +179,17 @@ exports.getTimeline = function(params, callback) {
           delete params[key];
         }
       });
+      options.limit += 1; // For next-page detection.
       collection.find(params, options).toArray(function(err, docs) {
         exports.dbClose();
+        var info = {nextPage: docs && (docs.length == options.limit)};
         if (docs) {
+          if (info.nextPage) { // Discard next-page hint doc.
+            docs.pop();
+          }
           docs = unpackTime(docs);
         }
-        callback(err, docs);
+        callback(err, docs, info);
       });
     });
   });
