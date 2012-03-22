@@ -9,7 +9,17 @@
         <select id="parser"></select>
       </div>
       <div class="form-row">
-        Between <input id="time-gte" type="text" class="input-medium" placeholder="Ex. 03/21/2012 08:10" /> and <input id="time-lte" type="text" class="input-medium" placeholder="Ex. 03/21/2012 12:10" />
+        <select id="time-preset">
+          <option value="">Time ...</option>
+          <option value="60">Last 1 min</option>
+          <option value="300">Last 5 mins</option>
+          <option value="900">Last 15 mins</option>
+          <option value="3600">Last 1 hour</option>
+          <option value="86400">Last 1 day</option>
+          <option value="604800">Last 1 wk</option>
+          <option value="2592000">Last 30 days</option>
+        </select>
+        <input id="time-gte" type="text" class="input-medium" placeholder="Earliest Event" /><input id="time-lte" type="text" class="input-medium" placeholder="Latest Event" />
       </div>
       <div class="form-row condition-pair">
         <input type="text" class="input-small" placeholder="Name">

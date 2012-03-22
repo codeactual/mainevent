@@ -7,14 +7,16 @@
 .timeline-update {
   font-weight: bold;
 }
-.modal-footer select + button,
-.condition-pair input + .btn-danger {
+.modal-footer select + button {
   margin-left: 8px;
 }
 .condition-pair select {
   width: 50px;
 }
 select#parser {
+  width: 120px;
+}
+select#time-preset {
   width: 120px;
 }
 .alert {
@@ -28,6 +30,8 @@ select#parser {
   text-align: center;
   margin-bottom: 1em;
 }
+.form-row input,
+.form-row select,
 .header-nav-group a,
 .pagination-group a {
   margin-right: 8px;

@@ -9,6 +9,8 @@
    * Displays the search box modal.
    */
   diana.views.TimelineSearch = Backbone.View.extend({
+    datetimePickerFormat: 'MM/DD/YYYY HH:mm:ss',
+
     initialize: function(options) {
       var view = this;
 
@@ -19,9 +21,13 @@
         }
       });
 
-      // Date/time inputs will activate widgets on focus.
-      $('#time-gte').datetimepicker({});
-      $('#time-lte').datetimepicker({});
+      $('#time-gte,#time-lte').each(function() {
+        var input = $(this);
+        // Invalidate the preset time range after a custom one is selected.
+        input.change(function() { $('#time-preset').val(''); });
+        // Activate date/time widgets when inputs gain focus.
+        input.datetimepicker({});
+      });
 
       // Each trash can button will remove the adjacent condition row,
       // or clear the last remaining row's values.
@@ -51,7 +57,7 @@
       _.each(basicArgNames, function(name) {
         if (view.options.searchArgs[name]) {
           if (('time-gte' == name || 'time-lte' == name)) {
-            view.options.searchArgs[name] = moment(view.options.searchArgs[name] * 1000).format('MM/DD/YYYY HH:mm:ss');
+            view.options.searchArgs[name] = moment(view.options.searchArgs[name] * 1000).format(view.datetimePickerFormat);
           }
           view.$('#' + name).val(view.options.searchArgs[name]);
           delete view.options.searchArgs[name];
@@ -78,7 +84,28 @@
     },
 
     events: {
-      'submit': 'submit'
+      'submit': 'submit',
+      'change #time-preset': 'applyPresetTime'
+    },
+
+    /**
+     * Submit search modal filters.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    submit: function(event) {
+      diana.helpers.Widget.closeModal(event);
+      this.navigate('timeline', this.getSearchArgs());
+    },
+
+    /**
+     * Update time range inputs with a preset relative range.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    applyPresetTime: function(event) {
+      $('#time-gte').val(moment().subtract('seconds', $('#time-preset').val()).format(this.datetimePickerFormat));
+      $('#time-lte').val(moment().format(this.datetimePickerFormat));
     },
 
     /**
@@ -123,16 +150,6 @@
       }
 
       return args;
-    },
-
-    /**
-     * Submit search modal filters.
-     *
-     * @param event {Object} jQuery event object.
-     */
-    submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
-      this.navigate('timeline', this.getSearchArgs());
-    },
+    }
   });
 })();
