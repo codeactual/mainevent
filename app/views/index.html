@@ -12,7 +12,10 @@
       }
     </style>
     <script>
-      var diana = {parsers: <%= parsers %>};
+      var diana = {
+        parsers: <%= parsers %>,
+        maxResultSize: <%= maxResultSize %>
+      };
     </script>
   </head>
   <body>

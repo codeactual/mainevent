@@ -125,6 +125,41 @@ exports.testGetTimelineNe = function(test) {
   );
 };
 
+exports.testPrevPageDetection = function(test) {
+  var source = {parser: 'json'};
+  var parser = parsers.createInstance('json');
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+
+  var lines = [];
+  _.each(logs, function(log) {
+    lines.push(JSON.stringify(log));
+  });
+
+  test.expect(4);
+  parser.parseAndInsert(source, lines, function() {
+
+    // Expect no next page.
+    var params = {run: run};
+    storage.getTimeline(params, function(err, docs, info) {
+      test.equal(docs.length, 3);
+      test.ok(false === info.prevPage);
+
+      // Expect a previous page.
+      params.skip = 1;
+      storage.getTimeline(params, function(err, docs, info) {
+        test.equal(docs.length, 2);
+        test.ok(info.prevPage);
+        test.done();
+      });
+    });
+  });
+};
+
 exports.testNextPageDetection = function(test) {
   var source = {parser: 'json'};
   var parser = parsers.createInstance('json');

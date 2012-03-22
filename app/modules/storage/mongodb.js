@@ -182,7 +182,10 @@ exports.getTimeline = function(params, callback) {
       options.limit += 1; // For next-page detection.
       collection.find(params, options).toArray(function(err, docs) {
         exports.dbClose();
-        var info = {nextPage: docs && (docs.length == options.limit)};
+        var info = {
+          prevPage: docs && options.skip > 0,
+          nextPage: docs && (docs.length == options.limit)
+        };
         if (docs) {
           if (info.nextPage) { // Discard next-page hint doc.
             docs.pop();

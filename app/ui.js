@@ -14,6 +14,7 @@
 var express = require('express');
 var app = express.createServer();
 require(__dirname + '/modules/diana.js');
+var config = diana.getConfig();
 var storage = diana.requireModule('storage/mongodb');
 var parsers = diana.requireModule('parsers/parsers');
 var io = require('socket.io').listen(app);
@@ -43,7 +44,9 @@ app.set('view options', {layout: false});
 // Serve the backbone.js MVC app.
 app.get('/', function(req, res) {
   res.render('index.html', {
-    parsers: JSON.stringify(parsers.getConfiguredParsers())
+    // Injected into global client-side 'diana' object.
+    parsers: JSON.stringify(parsers.getConfiguredParsers()),
+    maxResultSize: config.storage.maxResultSize
   });
 });
 
@@ -52,13 +55,13 @@ app.get('/timeline', function(req, res) {
     res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
   }
 
-  storage.getTimeline(req.query, function(err, docs) {
+  storage.getTimeline(req.query, function(err, docs, info) {
     if (err) {
       res.send({__error: err}, 500);
     } else if (docs.length) {
       // Augment each document object with preview text for the view table.
       diana.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
-        res.send(updated);
+        res.send({nextPage: info.nextPage, results: updated});
       });
     } else {
       res.send([]);

@@ -23,3 +23,10 @@ select#parser {
   font-size: 0.9em;
   color: #999999
 }
+.pagination-group {
+  text-align: center;
+  margin-bottom: 1em;
+}
+.pagination-group a {
+  margin-right: 8px;
+}

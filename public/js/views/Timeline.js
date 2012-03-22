@@ -178,13 +178,19 @@
 
       view.collection.fetch({
         success: function(collection, response) {
-          if (!response.length) {
+          if (!response.results.length) {
             dust.render('timeline_no_results', null, function(err, out) {
               view.$el.html(out);
             });
             return;
           }
-          callback.call(view, response);
+          if (response.nextPage) {
+            $('#timeline-next-page').show();
+          }
+          if (response.prevPage) {
+            $('#timeline-prev-page').show();
+          }
+          callback.call(view, response.results);
         },
 
         error: function(collection, response) {
