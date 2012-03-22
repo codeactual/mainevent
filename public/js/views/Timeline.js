@@ -184,11 +184,26 @@
             });
             return;
           }
-          if (response.nextPage) {
-            $('#timeline-next-page').show();
+
+          // Reveal and configure pagination links.
+          var searchArgs = _.clone(view.options.searchArgs);
+          var skip = parseInt(searchArgs.skip || '0', 10); // Use '0' to avoid NaN.
+          if (response.info.prevPage) {
+            searchArgs = _.clone(view.options.searchArgs);
+            searchArgs.skip = Math.max(0, parseInt(skip, 10) - diana.maxResultSize);
+            if (!searchArgs.skip) {
+              delete searchArgs.skip;
+            }
+            $('#timeline-prev-page')
+              .show()
+              .attr('href', view.buildUrl('timeline', searchArgs));
           }
-          if (response.prevPage) {
-            $('#timeline-prev-page').show();
+          if (response.info.nextPage) {
+            searchArgs = _.clone(view.options.searchArgs);
+            searchArgs.skip = parseInt(skip, 10) + diana.maxResultSize;
+            $('#timeline-next-page')
+              .show()
+              .attr('href', view.buildUrl('timeline', searchArgs));
           }
           callback.call(view, response.results);
         },

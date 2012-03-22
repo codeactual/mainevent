@@ -58,7 +58,6 @@
     if ('_id' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
       && !_.has(searchArgs, 'skip')) {
-        console.log('enabling');
       diana.features.timelineUpdate = true;
     }
 

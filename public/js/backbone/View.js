@@ -97,3 +97,32 @@ Backbone.View.prototype.enableKeyEvents = function() {
 Backbone.View.prototype.disableKeyEvents = function() {
   $(document).off('keyup', this.onKeyEvent);
 };
+
+/**
+ * Build a fragment URL.
+ *
+ * @param fragment {String} Ex. 'timeline', w/out trailing slash.
+ * @param args {Object}
+ * @return {String}
+ */
+Backbone.View.prototype.buildUrl = function (fragment, args) {
+  var pairs = [];
+  _.each(args, function(value, key) {
+    pairs.push(key + '=' + value);
+  });
+  pairs = pairs.join('&');
+  return '#' + fragment + (pairs ? '/' + pairs : '');
+};
+
+/**
+ * Build and navigate to a fragment URL.
+ *
+ * @param fragment {String} Ex. 'timeline', w/out trailing slash.
+ * @param args {Object}
+ * @param options {Object} Backbone.History.navigate() options.
+ */
+Backbone.View.prototype.navigate = function (fragment, args, options) {
+  options = options || {};
+  options.trigger = _.has(options, 'trigger') ? options.trigger : true;
+  Backbone.history.navigate(this.buildUrl(fragment, args), options);
+};

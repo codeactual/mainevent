@@ -114,7 +114,7 @@
      */
     submit: function(event) {
       diana.helpers.Widget.closeModal(event);
-      var urlArgs = [];
+      var args = {};
       _.each(this.getSearchArgs(), function(value, key) {
         if (!key.toString().length || !value.toString().length) {
           return;
@@ -122,10 +122,9 @@
         if (_.isNaN(value)) {
           return;
         }
-        urlArgs.push(key + '=' + value);
+        args[key] = value;
       });
-      urlArgs = urlArgs.join('&');
-      diana.navigate('timeline' + (urlArgs ? '/' + urlArgs : ''));
-    }
+      this.navigate('timeline', args);
+    },
   });
 })();

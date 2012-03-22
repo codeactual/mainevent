@@ -61,7 +61,7 @@ app.get('/timeline', function(req, res) {
     } else if (docs.length) {
       // Augment each document object with preview text for the view table.
       diana.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
-        res.send({nextPage: info.nextPage, results: updated});
+        res.send({info: info, results: updated});
       });
     } else {
       res.send([]);

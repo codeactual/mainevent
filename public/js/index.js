@@ -24,13 +24,6 @@ $(function() {
   // Used to close() the preexisting view during a route change.
   diana.mainView = null;
 
-  // Auto-triggering fragment navigation.
-  diana.navigate = function(fragment, options) {
-    options = options || {};
-    options.trigger = true;
-    Backbone.history.navigate(fragment, options);
-  };
-
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
