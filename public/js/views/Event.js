@@ -11,6 +11,12 @@
     searchView: null,
 
     initialize: function(options) {
+      this.initKeyEvents({
+        83: function(event) { // S
+          this.findSimilar(event);
+        }
+      });
+
       this.model = new diana.models.Event({id: options.id});
       this.model.bind('change', this.render, this);
 
@@ -36,7 +42,7 @@
      * @param event {Object} jQuery event object.
      */
     findSimilar: function(event) {
-      diana.helpers.Widget.closeDropdown(event);
+      event.preventDefault();
 
       var modal = $('#timeline-search-modal');
 
