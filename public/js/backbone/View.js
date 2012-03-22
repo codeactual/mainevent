@@ -10,10 +10,9 @@ Backbone.View.prototype.prefsNs = '';
  * @param defaults {Object} Default map.
  */
 Backbone.View.prototype.initPrefs = function(ns, defaults) {
-  var saved = diana.helpers.Prefs.get(ns);
+  var saved = diana.helpers.Prefs.get(ns + 'View');
   this.prefs = _.extend(defaults, saved);
   this.prefsNs = ns;
-  console.log('initPrefs', ns, this.prefs);
 };
 
 /**
@@ -25,7 +24,6 @@ Backbone.View.prototype.initPrefs = function(ns, defaults) {
  */
 Backbone.View.prototype.getPref = function(key) {
   if (!this.prefsNs) { throw new Error('Preferences namespace missing.'); }
-  console.log('getPref', key, this.prefs[key]);
   return _.has(this.prefs, key) ? this.prefs[key] : null;
 };
 
@@ -42,8 +40,7 @@ Backbone.View.prototype.getPref = function(key) {
 Backbone.View.prototype.setPref = function(key, value) {
   if (!this.prefsNs) { throw new Error('Preferences namespace missing.'); }
   this.prefs[key] = value;
-  diana.helpers.Prefs.set(this.prefsNs, this.prefs);
-  console.log('setPref', key, value);
+  diana.helpers.Prefs.set(this.prefsNs + 'View', this.prefs);
   return value;
 };
 

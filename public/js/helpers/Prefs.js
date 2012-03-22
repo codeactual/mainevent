@@ -13,7 +13,8 @@
       diana.cache.syncSet({ns: diana.helpers.Prefs.ns, data: data});
     },
     get: function(key) {
-      return diana.cache.syncGet({ns: diana.helpers.Prefs.ns, keys: key});
+      var data = diana.cache.syncGet({ns: diana.helpers.Prefs.ns, keys: key});
+      return _.has(data, key) ? data[key] : null;
     }
   };
 })();

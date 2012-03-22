@@ -16,19 +16,16 @@
     // socket.io connection.
     socket: null,
 
-    // Modal sub-view.
+    // Modal sub-views.
     searchView: null,
-
-    // Default preferences.
-    prefs: {
-      autoUpdate: true
-    },
 
     initialize: function(options) {
       var view = this;
 
-      var savedPrefs = diana.helpers.Prefs.get('TimelineSearch');
-      this.prefs = _.isEmpty(savedPrefs) ? this.prefs : savedPrefs;
+      this.initPrefs('Timeline', {
+        autoUpdate: true,
+        rowLimit: 100
+      });
 
       $.when(
         diana.helpers.View.deferRender(
@@ -39,20 +36,18 @@
           }
         )
       ).done(function() {
-        $('#timeline-toggle-updates').text(
-          (view.prefs.autoUpdate ? 'Disable' : 'Enable') + ' Updates'
-        );
+        view.renderUpdateSensitive();
         view.fetchTimeline.call(view, view.renderTimeline);
       });
 
-      if (!this.searchView) {
-        $(document).on('keyup', {view: this}, view.onKey);
-      }
+      $(document).on('keyup', {view: this}, view.onKey);
     },
 
     onKey: function(event) {
       switch (event.which) {
-        case 83: event.data.view.openSearch(event); break; // 's'
+        case 16: if (event.shiftKey) { event.data.view.toggleUpdates(event); } break; // shift + u
+        case 76: event.data.view.editRowLimit(event); break; // l
+        case 83: event.data.view.openSearch(event); break; // s
       }
     },
 
@@ -63,7 +58,8 @@
 
     events: {
       'click #timeline-open-search': 'openSearch',
-      'click #timeline-toggle-updates': 'toggleUpdates'
+      'click #timeline-toggle-updates': 'toggleUpdates',
+      'click #timeline-edit-rowlimit': 'editRowLimit'
     },
 
     /**
@@ -97,14 +93,41 @@
      */
     toggleUpdates: function(event) {
       diana.helpers.Widget.closeDropdown(event);
-      this.prefs.autoUpdate = !this.prefs.autoUpdate;
-      diana.helpers.Prefs.set('TimelineSearch', this.prefs);
+      this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
         this.startTimelineUpdate(this.newestEventId);
       } else {
         this.closeSocket();
       }
+
+      diana.helpers.Widget.alert(
+        'Updates ' + (this.prefs.autoUpdate ? 'Enabled' : 'Disabled'),
+        'info',
+        3
+      );
+
+      this.renderUpdateSensitive();
+    },
+
+    /**
+     * Open row-limit edit modal.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    editRowLimit: function(event) {
+      var view = this;
+      diana.helpers.Widget.closeDropdown(event);
+
+      this.rowLimitView = new diana.views.EditSingleValue({
+        default: this.prefs.rowLimit,
+        help: 'Event count. Only enforced when updates are enabled.',
+        placeholder: "20-100",
+        title: 'Limit Size',
+        onEdit: function(value) {
+          view.setPref('rowLimit', value);
+        }
+      });
     },
 
     /**
@@ -221,6 +244,21 @@
           $(tr).append(out);
         }
       );
+    },
+
+    /**
+     * Modify text on update toggling link in drop-down.
+     */
+    renderUpdateSensitive: function() {
+      $('#timeline-toggle-updates').text(
+        (this.prefs.autoUpdate ? 'Disable' : 'Enable') + ' Updates'
+      );
+
+      if (this.prefs.autoUpdate) {
+        $('#timeline-edit-rowlimit').parent().show();
+      } else {
+        $('#timeline-edit-rowlimit').parent().hide();
+      }
     },
 
     /**
