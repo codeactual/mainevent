@@ -180,7 +180,7 @@
           // Reveal and configure pagination links.
           var searchArgs = _.clone(view.options.searchArgs);
           var skip = parseInt(searchArgs.skip || '0', 10); // Use '0' to avoid NaN.
-          var limit = searchArgs.limit || '0', 10); // Use '0' to avoid NaN.
+          var limit = parseInt(searchArgs.limit || '0', 10); // Use '0' to avoid NaN.
           var pageSize = limit ? Math.min(limit, diana.maxResultSize) : diana.maxResultSize;
           if (response.info.prevPage) {
             searchArgs = _.clone(view.options.searchArgs);
