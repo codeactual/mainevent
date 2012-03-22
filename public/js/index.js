@@ -39,16 +39,16 @@ $(function() {
         '': {
           handler: diana.controllers.ViewIndex,
           context: {sidebar: false, tab: 'nav-home'}
-       },
+        },
         'timeline': {
           handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
-       },
+        },
         'timeline/:options': {
           handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
-       },
-        'event/:id': {
+        },
+        '^event\/([a-f0-9]+)(?:\/(.*))?$': {
           handler: diana.controllers.ViewEvent,
           context: {sidebar: false, tab: 'nav-timeline'}
         }
@@ -56,7 +56,8 @@ $(function() {
 
       var router = this;
       _.each(routes, function(config, route) {
-        // Register route.
+        // Accept both standard routing string and RegExp() string.
+        route = route.match(/\^/) ? new RegExp(route) : route;
         router.route(route, config.handler, function() {
           var routeArgs = arguments;
           // Apply 'context' options to the 'content' template, ex. show sidebar.

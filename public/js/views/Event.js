@@ -78,6 +78,8 @@
         return {name: value};
       });
 
+      context.intReferer = this.options.intReferer;
+
       var view = this;
       dust.render(
         // ex. 'event_nginx_access'

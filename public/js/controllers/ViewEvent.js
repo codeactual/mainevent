@@ -11,7 +11,11 @@
    * @param id {String} Event ID.
    * @return {Object} View object.
    */
-  diana.controllers.ViewEvent = function(id) {
-   return new diana.views.Event({id: id, el: $('#backbone-view')});
+  diana.controllers.ViewEvent = function(id, intReferer) {
+    return new diana.views.Event({
+      id: id,
+      el: $('#backbone-view'),
+      intReferer: intReferer
+    });
   };
 })();

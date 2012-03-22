@@ -279,6 +279,7 @@
      */
     renderEvent: function(event, tr) {
       event.relTime = moment(event.time * 1000).fromNow();
+      event.intReferer = this.buildUrl('timeline', this.options.searchArgs);
 
       return diana.helpers.View.deferRender(
         'timeline_table_row',

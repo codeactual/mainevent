@@ -30,3 +30,6 @@ select#parser {
 .pagination-group a {
   margin-right: 8px;
 }
+.internal-referer {
+  margin-bottom: 1em;
+}

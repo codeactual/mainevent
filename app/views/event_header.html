@@ -1,8 +1,13 @@
+{#intReferer}
+<div class="internal-referer">
+  <a href="{intReferer}" class="btn"><i class="icon-arrow-left icon-black" /> Back</a>
+</div>
+{/intReferer}
 <div class="taglist">
-<span class="label label-info">{parser}</span>
-{#tags}
- <span class="label label-info">{name}</span>
-{/tags}
+  <span class="label label-info">{parser}</span>
+  {#tags}
+  <span class="label label-info">{name}</span>
+  {/tags}
 </div>
 <h2>{time} ({timeFromNow})</h2>
 {#__parse_error}
