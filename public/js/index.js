@@ -37,8 +37,10 @@ $(function() {
         */
       var routes = {
         '': {
-          handler: diana.controllers.ViewIndex,
-          context: {sidebar: false, tab: 'nav-home'}
+          // handler: diana.controllers.ViewIndex,
+          // context: {sidebar: false, tab: 'nav-home'}
+          handler: diana.controllers.ViewTimeline,
+          context: {sidebar: false, tab: 'nav-timeline'}
         },
         'timeline': {
           handler: diana.controllers.ViewTimeline,
