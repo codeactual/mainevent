@@ -195,14 +195,14 @@
               delete searchArgs.skip;
             }
             $('#timeline-prev-page')
-              .show()
+              .removeClass('disabled')
               .attr('href', view.buildUrl('timeline', searchArgs));
           }
           if (response.info.nextPage) {
             searchArgs = _.clone(view.options.searchArgs);
             searchArgs.skip = parseInt(skip, 10) + diana.maxResultSize;
             $('#timeline-next-page')
-              .show()
+              .removeClass('disabled')
               .attr('href', view.buildUrl('timeline', searchArgs));
           }
           callback.call(view, response.results);
