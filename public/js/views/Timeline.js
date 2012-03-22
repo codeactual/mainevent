@@ -53,14 +53,6 @@
         view.renderUpdateSensitive();
         view.fetchTimeline.call(view, view.renderTimeline);
       });
-
-      // Suspend key event handling when sub-view modals are open.
-      diana.helpers.Event.on('ModalOpen', function() {
-        view.disableKeyEvents();
-      });
-      diana.helpers.Event.on('ModalClose', function() {
-        view.enableKeyEvents();
-      });
     },
 
     events: {

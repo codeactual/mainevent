@@ -72,7 +72,7 @@ Backbone.View.prototype.keyEventConfig = {};
 /**
  * 'keyup' handler customized by each view's keyEventConfig map.
  */
-Backbone.View.prototype.onKeyEvent = function() {};
+Backbone.View.prototype.onKeyEvent = null;
 
 /**
  * Optionally call from initialize() to configure and start key event handling.
@@ -82,20 +82,34 @@ Backbone.View.prototype.onKeyEvent = function() {};
 Backbone.View.prototype.initKeyEvents = function(config) {
   var view = this;
   this.keyEventConfig = _.clone(config);
+
   this.onKeyEvent = function(event) {
     if (_.has(view.keyEventConfig, event.which)) {
       view.keyEventConfig[event.which].call(view, event);
     }
   };
+
   this.enableKeyEvents();
+
+  // Suspend key event handling when sub-view modals are open.
+  diana.helpers.Event.on('ModalOpen', function() {
+    view.disableKeyEvents();
+  });
+  diana.helpers.Event.on('ModalClose', function() {
+    view.enableKeyEvents();
+  });
 };
 
 Backbone.View.prototype.enableKeyEvents = function() {
-  $(document).on('keyup', this.onKeyEvent);
+  if (this.onKeyEvent) {
+    $(document).on('keyup', this.onKeyEvent);
+  }
 };
 
 Backbone.View.prototype.disableKeyEvents = function() {
-  $(document).off('keyup', this.onKeyEvent);
+  if (this.onKeyEvent) {
+    $(document).off('keyup', this.onKeyEvent);
+  }
 };
 
 /**
