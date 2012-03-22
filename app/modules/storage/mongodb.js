@@ -174,7 +174,9 @@ exports.getTimeline = function(params, callback) {
           if ('time' == matches[1]) {
             value = new mongodb.Timestamp(null, value);
           }
-          params[matches[1]] = {};
+          if (!params[matches[1]]) {
+            params[matches[1]] = {};
+          }
           params[matches[1]]['$' + matches[2]] = value;
           delete params[key];
         }

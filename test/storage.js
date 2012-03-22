@@ -125,6 +125,27 @@ exports.testGetTimelineNe = function(test) {
   );
 };
 
+exports.testGetTimelineWithTwoTimeConditions = function(test) {
+  var run = testutil.getRandHash();  // Only for verification lookup.
+  var logs =[
+    {time: "3/12/2012 09:00:00", run: run},
+    {time: "3/12/2012 10:00:00", run: run},
+    {time: "3/12/2012 11:00:00", run: run}
+  ];
+  verifyTimelineResults(
+    test,
+    logs,
+    {
+      run: run,
+      'time-gt': diana.shared.Date.strtotime('3/12/2012 09:00:00'),
+      'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')
+    },
+    [
+      diana.shared.Date.strtotime(logs[2].time)
+    ]
+  );
+};
+
 exports.testPrevPageDetection = function(test) {
   var source = {parser: 'json'};
   var parser = parsers.createInstance('json');
