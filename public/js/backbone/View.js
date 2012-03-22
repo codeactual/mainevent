@@ -56,3 +56,44 @@ Backbone.View.prototype.close = function() {
     this.onClose();
   }
 };
+
+/**
+ * Key codes mapped to event handler.
+ *
+ * Example:
+ * {
+ *   16: function(event) { ... },
+ *   83: function(event) { ... },
+ *   ...
+ * }
+ */
+Backbone.View.prototype.keyEventConfig = {};
+
+/**
+ * 'keyup' handler customized by each view's keyEventConfig map.
+ */
+Backbone.View.prototype.onKeyEvent = function() {};
+
+/**
+ * Optionally call from initialize() to configure and start key event handling.
+ *
+ * @param config {Object} View's new keyEventConfig value.
+ */
+Backbone.View.prototype.initKeyEvents = function(config) {
+  var view = this;
+  this.keyEventConfig = _.clone(config);
+  this.onKeyEvent = function(event) {
+    if (_.has(view.keyEventConfig, event.which)) {
+      view.keyEventConfig[event.which].call(view, event);
+    }
+  };
+  this.enableKeyEvents();
+};
+
+Backbone.View.prototype.enableKeyEvents = function() {
+  $(document).on('keyup', this.onKeyEvent);
+};
+
+Backbone.View.prototype.disableKeyEvents = function() {
+  $(document).off('keyup', this.onKeyEvent);
+};

@@ -53,6 +53,7 @@
     closeModal: function(event) {
       event.preventDefault();
       $('.modal').modal('hide');
+      diana.helpers.Event.trigger('ModalClose');
     }
   };
 })();

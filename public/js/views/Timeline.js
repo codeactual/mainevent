@@ -27,6 +27,20 @@
         rowLimit: 100
       });
 
+      this.initKeyEvents({
+        16: function (event) { // SHIFT + U
+          if (event.shiftKey) {
+            this.toggleUpdates(event);
+          }
+        },
+        76: function(event) { // L
+          this.editRowLimit(event);
+        },
+        83: function(event) { // S
+          this.openSearch(event);
+        }
+      });
+
       $.when(
         diana.helpers.View.deferRender(
           'timeline_table',
@@ -40,26 +54,24 @@
         view.fetchTimeline.call(view, view.renderTimeline);
       });
 
-      $(document).on('keyup', {view: this}, view.onKey);
-    },
-
-    onKey: function(event) {
-      switch (event.which) {
-        case 16: if (event.shiftKey) { event.data.view.toggleUpdates(event); } break; // shift + u
-        case 76: event.data.view.editRowLimit(event); break; // l
-        case 83: event.data.view.openSearch(event); break; // s
-      }
-    },
-
-    onClose: function() {
-      $(document).off('keyup', this.onKey);
-      this.closeSocket();
+      // Suspend key event handling when sub-view modals are open.
+      diana.helpers.Event.on('ModalOpen', function() {
+        view.disableKeyEvents();
+      });
+      diana.helpers.Event.on('ModalClose', function() {
+        view.enableKeyEvents();
+      });
     },
 
     events: {
       'click #timeline-open-search': 'openSearch',
       'click #timeline-toggle-updates': 'toggleUpdates',
       'click #timeline-edit-rowlimit': 'editRowLimit'
+    },
+
+    onClose: function() {
+      $(document).off('keyup', this.onKey);
+      this.closeSocket();
     },
 
     /**
