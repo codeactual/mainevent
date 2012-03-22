@@ -13,12 +13,26 @@
       var view = this;
 
       // Auto-expand the 'x = y' <input> rows.
-      $(this.el).delegate('.condition-pair:last-child', 'focus', function() {
-        view.addConditionRow();
+      $(this.el).delegate('.condition-pair:last-child', 'focus', function(event) {
+        if (!$(event.target).hasClass('btn-danger')) {
+          view.addConditionRow();
+        }
       });
 
+      // Date/time inputs will activate widgets on focus.
       $('#time-gte').datetimepicker({});
       $('#time-lte').datetimepicker({});
+
+      // Each trash can button will remove the adjacent condition row,
+      // or clear the last remaining row's values.
+      $(this.el).delegate('.btn-danger', 'click', function(event) {
+        event.preventDefault();
+        if (view.$('.condition-pair').length > 1) {
+          view.$(this).parent().remove();
+        } else {
+          view.$(this).parent().find('input,select').val('');
+        }
+      });
 
       this.render();
     },
