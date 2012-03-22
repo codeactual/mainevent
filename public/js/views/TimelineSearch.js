@@ -48,6 +48,10 @@
       var condCount = 0;
       var condPairModel = this.$('.condition-pair');
       _.each(this.options.searchArgs, function(value, key) {
+        if ('skip' == key || 'limit' == key) {
+          return;
+        }
+
         // Reuse markup for the 1st pair.
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;
         $('input:nth-child(1)', condPair).val(key);
