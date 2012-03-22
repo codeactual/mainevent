@@ -125,9 +125,19 @@
         placeholder: "20-100",
         title: 'Limit Size',
         onEdit: function(value) {
-          view.setPref('rowLimit', value);
+          view.setPref('rowLimit', parseInt(value, 10));
+          view.truncateRows();
         }
       });
+    },
+
+    /**
+     * Truncate table rows based on preferred limit.
+     */
+    truncateRows: function() {
+      if (this.prefs.autoUpdate) {
+        this.$('tr').slice(1 + this.prefs.rowLimit).remove();
+      }
     },
 
     /**
@@ -317,6 +327,8 @@
       });
 
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
+
+      this.truncateRows();
     }
   });
 })();
