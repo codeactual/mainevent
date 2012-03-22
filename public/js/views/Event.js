@@ -55,7 +55,7 @@
       } else {
         var searchArgs = this.model.toJSON();
         _.each(searchArgs, function(value, key) {
-          if ('_' == key[0] || '' == value || key.match(/(previewAttr|time|id)/)) {
+          if ('_' == key[0] || '' == value || key.match(/^(previewAttr|time|id)$/)) {
             delete searchArgs[key];
           }
         });
