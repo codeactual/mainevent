@@ -17,11 +17,16 @@
      *
      * @param message {String}
      * @param level {String} 'error', 'success' or 'info'
+     * @param ttl {Number} (Optional) Number of seconds before removal.
      */
-    alert: function(message, level) {
+    alert: function(message, level, ttl) {
       var element = $('<div class="alert alert-' + level + '" />');
       element.append('<a class="close" data-dismiss="alert">&times;</a>');
       element.append('[' + moment().format(config.alert.format) + '] ' + message);
+      element.on('click', function() { $(this).remove(); });
+      if (ttl) {
+        setTimeout(function() { element.remove(); ttl = null; }, ttl * 1000);
+      }
       $('#alert').prepend(element);
       $('#alert div:nth-child(' + (config.alert.max + 1) + ')').remove();
     },

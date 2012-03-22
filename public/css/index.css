@@ -16,3 +16,6 @@
 select#parser {
   width: 120px;
 }
+.alert {
+  cursor: pointer;
+}
