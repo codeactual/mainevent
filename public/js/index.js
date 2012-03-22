@@ -32,19 +32,6 @@ $(function() {
   };
 
   /**
-   * Add default shutdown/GC to all views.
-   *
-   * @author Derick Bailey http://goo.gl/JD3DQ
-   */
-  Backbone.View.prototype.close = function() {
-    this.remove();
-    this.unbind();
-    if (this.onClose){
-      this.onClose();
-    }
-  };
-
-  /**
    * Custom routing used to allow 'context' attributes to support behaviors
    * like sidebar toggling per URL pattern.
    */
