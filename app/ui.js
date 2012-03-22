@@ -55,6 +55,10 @@ app.get('/timeline', function(req, res) {
     res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
   }
 
+  _.each(req.query, function(value, key) {
+    req.query[key] = decodeURIComponent(value);
+  });
+
   storage.getTimeline(req.query, function(err, docs, info) {
     if (err) {
       res.send({__error: err}, 500);

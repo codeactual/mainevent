@@ -22,16 +22,16 @@ NginxAccessParser.prototype.parse = function(log) {
 NginxAccessParser.prototype.addPreviewContext = function(log) {
   if (log.code) {
     switch (log.code[0]) {
-      case '2': log.codeClass = 'success'; break;
-      case '3': log.codeClass = 'info'; break;
-      case '4': log.codeClass = 'important'; break;
-      case '5': log.codeClass = 'important'; break;
+      case '2': log.__codeClass = 'success'; break;
+      case '3': log.__codeClass = 'info'; break;
+      case '4': log.__codeClass = 'important'; break;
+      case '5': log.__codeClass = 'important'; break;
     }
   }
 
   if (log.referer) {
     log.referer = '-' == log.referer ? '' : log.referer;
-    log.referer_min = log.referer.replace(/^http(s)?:\/\//, '');
+    log.__refererMin = log.referer.replace(/^http(s)?:\/\//, '');
   }
   return log;
 };

@@ -1,8 +1,9 @@
+<div class="header-nav-group">
 {#intReferer}
-<div class="internal-referer">
-  <a href="{intReferer}" class="btn"><i class="icon-arrow-left icon-black" /> Back</a>
-</div>
+  <a href="{intReferer}" class="btn"><i class="icon-arrow-left" /> Back</a>
 {/intReferer}
+<a id="event-find-similar" href="#" class="btn"><i class="icon-search" /> Find Similar</a>
+</div>
 <div class="taglist">
   <span class="label label-info">{parser}</span>
   {#tags}
@@ -15,3 +16,4 @@
   This log's {__parse_error} could not be parsed. All recoverable data is shown below.
 </div>
 {/__parse_error}
+{>timeline_search_modal/}

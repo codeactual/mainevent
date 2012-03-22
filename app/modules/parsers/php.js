@@ -28,8 +28,8 @@ PhpParser.prototype.parse = function(log) {
 PhpParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
-      case 'Warning': log.levelClass = 'warning'; break;
-      default: log.levelClass = 'important'; break;
+      case 'Warning': log.__levelClass = 'warning'; break;
+      default: log.__levelClass = 'important'; break;
     }
   }
   return log;

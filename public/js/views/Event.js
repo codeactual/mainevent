@@ -7,6 +7,9 @@
 
   // View of an individual event.
   diana.views.Event = Backbone.View.extend({
+    // Modal sub-views.
+    searchView: null,
+
     initialize: function(options) {
       this.model = new diana.models.Event({id: options.id});
       this.model.bind('change', this.render, this);
@@ -19,8 +22,42 @@
       this.model.fetch();
     },
 
-    close: function() {
+    events: {
+      'click #event-find-similar': 'findSimilar'
+    },
+
+    onClose: function() {
       this.model.unbind('change', this.render);
+    },
+
+    /**
+     * Open search modal seeded with this event's properties.
+     *
+     * @param event {Object} jQuery event object.
+     */
+    findSimilar: function(event) {
+      diana.helpers.Widget.closeDropdown(event);
+
+      var modal = $('#timeline-search-modal');
+
+      if (modal.is(':visible')) {
+        return;
+      }
+
+      if (this.searchView) {
+        modal.modal('show');
+      } else {
+        var searchArgs = this.model.toJSON();
+        _.each(searchArgs, function(value, key) {
+          if ('_' == key[0] || '' == value || key.match(/(previewAttr|time|id)/)) {
+            delete searchArgs[key];
+          }
+        });
+        this.searchView = new diana.views.TimelineSearch({
+          el: modal,
+          searchArgs: searchArgs
+        });
+      }
     },
 
     render: function() {

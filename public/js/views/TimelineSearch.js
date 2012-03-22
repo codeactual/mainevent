@@ -114,17 +114,7 @@
      */
     submit: function(event) {
       diana.helpers.Widget.closeModal(event);
-      var args = {};
-      _.each(this.getSearchArgs(), function(value, key) {
-        if (!key.toString().length || !value.toString().length) {
-          return;
-        }
-        if (_.isNaN(value)) {
-          return;
-        }
-        args[key] = value;
-      });
-      this.navigate('timeline', args);
+      this.navigate('timeline', this.getSearchArgs());
     },
   });
 })();

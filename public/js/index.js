@@ -44,7 +44,7 @@ $(function() {
           handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
         },
-        'timeline/:options': {
+        '^timeline/(.*)$': {
           handler: diana.controllers.ViewTimeline,
           context: {sidebar: false, tab: 'nav-timeline'}
         },

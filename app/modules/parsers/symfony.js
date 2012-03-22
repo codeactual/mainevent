@@ -28,10 +28,10 @@ SymfonyParser.prototype.parse = function(log) {
 SymfonyParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
-      case 'DEBUG': log.levelClass = 'default'; break;
-      case 'INFO': log.levelClass = 'info'; break;
-      case 'WARNING': log.levelClass = 'warning'; break;
-      default: log.levelClass = 'important'; break;
+      case 'DEBUG': log.__levelClass = 'default'; break;
+      case 'INFO': log.__levelClass = 'info'; break;
+      case 'WARNING': log.__levelClass = 'warning'; break;
+      default: log.__levelClass = 'important'; break;
     }
   }
   return log;

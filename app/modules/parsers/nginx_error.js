@@ -36,10 +36,10 @@ NginxErrorParser.prototype.parse = function(log) {
 NginxErrorParser.prototype.addPreviewContext = function(log) {
   if (log.level) {
     switch (log.level) {
-      case 'debug': log.levelClass = 'info'; break;
-      case 'info': log.levelClass = 'info'; break;
-      case 'warn': log.levelClass = 'warning'; break;
-      default: log.levelClass = 'important'; break;
+      case 'debug': log.__levelClass = 'info'; break;
+      case 'info': log.__levelClass = 'info'; break;
+      case 'warn': log.__levelClass = 'warning'; break;
+      default: log.__levelClass = 'important'; break;
     }
   }
   return log;

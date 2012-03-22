@@ -108,6 +108,9 @@ Backbone.View.prototype.disableKeyEvents = function() {
 Backbone.View.prototype.buildUrl = function (fragment, args) {
   var pairs = [];
   _.each(args, function(value, key) {
+    if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
+      return;
+    }
     pairs.push(key + '=' + value);
   });
   pairs = pairs.join('&');
