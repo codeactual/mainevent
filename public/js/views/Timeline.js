@@ -188,20 +188,21 @@
           // Reveal and configure pagination links.
           var searchArgs = _.clone(view.options.searchArgs);
           var skip = parseInt(searchArgs.skip || '0', 10); // Use '0' to avoid NaN.
+          var pageSize = Math.min(searchArgs.limit, diana.maxResultSize);
           if (response.info.prevPage) {
             searchArgs = _.clone(view.options.searchArgs);
-            searchArgs.skip = Math.max(0, parseInt(skip, 10) - diana.maxResultSize);
+            searchArgs.skip = Math.max(0, parseInt(skip, 10) - pageSize);
             if (!searchArgs.skip) {
               delete searchArgs.skip;
             }
-            $('#timeline-prev-page')
+            $('.prev-page')
               .removeClass('disabled')
               .attr('href', view.buildUrl('timeline', searchArgs));
           }
           if (response.info.nextPage) {
             searchArgs = _.clone(view.options.searchArgs);
-            searchArgs.skip = parseInt(skip, 10) + diana.maxResultSize;
-            $('#timeline-next-page')
+            searchArgs.skip = parseInt(skip, 10) + pageSize;
+            $('.next-page')
               .removeClass('disabled')
               .attr('href', view.buildUrl('timeline', searchArgs));
           }
