@@ -52,6 +52,7 @@ Backbone.View.prototype.setPref = function(key, value) {
 Backbone.View.prototype.close = function() {
   this.remove();
   this.unbind();
+  this.disableKeyEvents();
   if (this.onClose){
     this.onClose();
   }
