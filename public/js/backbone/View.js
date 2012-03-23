@@ -78,7 +78,7 @@ Backbone.View.prototype.close = function() {
 Backbone.View.prototype.keyEventConfig = {};
 
 /**
- * 'keyup' handler customized by each view's keyEventConfig map.
+ * 'keypress' handler customized by each view's keyEventConfig map.
  */
 Backbone.View.prototype.onKeyEvent = null;
 
@@ -92,37 +92,26 @@ Backbone.View.prototype.onKeyboardShortcutsClick = null;
  * Optionally call from initialize() to configure and start key event handling.
  *
  * @param config {Object} View's new keyEventConfig value.
+ * Example:
+ * {
+ *   'Search Messages': {
+ *     keyChar: 's',
+ *     callback: searchMessages
+ *   },
+ *   'Open Message': {
+ *     keyChar: 'o',
+ *     shiftKey: true,
+ *     callback: openMessage
+ *   },
+ *   ...
+ * }
+ * - Other accepted handler properties:
+ *   keyCode {Number}
+ *   ctrlKey {Boolean}
  */
 Backbone.View.prototype.initKeyEvents = function(config) {
   var view = this;
   this.keyEventConfig = {};
-
-  // Group handlers by key code.
-  _.each(config, function(handler) {
-    var keyCode = handler.keyCode || parseInt(handler.keyChar.toUpperCase().charCodeAt(0), 10);
-    if (!_.has(view.keyEventConfig, keyCode)) {
-      view.keyEventConfig[keyCode] = [];
-    }
-    delete handler.keyCode;
-    delete handler.keyChar;
-    view.keyEventConfig[keyCode].push(handler);
-  });
-
-  // Trigger all handlers in the matching key code group.
-  this.onKeyEvent = function(event) {
-    if (!view.keyEventConfig[event.keyCode]) {
-      return;
-    }
-    _.each(view.keyEventConfig[event.keyCode], function(handler) {
-      if (handler.shiftKey && !event.shiftKey) { return; }
-      if (handler.ctrlKey && !event.ctrlKey) { return; }
-      if (handler.metaKey && !event.metaKey) { return; }
-      if (handler.altKey && !event.altKey) { return; }
-      handler.callback.call(view, event);
-    });
-  };
-
-  this.enableKeyEvents();
 
   // Suspend key event handling when sub-view modals are open.
   diana.helpers.Event.on('ModalOpen', view.disableKeyEvents);
@@ -133,17 +122,59 @@ Backbone.View.prototype.initKeyEvents = function(config) {
     new diana.views.KeyboardShortcuts({keyEventConfig: view.keyEventConfig});
   };
   diana.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+
+  // Override '?'
+  config['Display this menu'] = {
+    keyCode: 63,
+    shiftKey: true,
+    callback: this.onKeyboardShortcutsClick
+  };
+
+  // Group handlers by key code.
+  _.each(config, function(handler, description) {
+    if (handler.keyChar && handler.keyChar.match(/[A-Z]/)) {
+      handler.shiftKey = true;
+    }
+
+    var keyCode = handler.keyCode || handler.keyChar.charCodeAt(0);
+
+    // Initialize group.
+    if (!_.has(view.keyEventConfig, keyCode)) {
+      view.keyEventConfig[keyCode] = [];
+    }
+
+    delete handler.keyCode;
+    handler.keyChar = handler.keyChar || String.fromCharCode(keyCode);
+    handler.description = description;
+
+    view.keyEventConfig[keyCode].push(handler);
+  });
+
+  // Trigger all handlers in the matching key code group.
+  this.onKeyEvent = function(event) {
+    if (!view.keyEventConfig[event.which]) {
+      return;
+    }
+    _.each(view.keyEventConfig[event.which], function(handler) {
+      if (handler.shiftKey && !event.shiftKey) { return; }
+      if (handler.ctrlKey && !event.ctrlKey) { return; }
+      handler.callback.call(view, event);
+    });
+  };
+
+  this.enableKeyEvents();
+
 };
 
 Backbone.View.prototype.enableKeyEvents = function() {
   if (this.onKeyEvent) {
-    $(document).on('keyup', this.onKeyEvent);
+    $(document).on('keypress', this.onKeyEvent);
   }
 };
 
 Backbone.View.prototype.disableKeyEvents = function() {
   if (this.onKeyEvent) {
-    $(document).off('keyup', this.onKeyEvent);
+    $(document).off('keypress', this.onKeyEvent);
   }
 };
 

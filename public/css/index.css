@@ -43,3 +43,8 @@ select#time-preset {
   margin-top: 9px; /* Align with drop-down text */
   text-align: right;
 }
+#keyboard-shortcuts-modal .keyChar {
+  font-weight: bold;
+  text-align: right;
+  padding-right: 8px;
+}

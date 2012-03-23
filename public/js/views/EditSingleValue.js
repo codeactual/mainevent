@@ -10,11 +10,11 @@
    */
   diana.views.EditSingleValue = Backbone.View.extend({
     initialize: function(options) {
+      this.setElement('#edit-singlevalue-modal');
       this.render();
     },
 
     render: function() {
-      this.setElement('#edit-singlevalue-modal');
       this.$el.modal('show');
       this.$('#modal-title').text(this.options.title);
       this.$('.help-block').text(this.options.help);
