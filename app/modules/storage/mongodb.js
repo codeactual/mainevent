@@ -34,7 +34,7 @@ var unpackTime = function(docs) {
  *
  * @param callback {Function} Fired after connection attempted.
  */
-var dbConnectAndOpen = function(error, success) {
+exports.dbConnectAndOpen = function(error, success) {
   if (link) {
     success(null, link);
   } else {
@@ -62,7 +62,7 @@ var dbConnectAndOpen = function(error, success) {
  * @param error {Function} Fired on failed opening.
  * @param error {Function} Fired on successful opening.
  */
-var dbCollection = function(db, collection, error, success) {
+exports.dbCollection = function(db, collection, error, success) {
   db.collection(collection, function(err, collection) {
     if (err) {
       exports.dbClose();
@@ -92,8 +92,8 @@ exports.dbClose = function() {
  * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
 exports.insertLog = function(source, log, callback, bulk) {
-  dbConnectAndOpen(callback, function(err, db) {
-    dbCollection(db, collection, callback, function(err, collection) {
+  exports.dbConnectAndOpen(callback, function(err, db) {
+    exports.dbCollection(db, collection, callback, function(err, collection) {
       log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
@@ -116,8 +116,8 @@ exports.insertLog = function(source, log, callback, bulk) {
  * @param callback {Function} Receives findOne() results.
  */
 exports.getLog = function(id, callback) {
-  dbConnectAndOpen(callback, function(err, db) {
-    dbCollection(db, collection, callback, function(err, collection) {
+  exports.dbConnectAndOpen(callback, function(err, db) {
+    exports.dbCollection(db, collection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         exports.dbClose();
         if (doc) {
@@ -145,8 +145,8 @@ exports.getLog = function(id, callback) {
  *   'nextPage' {Boolean} True if additional documents exist.
  */
 exports.getTimeline = function(params, callback) {
-  dbConnectAndOpen(callback, function(err, db) {
-    dbCollection(db, collection, callback, function(err, collection) {
+  exports.dbConnectAndOpen(callback, function(err, db) {
+    exports.dbCollection(db, collection, callback, function(err, collection) {
       var options = {};
       if (params['sort-attr']) {
         if ('desc' == params['sort-dir']) {
