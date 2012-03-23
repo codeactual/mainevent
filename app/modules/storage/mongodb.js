@@ -200,6 +200,8 @@ MongoDbStorage.prototype.getTimeline = function(params, callback) {
           }
           params[matches[1]]['$' + matches[2]] = value;
           delete params[key];
+        } else if ('_id' == key && _.isString(value)) {
+          params[key] = new BSON.ObjectID(value);
         }
       });
       options.limit += 1; // For next-page detection.
