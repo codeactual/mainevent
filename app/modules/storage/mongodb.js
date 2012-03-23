@@ -5,10 +5,26 @@
 'use strict';
 
 var mongodb = require('mongodb');
-var BSON = mongodb.BSONPure;
-var link = null;
-var collection = null;
 var config = diana.getConfig().storage;
+
+exports.createInstance = function() {
+  return new MongoDbStorage();
+};
+
+var MongoDbStorage = function() {
+  Storage.call(this);
+};
+
+diana.shared.Lang.inheritPrototype(MongoDbStorage, Storage);
+
+// Db instance.
+MongoDbStorage.prototype.link = null;
+
+// Collection name.
+MongoDbStorage.prototype.collection = null;
+
+// Convenience pointer for client scripts.
+MongoDbStorage.prototype.BSON = mongodb.BSONPure;
 
 /**
  * In one or more documents, convert BSON Timestamp objects to their UNIX
@@ -17,7 +33,7 @@ var config = diana.getConfig().storage;
  * @param docs {Array|Object} Query result(s).
  * @return {Array}
  */
-var unpackTime = function(docs) {
+MongoDbStorage.prototype.unpackTime = function(docs) {
   if (_.isArray(docs)) {
     return _.map(docs, function(doc) {
       doc.time = doc.time.high_;
@@ -34,18 +50,19 @@ var unpackTime = function(docs) {
  *
  * @param callback {Function} Fired after connection attempted.
  */
-exports.dbConnectAndOpen = function(error, success) {
-  if (link) {
-    success(null, link);
+MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
+  if (this.link) {
+    success(null, this.link);
   } else {
-    collection = config.collection;
-    link = new mongodb.Db(
+    this.collection = config.collection;
+    this.link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
     );
-    link.open(function(err, db) {
+    var mongo = this;
+    this.link.open(function(err, db) {
       if (err) {
-        exports.dbClose();
+        mongo.dbClose();
         error('Could not access database.', null);
       } else {
         success(err, db);
@@ -62,10 +79,10 @@ exports.dbConnectAndOpen = function(error, success) {
  * @param error {Function} Fired on failed opening.
  * @param error {Function} Fired on successful opening.
  */
-exports.dbCollection = function(db, collection, error, success) {
+MongoDbStorage.prototype.dbCollection = function(db, collection, error, success) {
   db.collection(collection, function(err, collection) {
     if (err) {
-      exports.dbClose();
+      this.dbClose();
       error('Could not access collection.', null);
     } else {
       success(err, collection);
@@ -76,10 +93,10 @@ exports.dbCollection = function(db, collection, error, success) {
 /**
  * Disconnect from the DB.
  */
-exports.dbClose = function() {
-  if (link) {
-    link.close();
-    link = null;
+MongoDbStorage.prototype.dbClose = function() {
+  if (this.link) {
+    this.link.close();
+    this.link = null;
   }
 };
 
@@ -91,9 +108,10 @@ exports.dbClose = function() {
  * @param callback {Function} Receives insert() results.
  * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
-exports.insertLog = function(source, log, callback, bulk) {
-  exports.dbConnectAndOpen(callback, function(err, db) {
-    exports.dbCollection(db, collection, callback, function(err, collection) {
+MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
+  var mongo = this;
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
@@ -101,7 +119,7 @@ exports.insertLog = function(source, log, callback, bulk) {
       collection.insert(log, {safe: true}, function(err, docs) {
         // close() required after one-time insert to avoid hang.
         if (!bulk) {
-          exports.dbClose();
+          mongo.dbClose();
         }
         callback(err, docs);
       });
@@ -115,13 +133,14 @@ exports.insertLog = function(source, log, callback, bulk) {
  * @param id {String} Document ID.
  * @param callback {Function} Receives findOne() results.
  */
-exports.getLog = function(id, callback) {
-  exports.dbConnectAndOpen(callback, function(err, db) {
-    exports.dbCollection(db, collection, callback, function(err, collection) {
+MongoDbStorage.prototype.getLog = function(id, callback) {
+  var mongo = this;
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
-        exports.dbClose();
+        mongo.dbClose();
         if (doc) {
-          doc = unpackTime(doc);
+          doc = mongo.unpackTime(doc);
         }
         callback(err, doc);
       });
@@ -144,9 +163,10 @@ exports.getLog = function(id, callback) {
  * - {Object} Additional result details.
  *   'nextPage' {Boolean} True if additional documents exist.
  */
-exports.getTimeline = function(params, callback) {
-  exports.dbConnectAndOpen(callback, function(err, db) {
-    exports.dbCollection(db, collection, callback, function(err, collection) {
+MongoDbStorage.prototype.getTimeline = function(params, callback) {
+  var mongo = this;
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       var options = {};
       if (params['sort-attr']) {
         if ('desc' == params['sort-dir']) {
@@ -183,7 +203,7 @@ exports.getTimeline = function(params, callback) {
       });
       options.limit += 1; // For next-page detection.
       collection.find(params, options).toArray(function(err, docs) {
-        exports.dbClose();
+        mongo.dbClose();
         var info = {
           prevPage: docs && options.skip > 0,
           nextPage: docs && (docs.length == options.limit)
@@ -192,7 +212,7 @@ exports.getTimeline = function(params, callback) {
           if (info.nextPage) { // Discard next-page hint doc.
             docs.pop();
           }
-          docs = unpackTime(docs);
+          docs = mongo.unpackTime(docs);
         }
         callback(err, docs, info);
       });
@@ -207,9 +227,9 @@ exports.getTimeline = function(params, callback) {
  * @param params {Object} getTimeline() compatible parameters.
  * @param callback {Function} Receives find() results.
  */
-exports.getTimelineUpdates = function(id, params, callback) {
+MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
   params._id = {$gt: new BSON.ObjectID(id)};
   params['sort-attr'] = 'time';
   params['sort-dir'] = 'desc';
-  exports.getTimeline(params, callback);
+  this.getTimeline(params, callback);
 };

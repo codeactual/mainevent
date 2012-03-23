@@ -19,7 +19,7 @@
 
   require(__dirname + '/modules/diana.js');
   var parsers = diana.requireModule('parsers/parsers');
-  var storage = diana.requireModule('storage/storage').load();
+  var storage = diana.requireModule('storage/storage').createInstance();
   var config = diana.getConfig(program.config);
   var monitors = {};
   var parserCache = {};

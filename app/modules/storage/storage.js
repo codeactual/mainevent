@@ -4,8 +4,16 @@
 
 'use strict';
 
+require(__dirname + '/prototype.js');
+
 var config = diana.getConfig();
 
-exports.load = function() {
-  return diana.requireModule('storage/' + config.storage.module);
+/**
+ * Return a new instance of the configured storage driver.
+ *
+ * @return {Object} Ex. MongoDbStorage which inherits from Storage in prototype.js.
+ */
+exports.createInstance = function() {
+  // Ex. storage/mongodb
+  return diana.requireModule('storage/' + config.storage.module).createInstance();
 };

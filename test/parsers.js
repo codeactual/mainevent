@@ -6,7 +6,7 @@
 
 var testutil = require(__dirname + '/modules/testutil.js');
 var parsers = diana.requireModule('parsers/parsers');
-var storage = diana.requireModule('storage/storage').load();
+var storage = diana.requireModule('storage/storage').createInstance();
 
 /**
  * Verification logic used by most test cases below.

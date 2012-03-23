@@ -6,7 +6,7 @@
 
 var testutil = require(__dirname + '/modules/testutil.js');
 var parsers = diana.requireModule('parsers/parsers');
-var storage = diana.requireModule('storage/storage').load();
+var storage = diana.requireModule('storage/storage').createInstance();
 
 /**
  * Assertion helper for $gte, $gt, $lt, $lte, $ne search filters.

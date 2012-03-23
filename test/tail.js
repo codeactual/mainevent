@@ -8,7 +8,7 @@ var fs = require('fs');
 var testutil = require(__dirname + '/modules/testutil.js');
 var fork = require('child_process').fork;
 var exec = require('child_process').exec;
-var storage = diana.requireModule('storage/storage').load();
+var storage = diana.requireModule('storage/storage').createInstance();
 
 var testConfigFile = __dirname + '/fixtures/tail-config.js';
 var testConfig = diana.getConfig(testConfigFile);
