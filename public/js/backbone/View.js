@@ -54,7 +54,11 @@ Backbone.View.prototype.setPref = function(key, value) {
 Backbone.View.prototype.close = function() {
   this.remove();
   this.unbind();
-  this.disableKeyEvents();
+  if (this.onKeyEvent) {
+    this.disableKeyEvents();
+    diana.helpers.Event.off('ModalOpen', this.disableKeyEvents);
+    diana.helpers.Event.off('ModalClose', this.enableKeyEvents);
+  }
   if (this.onClose){
     this.onClose();
   }
@@ -95,12 +99,8 @@ Backbone.View.prototype.initKeyEvents = function(config) {
   this.enableKeyEvents();
 
   // Suspend key event handling when sub-view modals are open.
-  diana.helpers.Event.on('ModalOpen', function() {
-    view.disableKeyEvents();
-  });
-  diana.helpers.Event.on('ModalClose', function() {
-    view.enableKeyEvents();
-  });
+  diana.helpers.Event.on('ModalOpen', view.disableKeyEvents);
+  diana.helpers.Event.on('ModalClose', view.enableKeyEvents);
 };
 
 Backbone.View.prototype.enableKeyEvents = function() {
