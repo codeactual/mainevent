@@ -209,7 +209,7 @@ exports.getTimeline = function(params, callback) {
  */
 exports.getTimelineUpdates = function(id, params, callback) {
   params._id = {$gt: new BSON.ObjectID(id)};
-  params['sort-attr'] = '_id';
+  params['sort-attr'] = 'time';
   params['sort-dir'] = 'desc';
   exports.getTimeline(params, callback);
 };
