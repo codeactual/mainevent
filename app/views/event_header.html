@@ -6,26 +6,26 @@
     {/intReferer}
     <a id="event-find-similar" href="#" class="btn"><i class="icon-search" /> Find Similar</a>
     </div>
-    <div class="taglist">
-      <span class="label label-info">{parser}</span>
-      {#parser_subtype}
-      <span class="label label-info">{parser_subtype}</span>
-      {/parser_subtype}
-      {#tags}
-      <span class="label label-info">{name}</span>
-      {/tags}
-    </div>
-    <h2>{time} ({timeFromNow})</h2>
-    {#__parse_error}
-    <div class="alert alert-error">
-      This log's {__parse_error} could not be parsed. All recoverable data is shown below.
-    </div>
-    {/__parse_error}
   </div>
   <div class="span4">&nbsp;</div>
   <div class="span4">
   {>keyboard_shortcuts/}
   </div>
 </div>
+<div class="taglist">
+  <span class="label label-info">{parser}</span>
+  {#parser_subtype}
+  <span class="label label-info">{parser_subtype}</span>
+  {/parser_subtype}
+  {#tags}
+  <span class="label label-info">{name}</span>
+  {/tags}
+</div>
+<h2>{time} ({timeFromNow})</h2>
+{#__parse_error}
+<div class="alert alert-error">
+  This log's {__parse_error} could not be parsed. All recoverable data is shown below.
+</div>
+{/__parse_error}
 {>timeline_search_modal/}
 {>keyboard_shortcuts_modal/}
