@@ -56,9 +56,8 @@ Backbone.View.prototype.close = function() {
   this.unbind();
   if (this.onKeyEvent) {
     this.disableKeyEvents();
-    diana.helpers.Event.off('ModalOpen', this.disableKeyEvents);
-    diana.helpers.Event.off('ModalClose', this.enableKeyEvents);
-    $('#keyboard-shortcuts').off('click', this.onKeyboardShortcutsClick);
+    this.disableKeyboardShortcuts();
+    this.disableModalEvents();
   }
   if (this.onClose){
     this.onClose();
@@ -114,14 +113,13 @@ Backbone.View.prototype.initKeyEvents = function(config) {
   this.keyEventConfig = {};
 
   // Suspend key event handling when sub-view modals are open.
-  diana.helpers.Event.on('ModalOpen', view.disableKeyEvents);
-  diana.helpers.Event.on('ModalClose', view.enableKeyEvents);
+  this.enableModalEvents();
 
   // Display keyboard shortcuts modal with help content based on keyEventConfig.
   this.onKeyboardShortcutsClick = function() {
     new diana.views.KeyboardShortcuts({keyEventConfig: view.keyEventConfig});
   };
-  diana.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+  this.enableKeyboardShortcuts();
 
   // Override '?'
   config['Display this menu'] = {
@@ -163,7 +161,38 @@ Backbone.View.prototype.initKeyEvents = function(config) {
   };
 
   this.enableKeyEvents();
+};
 
+Backbone.View.prototype.enableModalEvents = function() {
+  diana.helpers.Event.on('ModalOpen', this.onModalOpen, this);
+  diana.helpers.Event.on('ModalClose', this.onModalClose, this);
+};
+
+Backbone.View.prototype.disableModalEvents = function() {
+  diana.helpers.Event.off('ModalOpen', this.onModalOpen);
+  diana.helpers.Event.off('ModalClose', this.onModalClose);
+};
+
+Backbone.View.prototype.enableKeyboardShortcuts = function() {
+  if (this.onKeyboardShortcutsClick) {
+    diana.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+  }
+};
+
+Backbone.View.prototype.disableKeyboardShortcuts = function() {
+  if (this.onKeyboardShortcutsClick) {
+    diana.helpers.Event.off('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+  }
+};
+
+Backbone.View.prototype.onModalOpen = function() {
+  this.disableKeyEvents();
+  this.disableKeyboardShortcuts();
+};
+
+Backbone.View.prototype.onModalClose = function() {
+  this.enableKeyEvents();
+  this.enableKeyboardShortcuts();
 };
 
 Backbone.View.prototype.enableKeyEvents = function() {
