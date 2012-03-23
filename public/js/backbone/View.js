@@ -95,12 +95,31 @@ Backbone.View.prototype.onKeyboardShortcutsClick = null;
  */
 Backbone.View.prototype.initKeyEvents = function(config) {
   var view = this;
-  this.keyEventConfig = _.clone(config);
+  this.keyEventConfig = {};
 
-  this.onKeyEvent = function(event) {
-    if (_.has(view.keyEventConfig, event.which)) {
-      view.keyEventConfig[event.which].call(view, event);
+  // Group handlers by key code.
+  _.each(config, function(handler) {
+    var keyCode = handler.keyCode || parseInt(handler.keyChar.toUpperCase().charCodeAt(0), 10);
+    if (!_.has(view.keyEventConfig, keyCode)) {
+      view.keyEventConfig[keyCode] = [];
     }
+    delete handler.keyCode;
+    delete handler.keyChar;
+    view.keyEventConfig[keyCode].push(handler);
+  });
+
+  // Trigger all handlers in the matching key code group.
+  this.onKeyEvent = function(event) {
+    if (!view.keyEventConfig[event.keyCode]) {
+      return;
+    }
+    _.each(view.keyEventConfig[event.keyCode], function(handler) {
+      if (handler.shiftKey && !event.shiftKey) { return; }
+      if (handler.ctrlKey && !event.ctrlKey) { return; }
+      if (handler.metaKey && !event.metaKey) { return; }
+      if (handler.altKey && !event.altKey) { return; }
+      handler.callback.call(view, event);
+    });
   };
 
   this.enableKeyEvents();

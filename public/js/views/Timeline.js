@@ -28,16 +28,18 @@
       });
 
       this.initKeyEvents({
-        16: function (event) { // SHIFT + U
-          if (event.shiftKey) {
-            this.toggleUpdates(event);
-          }
+        'Toggle automatic updates': {
+          keyChar: 'u',
+          shiftKey: true,
+          callback: this.toggleUpdates
         },
-        76: function(event) { // L
-          this.editRowLimit(event);
+        'Edit row limit enforced during automatic updating': {
+          keyChar: 'l',
+          callback: this.editRowLimit
         },
-        83: function(event) { // S
-          this.openSearch(event);
+        'Search': {
+          keyChar: 's',
+          callback: this.openSearch
         }
       });
 
@@ -106,7 +108,7 @@
       }
 
       diana.helpers.Widget.alert(
-        'Updates ' + (this.prefs.autoUpdate ? 'Enabled' : 'Disabled'),
+        'Updates ' + (this.prefs.autoUpdate ? 'enabled' : 'disabled') + '.',
         'info',
         3
       );
