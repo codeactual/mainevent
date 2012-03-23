@@ -47,6 +47,8 @@ Backbone.View.prototype.setPref = function(key, value) {
 /**
  * Add default shutdown/GC to all views.
  *
+ * - Called by index.js router when a new 'main' view is about to load.
+ *
  * @author Derick Bailey http://goo.gl/JD3DQ
  */
 Backbone.View.prototype.close = function() {
