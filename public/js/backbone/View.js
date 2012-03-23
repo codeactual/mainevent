@@ -148,6 +148,8 @@ Backbone.View.prototype.initKeyEvents = function(config) {
     delete handler.keyCode;
     handler.keyChar = handler.keyChar || String.fromCharCode(keyCode);
     handler.description = description;
+    handler.shiftKey = _.isUndefined(handler.shiftKey) ? false : handler.shiftKey;
+    handler.ctrlKey = _.isUndefined(handler.ctrlKey) ? false : handler.ctrlKey;
 
     view.keyEventConfig[keyCode].push(handler);
   });
@@ -158,8 +160,8 @@ Backbone.View.prototype.initKeyEvents = function(config) {
       return;
     }
     _.each(view.keyEventConfig[event.which], function(handler) {
-      if (handler.shiftKey && !event.shiftKey) { return; }
-      if (handler.ctrlKey && !event.ctrlKey) { return; }
+      if (handler.shiftKey != event.shiftKey) { return; }
+      if (handler.ctrlKey != event.ctrlKey) { return; }
       handler.callback.call(view, event);
     });
   };
