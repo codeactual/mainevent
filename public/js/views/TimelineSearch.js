@@ -53,7 +53,7 @@
       var body = this.$('.modal-body');
       var parser = this.$('#parser');
 
-      parser.append('<option value="">Any Type</option>');
+      parser.append('<option value="">Any</option>');
       _.each(diana.parsers, function(name) {
         parser.append('<option value="' + name + '">' + name + '</option>');
       });
