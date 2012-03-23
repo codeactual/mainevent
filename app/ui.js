@@ -51,7 +51,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/timeline', function(req, res) {
-  if ('_id' == req.query['sort-attr'] && 'desc' == req.query['sort-dir']) {
+  if ('time' == req.query['sort-attr'] && 'desc' == req.query['sort-dir']) {
     res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
   }
 

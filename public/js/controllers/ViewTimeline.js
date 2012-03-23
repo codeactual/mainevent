@@ -18,7 +18,7 @@
 
       limit: null,
       skip: null,
-      'sort-attr': '_id',
+      'sort-attr': 'time',
       'sort-dir': 'desc'
     };
 
@@ -56,7 +56,7 @@
 
     // Enable compatible feature(s).
     diana.features.timelineUpdate =
-      '_id' == searchArgs['sort-attr']
+      'time' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
       && !_.has(searchArgs, 'skip');
 
