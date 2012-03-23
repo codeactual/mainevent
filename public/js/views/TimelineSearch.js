@@ -40,6 +40,11 @@
         }
       });
 
+      $('#time-preset-clear').on('click', function(event) {
+        event.preventDefault();
+        $('#time-preset,#time-gte,#time-lte').val('');
+      });
+
       this.render();
     },
 
