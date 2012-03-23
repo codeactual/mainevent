@@ -58,7 +58,8 @@
     diana.features.timelineUpdate =
       'time' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
-      && !_.has(searchArgs, 'skip');
+      && !_.has(searchArgs, 'skip')
+      && !_.has(searchArgs, '_id');
 
     return new diana.views.Timeline({searchArgs: searchArgs, el: $('#backbone-view')});
   };
