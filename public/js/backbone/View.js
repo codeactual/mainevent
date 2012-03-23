@@ -130,11 +130,15 @@ Backbone.View.prototype.initKeyEvents = function(config) {
 
   // Group handlers by key code.
   _.each(config, function(handler, description) {
-    if (handler.keyChar && handler.keyChar.match(/[A-Z]/)) {
-      handler.shiftKey = true;
-    }
+    var keyCode = handler.keyCode;
 
-    var keyCode = handler.keyCode || handler.keyChar.charCodeAt(0);
+    if (!keyCode) {
+      if (handler.shiftKey && handler.keyChar.match(/[a-z]/)) {
+        keyCode = handler.keyChar.toUpperCase().charCodeAt(0);
+      } else {
+        keyCode = handler.keyChar.charCodeAt(0);
+      }
+    }
 
     // Initialize group.
     if (!_.has(view.keyEventConfig, keyCode)) {
