@@ -226,7 +226,7 @@ Backbone.View.prototype.buildUrl = function (fragment, args) {
     if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
       return;
     }
-    pairs.push(key + '=' + value);
+    pairs.push(key + '=' + encodeURIComponent(value));
   });
   pairs = pairs.join('&');
   return '#' + fragment + (pairs ? '/' + pairs : '');

@@ -79,6 +79,8 @@ $(function() {
                 diana.mainView = null;
               }
 
+              routeArgs = _.map(routeArgs, decodeURIComponent);
+
               // Pass the matched route parameters to the actual handler.
               var mainView = config.handler.apply(config.context, routeArgs);
               if (mainView) {
