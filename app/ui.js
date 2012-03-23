@@ -68,7 +68,7 @@ app.get('/timeline', function(req, res) {
         res.send({info: info, results: updated});
       });
     } else {
-      res.send([]);
+      res.send({info: info, results: []});
     }
   });
 });
