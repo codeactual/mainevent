@@ -49,3 +49,9 @@ select#time-preset {
   text-align: right;
   padding-right: 8px;
 }
+.taglist {
+  margin-bottom: 18px;
+}
+#event-header-grid div:nth-child(2) {
+  text-align: center;
+}

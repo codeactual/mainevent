@@ -1,4 +1,4 @@
-<div class="row-fluid">
+<div id="event-header-grid" class="row-fluid">
   <div class="span4">
     <div class="header-nav-group">
     {#intReferer}
@@ -7,7 +7,7 @@
     <a id="event-find-similar" href="#" class="btn"><i class="icon-search" /> Find Similar</a>
     </div>
   </div>
-  <div class="span4">&nbsp;</div>
+  <div class="span4"><h3>{time}</h3><h4>({timeFromNow})</h4></div>
   <div class="span4">
   {>keyboard_shortcuts/}
   </div>
@@ -21,7 +21,6 @@
   <span class="label label-info">{name}</span>
   {/tags}
 </div>
-<h2>{time} ({timeFromNow})</h2>
 {#__parse_error}
 <div class="alert alert-error">
   This log's {__parse_error} could not be parsed. All recoverable data is shown below.

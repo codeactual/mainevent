@@ -19,7 +19,7 @@ if ('undefined' != typeof require) {
      * @return {String}
      */
     formatTime: function(time) {
-      return moment(new Date(time * 1000)).format('LLLL z');
+      return moment(new Date(time * 1000)).format('ddd, MMM D YYYY, HH:mm:ss');
     },
 
     /**
