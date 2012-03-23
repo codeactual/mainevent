@@ -83,6 +83,9 @@
         $('input:nth-child(3)', condPair).val(value);
         body.append(condPair);
       });
+      if (condCount) { // And an extra to hint at expansion behavior.
+        view.addConditionRow();
+      }
 
       this.$el.modal('show');
       this.$('#parser').focus().select();
