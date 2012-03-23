@@ -15,7 +15,7 @@ var express = require('express');
 var app = express.createServer();
 require(__dirname + '/modules/diana.js');
 var config = diana.getConfig();
-var storage = diana.requireModule('storage/mongodb');
+var storage = diana.requireModule('storage/storage').createInstance();
 var parsers = diana.requireModule('parsers/parsers');
 var io = require('socket.io').listen(app);
 

@@ -5,6 +5,7 @@
 'use strict';
 
 var mongodb = require('mongodb');
+var BSON = mongodb.BSONPure;
 var config = diana.getConfig().storage;
 
 exports.createInstance = function() {
