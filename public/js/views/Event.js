@@ -12,7 +12,7 @@
 
     initialize: function(options) {
       this.initKeyEvents({
-        'Search': {
+        'Find similar events': {
           keyChar: 's',
           callback: this.findSimilar
         }
