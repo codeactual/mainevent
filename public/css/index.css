@@ -39,3 +39,7 @@ select#time-preset {
 .header-nav-group {
   margin-bottom: 1em;
 }
+#keyboard-shortcuts-group {
+  margin-top: 9px; /* Align with drop-down text */
+  text-align: right;
+}

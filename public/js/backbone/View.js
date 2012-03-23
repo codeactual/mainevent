@@ -58,6 +58,7 @@ Backbone.View.prototype.close = function() {
     this.disableKeyEvents();
     diana.helpers.Event.off('ModalOpen', this.disableKeyEvents);
     diana.helpers.Event.off('ModalClose', this.enableKeyEvents);
+    $('#keyboard-shortcuts').off('click', this.onKeyboardShortcutsClick);
   }
   if (this.onClose){
     this.onClose();
@@ -82,6 +83,12 @@ Backbone.View.prototype.keyEventConfig = {};
 Backbone.View.prototype.onKeyEvent = null;
 
 /**
+ * Click handler for 'Keyboard shortcuts available' link, customized by each
+ * view's keyEventConfig map.
+ */
+Backbone.View.prototype.onKeyboardShortcutsClick = null;
+
+/**
  * Optionally call from initialize() to configure and start key event handling.
  *
  * @param config {Object} View's new keyEventConfig value.
@@ -101,6 +108,12 @@ Backbone.View.prototype.initKeyEvents = function(config) {
   // Suspend key event handling when sub-view modals are open.
   diana.helpers.Event.on('ModalOpen', view.disableKeyEvents);
   diana.helpers.Event.on('ModalClose', view.enableKeyEvents);
+
+  // Display keyboard shortcuts modal with help content based on keyEventConfig.
+  this.onKeyboardShortcutsClick = function() {
+    new diana.views.KeyboardShortcuts({keyEventConfig: view.keyEventConfig});
+  };
+  diana.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
 };
 
 Backbone.View.prototype.enableKeyEvents = function() {

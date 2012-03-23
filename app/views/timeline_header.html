@@ -1,15 +1,24 @@
-<ul class="nav nav-pills">
-  <li class="dropdown" id="timeline-dd">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#timeline-dd">
-      Timeline
-      <b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu">
-      <li><a id="timeline-open-search" href="#">Search</a></li>
-      <li class="divider"></li>
-      <li><a id="timeline-toggle-updates" href="#"></a></li>
-      <li class="hide"><a id="timeline-edit-rowlimit" class="hide" href="#">Limit Size</a></li>
+<div class="row-fluid">
+  <div class="span4">
+    <ul class="nav nav-pills">
+      <li class="dropdown" id="timeline-dd">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#timeline-dd">
+          Timeline
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a id="timeline-open-search" href="#">Search</a></li>
+          <li class="divider"></li>
+          <li><a id="timeline-toggle-updates" href="#"></a></li>
+          <li class="hide"><a id="timeline-edit-rowlimit" class="hide" href="#">Limit Size</a></li>
+        </ul>
+      </li>
     </ul>
-  </li>
-</ul>
-{>pagination/}
+  </div>
+  <div class="span4">
+    {>pagination/}
+  </div>
+  <div class="span4">
+  {>keyboard_shortcuts/}
+  </div>
+</div>
