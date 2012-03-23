@@ -6,7 +6,10 @@
   <form class="well form-inline form-inline">
     <div class="modal-body">
       <div class="form-row">
-        <select id="parser"></select>
+        <span class="input-prepend">
+          <span class="add-on">Event Type</span>
+          <select id="parser"></select>
+        </span>
       </div>
       <div class="form-row">
         <select id="time-preset">
@@ -37,7 +40,10 @@
       </div>
     </div>
     <div class="modal-footer">
-      <label for="sort-attr">Sort By</label> <input id="sort-attr" type="text" class="input-small" placeholder="Name" />
+      <span class="input-prepend">
+        <span class="add-on">Sort By</span>
+        <input id="sort-attr" type="text" class="input-small" placeholder="Name" />
+      </span>
       <select id="sort-dir">
         <option value="asc">Low to High</option>
         <option value="desc">High to Low</option>

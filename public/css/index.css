@@ -7,8 +7,9 @@
 .timeline-update {
   font-weight: bold;
 }
-.modal-footer select + button {
-  margin-left: 8px;
+.modal-footer input,
+.modal-footer select {
+  margin-right: 8px;
 }
 .condition-pair select {
   width: 50px;
