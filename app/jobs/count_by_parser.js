@@ -21,8 +21,8 @@ var reduce = function(key, values) {
   return result;
 };
 
-storage.dbConnectAndOpen(function() {}, function(err, db) {
-  storage.dbCollection(db, storage.collection, function() {}, function(err, collection) {
+storage.dbConnectAndOpen(function(err, db) {
+  storage.dbCollection(db, storage.collection, function(err, collection) {
     collection.mapReduce(map, reduce, options, function(err, results, stats) {
       storage.dbClose();
     });

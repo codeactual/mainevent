@@ -49,11 +49,11 @@ MongoDbStorage.prototype.unpackTime = function(docs) {
 /**
  * Connect to the DB based on config.js. Reuse a link if available.
  *
- * @param callback {Function} Fired after connection attempted.
+ * @param callback {Function} Fired after success/error.
  */
-MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
+MongoDbStorage.prototype.dbConnectAndOpen = function(callback) {
   if (this.link) {
-    success(null, this.link);
+    callback(null, this.link);
   } else {
     this.collection = config.collection;
     this.link = new mongodb.Db(
@@ -64,9 +64,9 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
     this.link.open(function(err, db) {
       if (err) {
         mongo.dbClose();
-        error('Could not access database.', null);
+        callback('Could not access database.', null);
       } else {
-        success(err, db);
+        callback(err, db);
       }
     });
   }
@@ -77,16 +77,15 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
  *
  * @param db {Object} Connection link.
  * @param collection {String} Collection name.
- * @param error {Function} Fired on failed opening.
- * @param error {Function} Fired on successful opening.
+ * @param callback {Function} Fired on success/error.
  */
-MongoDbStorage.prototype.dbCollection = function(db, collection, error, success) {
+MongoDbStorage.prototype.dbCollection = function(db, collection, callback) {
   db.collection(collection, function(err, collection) {
     if (err) {
       this.dbClose();
-      error('Could not access collection.', null);
+      callback('Could not access collection.', null);
     } else {
-      success(err, collection);
+      callback(err, collection);
     }
   });
 };
@@ -111,8 +110,8 @@ MongoDbStorage.prototype.dbClose = function() {
  */
 MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
   var mongo = this;
-  this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+  this.dbConnectAndOpen(function(err, db) {
+    mongo.dbCollection(db, mongo.collection, function(err, collection) {
       log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
@@ -136,8 +135,8 @@ MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
  */
 MongoDbStorage.prototype.getLog = function(id, callback) {
   var mongo = this;
-  this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+  this.dbConnectAndOpen(function(err, db) {
+    mongo.dbCollection(db, mongo.collection, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         mongo.dbClose();
         if (doc) {
@@ -166,8 +165,8 @@ MongoDbStorage.prototype.getLog = function(id, callback) {
  */
 MongoDbStorage.prototype.getTimeline = function(params, callback) {
   var mongo = this;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+  mongo.dbConnectAndOpen(function(err, db) {
+    mongo.dbCollection(db, mongo.collection, function(err, collection) {
       var options = {};
       if (params['sort-attr']) {
         if ('desc' == params['sort-dir']) {
