@@ -7,6 +7,7 @@
 var testutil = require(__dirname + '/modules/testutil.js');
 var parsers = diana.requireModule('parsers/parsers');
 var storage = diana.requireModule('storage/storage').createInstance();
+var strtotime = diana.shared.Date.strtotime;
 
 /**
  * Assertion helper for $gte, $gt, $lt, $lte, $ne search filters.
@@ -47,10 +48,10 @@ exports.testGetTimelineGte = function(test) {
   verifyTimelineResults(
     test,
     logs,
-    {run: run, 'time-gte': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    {run: run, 'time-gte': strtotime('3/12/2012 10:00:00')},
     [
-      diana.shared.Date.strtotime(logs[1].time),
-      diana.shared.Date.strtotime(logs[2].time)
+      strtotime(logs[1].time),
+      strtotime(logs[2].time)
     ]
   );
 };
@@ -65,9 +66,9 @@ exports.testGetTimelineGt = function(test) {
   verifyTimelineResults(
     test,
     logs,
-    {run: run, 'time-gt': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    {run: run, 'time-gt': strtotime('3/12/2012 10:00:00')},
     [
-      diana.shared.Date.strtotime(logs[2].time)
+      strtotime(logs[2].time)
     ]
   );
 };
@@ -82,10 +83,10 @@ exports.testGetTimelineLte = function(test) {
   verifyTimelineResults(
     test,
     logs,
-    {run: run, 'time-lte': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    {run: run, 'time-lte': strtotime('3/12/2012 10:00:00')},
     [
-      diana.shared.Date.strtotime(logs[0].time),
-      diana.shared.Date.strtotime(logs[1].time)
+      strtotime(logs[0].time),
+      strtotime(logs[1].time)
     ]
   );
 };
@@ -100,9 +101,9 @@ exports.testGetTimelineLt = function(test) {
   verifyTimelineResults(
     test,
     logs,
-    {run: run, 'time-lt': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    {run: run, 'time-lt': strtotime('3/12/2012 10:00:00')},
     [
-      diana.shared.Date.strtotime(logs[0].time)
+      strtotime(logs[0].time)
     ]
   );
 };
@@ -117,10 +118,10 @@ exports.testGetTimelineNe = function(test) {
   verifyTimelineResults(
     test,
     logs,
-    {run: run, 'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')},
+    {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')},
     [
-      diana.shared.Date.strtotime(logs[0].time),
-      diana.shared.Date.strtotime(logs[2].time)
+      strtotime(logs[0].time),
+      strtotime(logs[2].time)
     ]
   );
 };
@@ -137,11 +138,11 @@ exports.testGetTimelineWithTwoTimeConditions = function(test) {
     logs,
     {
       run: run,
-      'time-gt': diana.shared.Date.strtotime('3/12/2012 09:00:00'),
-      'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')
+      'time-gt': strtotime('3/12/2012 09:00:00'),
+      'time-ne': strtotime('3/12/2012 10:00:00')
     },
     [
-      diana.shared.Date.strtotime(logs[2].time)
+      strtotime(logs[2].time)
     ]
   );
 };
@@ -200,7 +201,7 @@ exports.testNextPageDetection = function(test) {
   parser.parseAndInsert(source, lines, function() {
 
     // Expect no next page.
-    var params = {run: run, 'time-ne': diana.shared.Date.strtotime('3/12/2012 10:00:00')};
+    var params = {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')};
     storage.getTimeline(params, function(err, docs, info) {
       test.equal(docs.length, 2);
       test.ok(false === info.nextPage);
