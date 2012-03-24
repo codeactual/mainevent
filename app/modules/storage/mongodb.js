@@ -298,6 +298,7 @@ MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) 
  *   pairs as values.
  */
 MongoDbStorage.prototype.getMapReduceResults = function(name, callback) {
+  name = diana.extractJobName(name);
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {

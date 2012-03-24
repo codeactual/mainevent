@@ -19,7 +19,6 @@ var parsers = diana.requireModule('parsers/parsers');
  * @param expected {Object} Reduce results indexed by their _id values.
  */
 exports.verifyTimeRange = function(test, jobName, run, startTime, endTime, logs, expected) {
-  jobName = diana.extractJobName(jobName);
   var job = diana.requireJob(jobName).run;
   parsers.parseAndInsert(logs, function() {
     var query = {message: run}; // Only for verification lookup.
