@@ -22,11 +22,9 @@ exports.verifyTimeRange = function(test, jobName, run, startTime, endTime, logs,
   var job = diana.requireJob(jobName).run;
   parsers.parseAndInsert(logs, function() {
     var query = {message: run}; // Only for verification lookup.
-    job(startTime, endTime, query, function() {
-      storage.getMapReduceResults(jobName, function(err, docs) {
-        test.deepEqual(docs, expected);
-        test.done();
-      });
+    job(startTime, endTime, query, function(err, docs) {
+      test.deepEqual(docs, expected);
+      test.done();
     });
   });
 };

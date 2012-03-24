@@ -252,11 +252,17 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
  *   - Optionally supply __filename of a job script and the basename will be used.
  * - map {Function}
  * - reduce {Function}
- * - query {Object} Filter query object.
- * - out {Object} MongoDB output directive. (Default: {replace: <name>})
+ * - query {Object} (Optional) Filter query object.
+ * - out {Object} (Optional, Default: {replace: <name>}) Output directive.
+ * - return {String} (Optional, Default: none) Callback receives 'cursor' or 'array'.
  * - callback {Function} Fires after success/error.
- *   - err {String}
- *   - stats {Object}
+ *   - If 'return' not set:
+ *     err {String}
+ *     stats {Object}
+ *   - If 'return' set:
+ *     err {String}
+ *     return {Object|Array}
+ *     stats {Object}
  */
 MongoDbStorage.prototype.mapReduce = function(job) {
   job.name = diana.extractJobName(job.name);
@@ -266,8 +272,16 @@ MongoDbStorage.prototype.mapReduce = function(job) {
   this.dbConnectAndOpen(job.callback, function(err, db) {
     mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
       collection.mapReduce(job.map, job.reduce, options, function(err, stats) {
-        mongo.dbClose();
-        job.callback(err, stats);
+        if (err) { storage.dbClose(); job.callback(err); return; }
+        if (job.return) {
+          mongo.getMapReduceResults(job.name, function(err, results) {
+            mongo.dbClose();
+            job.callback(err, results, stats);
+          }, job.return != 'cursor');
+        } else {
+          mongo.dbClose();
+          job.callback(err, stats);
+        }
       });
     });
   });
@@ -294,22 +308,29 @@ MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) 
  *
  * @param name {String}
  * @param callback {Function} Fires after success/error.
- * - Receives an object with _id values as keys and remaining
+ * - asArray = true: Receives an object with _id values as keys and remaining
  *   pairs as values.
+ * - asArray = false: Receives a Cursor object.
+ * @param asArray {Boolean} (Optional, Default: true)
  */
-MongoDbStorage.prototype.getMapReduceResults = function(name, callback) {
+MongoDbStorage.prototype.getMapReduceResults = function(name, callback, asArray) {
+  asArray = _.isUndefined(asArray) ? true : asArray;
   name = diana.extractJobName(name);
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {
-      collection.find().toArray(function(err, docs) {
-        mongo.dbClose();
-        var results = {};
-        _.each(docs, function(doc) {
-          results[doc._id] = doc.value;
-        })
-        callback(err, results);
-      });
+      if (asArray) {
+        collection.find().toArray(function(err, docs) {
+          mongo.dbClose();
+          var results = {};
+          _.each(docs, function(doc) {
+            results[doc._id] = doc.value;
+          })
+          callback(err, results);
+        });
+      } else {
+        collection.find(callback);
+      }
     });
   });
 };

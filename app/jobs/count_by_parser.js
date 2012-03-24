@@ -25,6 +25,7 @@ exports.run = function(startTime, endTime, query, callback) {
     map: map,
     reduce: reduce,
     query: query,
+    return: 'array',
     callback: callback
   });
 };
