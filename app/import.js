@@ -36,7 +36,7 @@
   }
 
   require(__dirname + '/modules/diana.js');
-  var parser = diana.requireModule('parsers/parsers').createInstance(source.parser);
+  var parsers = diana.requireModule('parsers/parsers');
 
   var lazy = require('lazy');
   new lazy(require("fs").createReadStream(source.path))
@@ -48,7 +48,7 @@
     })
     .join(function (lines) {
       if (lines.length) {
-        parser.parseAndInsert(source, lines);
+        parsers.parseAndInsert({source: source, lines: lines});
       }
     });
 })();

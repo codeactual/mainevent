@@ -22,7 +22,6 @@
   var storage = diana.requireModule('storage/storage').createInstance();
   var config = diana.getConfig(program.config);
   var monitors = {};
-  var parserCache = {};
   var spawn = require('child_process').spawn;
 
   // To support maximum line count for --test.
@@ -61,14 +60,10 @@
      * @param data {Object} Buffer instance.
      */
     monitors[source.path].stdout.on('data', function(data) {
-      if (!parserCache[source.parser]) {
-        parserCache[source.parser] = parsers.createInstance(source.parser);
-      }
-
       var lines = data.toString().replace(/\n$/, '').split("\n");
       lineCount += lines.length;
 
-      parserCache[source.parser].parseAndInsert(source, lines, function() {
+      parsers.parseAndInsert({source: source, lines: lines}, function() {
         // Support maximum line count for --test.
         if (program.test > 0 && lineCount >= program.test) {
           process.exit();

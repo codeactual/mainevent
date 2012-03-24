@@ -7,70 +7,55 @@ GLOBAL.Parser = function(name) {
 var storage = diana.requireModule('storage/storage').createInstance();
 
 /**
- * Parse each line according to its source parser. Tag unparsable.
+ * Parse each line according to its source parser.
  *
- * @param subject {String} Log line.
- * @param names {Array} Capture names, ex. 'time' or 'host'.
- * @param regex {RegExp} Pattern to capture all parts in 'names'.
- * @param bulk {Boolean} If true, DB connection is not auto-closed.
- * @return {Object} Captured properties.
+ * @param source {Object}  Source properties from config.js
+ * @param lines {Array|String} Log line string(s).
+ * @return {Array} Log objects.
  */
-Parser.prototype.parseAndInsert = function(source, lines, callback, bulk) {
-  callback = callback || function() {};
-  lines = _.isArray(lines) ? lines : [lines];
-
+Parser.prototype.parseLines = function(source, lines) {
   var parser = this;
-  _.each(lines, function(line, index) {
-    lines[index] = parser.parse(line);
+  var logs = [];
+
+  _.each(_.isArray(lines) ? lines : [lines], function(line, index) {
+    var log = parser.parse(line);
 
     // Parse succeeded.
-    if (_.size(lines[index])) {
+    if (_.size(log)) {
       // Use a source-specific attribute for the canonical 'time' attribute.
-      if (source.timeAttr && lines[index][source.timeAttr]) {
-        lines[index].time = lines[index][source.timeAttr];
-        delete lines[index][source.timeAttr];
+      if (source.timeAttr && log[source.timeAttr]) {
+        log.time = log[source.timeAttr];
+        delete log[source.timeAttr];
       }
 
-      lines[index].time = parser.extractTime(lines[index].time);
+      log.time = parser.extractTime(log.time);
 
       // Fallback to the current time.
-      if (isNaN(lines[index].time)) {
-        lines[index].time = (new Date()).getTime();
-        lines[index].__parse_error = 'time';
+      if (isNaN(log.time)) {
+        log.time = (new Date()).getTime();
+        log.__parse_error = 'time';
       }
 
       // Attach source-specific attributes.
-      lines[index].previewAttr = source.previewAttr || [];
+      log.previewAttr = source.previewAttr || [];
 
     // Parse failed. Store the line and mark it.
     } else {
-      lines[index] = {
+      log = {
         time: (new Date()).getTime(),
         message: line,
         __parse_error: 'line'
       };
     }
 
-    lines[index].time = Math.round(lines[index].time / 1000);
+    log.time = Math.round(log.time / 1000);
+    log.parser = source.parser;
+    log.tags = source.tags || [];
+
+    logs.push(log);
   });
 
-  diana.shared.Async.runOrdered(
-    lines,
-    function (line, callback) {
-      storage.insertLog(source, line, callback, true);
-    },
-    null,
-    function() {
-      // insertLog() is called above in bulk-mode, so we need to close the
-      // reused link after all lines are inserted. Only skip that step
-      // if parseAndInsert() itself is in bulk-mode, e.g. by tail.js.
-      bulk = undefined === bulk ? false : bulk;
-      if (!bulk) {
-        storage.dbClose();
-      }
-      callback();
-    }
-  );
+  return logs;
 };
 
 /**

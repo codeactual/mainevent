@@ -25,18 +25,17 @@
         consumerCallback = consumerCallback || function() {};
         onDone = onDone || function() {};
 
-        // E.g. pass one element for an async DB insert.
-        consumer(list.shift(), function() {
-          // Run the async DB insertion callback, e.g. log the insert.
-          consumerCallback.apply(this, arguments);
-          if (list.length) {
+        if (list.length) {
+          // E.g. pass one element for an async DB insert.
+          consumer(list.shift(), function() {
+            // Run the async DB insertion callback, e.g. log the insert.
+            consumerCallback.apply(this, arguments);
             diana.shared.Async.runOrdered(list, consumer, consumerCallback, onDone);
-          } else {
-            onDone();
-          }
-        });
+          });
+        } else {
+          onDone();
+        }
       }).apply(null, arguments);
     }
   };
 })();
-

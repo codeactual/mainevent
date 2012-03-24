@@ -27,7 +27,7 @@ var verifyTimelineResults = function(test, logs, params, expected) {
   });
 
   test.expect(expected.length + 1);
-  parser.parseAndInsert(source, lines, function() {
+  parsers.parseAndInsert({source: source, lines: lines}, function() {
     storage.getTimeline(params, function(err, docs) {
       test.equal(docs.length, expected.length);
       _.each(expected, function(time, index) {
@@ -163,7 +163,7 @@ exports.testPrevPageDetection = function(test) {
   });
 
   test.expect(4);
-  parser.parseAndInsert(source, lines, function() {
+  parsers.parseAndInsert({source: source, lines: lines}, function() {
 
     // Expect no next page.
     var params = {run: run};
@@ -198,7 +198,7 @@ exports.testNextPageDetection = function(test) {
   });
 
   test.expect(4);
-  parser.parseAndInsert(source, lines, function() {
+  parsers.parseAndInsert({source: source, lines: lines}, function() {
 
     // Expect no next page.
     var params = {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')};

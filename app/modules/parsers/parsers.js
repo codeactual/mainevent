@@ -3,6 +3,8 @@
 // Load GLOBAL.Parser.
 require(__dirname + '/prototype.js');
 
+var storage = diana.requireModule('storage/storage').createInstance();
+
 /**
  * Return a named parser.
  *
@@ -11,6 +13,31 @@ require(__dirname + '/prototype.js');
  */
 exports.createInstance = function(name) {
   return require(__dirname + '/' + name + '.js').createInstance();
+};
+
+/**
+ * Parse each line list according to its source parser.
+ *
+ * @param sourceLines {Array|Object} Line object(s).
+ * - source {Object} Source properties from config.js
+ * - lines {Array|String} Unparsed line(s).
+ * @param callback {Function} Fires after success/error.
+ * @param bulk {Boolean} If true, DB connection is not auto-closed.
+ */
+exports.parseAndInsert = function(sourceLines, callback, bulk) {
+  var lines = [];
+  _.each(_.isArray(sourceLines) ? sourceLines : [sourceLines], function(sl) {
+    var parser = exports.createInstance(sl.source.parser);
+    sl.lines = _.isArray(sl.lines) ? sl.lines : [sl.lines];
+    lines = lines.concat(parser.parseLines(sl.source, sl.lines));
+  });
+
+  storage.insertLog(lines, function() {
+    if (!bulk) {
+      storage.dbClose();
+    }
+    (callback || function() {})();
+  }, bulk);
 };
 
 /**

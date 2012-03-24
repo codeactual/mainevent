@@ -61,7 +61,7 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
     var mongo = this;
     this.link.open(function(err, db) {
       if (err) {
-        mongo.dbClose('Could not access database.', error);
+        error('Could not access database.', null);
       } else {
         success(err, db);
       }
@@ -108,19 +108,21 @@ MongoDbStorage.prototype.dbClose = function(err, callback) {
 /**
  * Insert a single parsed log line.
  *
- * @param source {Object} See config.js.dist for the structure.
- * @param log {Object} Output from a parser module's parse() function.
+ * @param logs {Array|Object} Output from a parser module's parse() function.
  * @param callback {Function} Receives insert() results.
  * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
-MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
+MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
-      log.time = new mongodb.Timestamp(null, log.time);
-      log.parser = source.parser;
-      log.tags = source.tags;
-      collection.insert(log, {safe: true}, function(err, docs) {
+      var docs = [];
+      logs = _.isArray(logs) ? logs : [logs];
+      _.each(logs, function(log) {
+        log.time = new mongodb.Timestamp(null, log.time);
+        docs.push(log);
+      });
+      collection.insert(docs, {safe: true}, function(err, docs) {
         // close() required after one-time insert to avoid hang.
         if (!bulk) {
           mongo.dbClose();
@@ -288,18 +290,24 @@ MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) 
 };
 
 /**
- * Return all documents in a collection.
+ * Return all map reduce results from collection.
  *
  * @param name {String}
  * @param callback {Function} Fires after success/error.
+ * - Receives an object with _id values as keys and remaining
+ *   pairs as values.
  */
-MongoDbStorage.prototype.getWholeCollection = function(name, callback) {
+MongoDbStorage.prototype.getMapReduceResults = function(name, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {
       collection.find().toArray(function(err, docs) {
         mongo.dbClose();
-        callback(err, docs);
+        var results = {};
+        _.each(docs, function(doc) {
+          results[doc._id] = doc.value;
+        })
+        callback(err, results);
       });
     });
   });
