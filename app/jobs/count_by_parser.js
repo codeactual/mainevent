@@ -7,8 +7,6 @@
 require(__dirname + '/../modules/diana.js');
 var storage = diana.requireModule('storage/storage').createInstance();
 
-var options = {out: {replace : "top_parsers"}};
-
 var map = function() {
   emit(this.parser, {count: 1});
 };
@@ -21,10 +19,12 @@ var reduce = function(key, values) {
   return result;
 };
 
-storage.dbConnectAndOpen(function(err, db) {
-  storage.dbCollection(db, storage.collection, function(err, collection) {
-    collection.mapReduce(map, reduce, options, function(err, results, stats) {
-      storage.dbClose();
-    });
+exports.run = function(startTime, endTime, query, callback) {
+  storage.mapReduceTimeRange(startTime, endTime, {
+    name: __filename,
+    map: map,
+    reduce: reduce,
+    query: query,
+    callback: callback
   });
-});
+};

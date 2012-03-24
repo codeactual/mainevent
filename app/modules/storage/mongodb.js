@@ -24,9 +24,6 @@ MongoDbStorage.prototype.link = null;
 // Collection name.
 MongoDbStorage.prototype.collection = null;
 
-// Convenience pointer for client scripts.
-MongoDbStorage.prototype.BSON = mongodb.BSONPure;
-
 /**
  * In one or more documents, convert BSON Timestamp objects to their UNIX
  * timestamp integer values.
@@ -49,11 +46,12 @@ MongoDbStorage.prototype.unpackTime = function(docs) {
 /**
  * Connect to the DB based on config.js. Reuse a link if available.
  *
- * @param callback {Function} Fired after success/error.
+ * @param error {Function} Fired after error.
+ * @param success {Function} Fired after success.
  */
-MongoDbStorage.prototype.dbConnectAndOpen = function(callback) {
+MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
   if (this.link) {
-    callback(null, this.link);
+    success(null, this.link);
   } else {
     this.collection = config.collection;
     this.link = new mongodb.Db(
@@ -63,10 +61,9 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(callback) {
     var mongo = this;
     this.link.open(function(err, db) {
       if (err) {
-        mongo.dbClose();
-        callback('Could not access database.', null);
+        mongo.dbClose('Could not access database.', error);
       } else {
-        callback(err, db);
+        success(err, db);
       }
     });
   }
@@ -77,26 +74,34 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(callback) {
  *
  * @param db {Object} Connection link.
  * @param collection {String} Collection name.
- * @param callback {Function} Fired on success/error.
+ * @param error {Function} Fired on error.
+ * @param success {Function} Fired on success.
  */
-MongoDbStorage.prototype.dbCollection = function(db, collection, callback) {
+MongoDbStorage.prototype.dbCollection = function(db, collection, error, success) {
+  var mongo = this;
   db.collection(collection, function(err, collection) {
     if (err) {
-      this.dbClose();
-      callback('Could not access collection.', null);
+      mongo.dbClose('Could not access collection.', error);
     } else {
-      callback(err, collection);
+      success(err, collection);
     }
   });
 };
 
 /**
  * Disconnect from the DB.
+ *
+ * @param err {String} Optional error value passed to 'callback'.
+ * @param callback {Function} Optional function called after link is closed.
+ * - Receives two arguments, 'err' and null.
  */
-MongoDbStorage.prototype.dbClose = function() {
+MongoDbStorage.prototype.dbClose = function(err, callback) {
   if (this.link) {
     this.link.close();
     this.link = null;
+  }
+  if (callback) {
+    callback(err, null);
   }
 };
 
@@ -110,12 +115,11 @@ MongoDbStorage.prototype.dbClose = function() {
  */
 MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
   var mongo = this;
-  this.dbConnectAndOpen(function(err, db) {
-    mongo.dbCollection(db, mongo.collection, function(err, collection) {
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       log.time = new mongodb.Timestamp(null, log.time);
       log.parser = source.parser;
       log.tags = source.tags;
-
       collection.insert(log, {safe: true}, function(err, docs) {
         // close() required after one-time insert to avoid hang.
         if (!bulk) {
@@ -135,9 +139,10 @@ MongoDbStorage.prototype.insertLog = function(source, log, callback, bulk) {
  */
 MongoDbStorage.prototype.getLog = function(id, callback) {
   var mongo = this;
-  this.dbConnectAndOpen(function(err, db) {
-    mongo.dbCollection(db, mongo.collection, function(err, collection) {
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
+        if (err) { mongo.dbClose(err, callback); return; }
         mongo.dbClose();
         if (doc) {
           doc = mongo.unpackTime(doc);
@@ -165,8 +170,8 @@ MongoDbStorage.prototype.getLog = function(id, callback) {
  */
 MongoDbStorage.prototype.getTimeline = function(params, callback) {
   var mongo = this;
-  mongo.dbConnectAndOpen(function(err, db) {
-    mongo.dbCollection(db, mongo.collection, function(err, collection) {
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
       var options = {};
       if (params['sort-attr']) {
         if ('desc' == params['sort-dir']) {
@@ -205,6 +210,7 @@ MongoDbStorage.prototype.getTimeline = function(params, callback) {
       });
       options.limit += 1; // For next-page detection.
       collection.find(params, options).toArray(function(err, docs) {
+        if (err) { mongo.dbClose(err, callback); return; }
         mongo.dbClose();
         var info = {
           prevPage: docs && options.skip > 0,
@@ -234,4 +240,67 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
   params['sort-attr'] = 'time';
   params['sort-dir'] = 'desc';
   this.getTimeline(params, callback);
+};
+
+/**
+ * Retrieve the attributes of all logs newer than a given ID.
+ *
+ * @param job {Object}
+ * - name {String} Name of collection to receive results.
+ *   - Optionally supply __filename of a job script and the basename will be used.
+ * - map {Function}
+ * - reduce {Function}
+ * - query {Object} Filter query object.
+ * - out {Object} MongoDB output directive. (Default: {replace: <name>})
+ * - callback {Function} Fires after success/error.
+ *   - err {String}
+ *   - stats {Object}
+ */
+MongoDbStorage.prototype.mapReduce = function(job) {
+  if (job.name[0] == '/') { job.name = require('path').basename(job.name, '.js'); }
+  var options = {out: job.out || {replace: job.name}};
+  if (job.query) { options.query = job.query; delete job.query; }
+  var mongo = this;
+  this.dbConnectAndOpen(job.callback, function(err, db) {
+    mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
+      collection.mapReduce(job.map, job.reduce, options, function(err, stats) {
+        mongo.dbClose();
+        job.callback(err, stats);
+      });
+    });
+  });
+};
+
+/**
+ * Time-ranged wrapped for mapReduce().
+ *
+ * @param startTime {Number}
+ * @param endTime {Number}
+ * @param job {Object} mapReduce() argument.
+ */
+MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
+  job.query = job.query || {};
+  job.query.time = {
+    $gte: new mongodb.Timestamp(null, startTime),
+    $lte: new mongodb.Timestamp(null, endTime)
+  };
+  this.mapReduce(job);
+};
+
+/**
+ * Return all documents in a collection.
+ *
+ * @param name {String}
+ * @param callback {Function} Fires after success/error.
+ */
+MongoDbStorage.prototype.getWholeCollection = function(name, callback) {
+  var mongo = this;
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, name, callback, function(err, collection) {
+      collection.find().toArray(function(err, docs) {
+        mongo.dbClose();
+        callback(err, docs);
+      });
+    });
+  });
 };

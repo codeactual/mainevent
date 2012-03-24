@@ -12,13 +12,25 @@ GLOBAL.util = require('util');
 
 GLOBAL.diana = {
   /**
-   * Load module based on file layout convention.
+   * Load core module.
    *
    * @param name {String} Path relative to app/modules. No trailing '.js'.
    * @return {Object}
    */
   requireModule: function(name) {
     return require(__dirname + '/' + name + '.js');
+  },
+
+  /**
+   * Load job module.
+   *
+   * @param name {String} Path relative to app/modules. No trailing '.js'.
+   * @return {Object}
+   */
+  requireJob: function(name) {
+    var job = require(__dirname + '/../jobs/' + name + '.js');
+    job.name = name;
+    return job;
   },
 
   /**
