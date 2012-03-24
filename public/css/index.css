@@ -52,6 +52,6 @@ select#time-preset {
 .taglist {
   margin-bottom: 18px;
 }
-#event-header-grid div:nth-child(2) {
+#event-header-grid > div:nth-child(2) {
   text-align: center;
 }
