@@ -259,7 +259,7 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
  *   - stats {Object}
  */
 MongoDbStorage.prototype.mapReduce = function(job) {
-  if (job.name[0] == '/') { job.name = require('path').basename(job.name, '.js'); }
+  job.name = diana.extractJobName(job.name);
   var options = {out: job.out || {replace: job.name}};
   if (job.query) { options.query = job.query; delete job.query; }
   var mongo = this;

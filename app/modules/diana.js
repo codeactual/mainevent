@@ -28,9 +28,21 @@ GLOBAL.diana = {
    * @return {Object}
    */
   requireJob: function(name) {
-    var job = require(__dirname + '/../jobs/' + name + '.js');
-    job.name = name;
-    return job;
+    name = diana.extractJobName(name);
+    return require(__dirname + '/../jobs/' + name + '.js');
+  },
+
+  /**
+   * Convert a job script's absolute path into its base name.
+   *
+   * @param name {String}
+   * @return {String}
+   */
+  extractJobName: function(name) {
+    if (name[0] == '/') {
+      name = require('path').basename(name, '.js');
+    }
+    return name;
   },
 
   /**
