@@ -1,6 +1,6 @@
 'use strict';
 
-define(['moment'], function(moment) {
+define([], function() {
 
   var Lang = function() {};
 

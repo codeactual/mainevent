@@ -4,11 +4,7 @@ if ('undefined' != typeof require) {
   var moment = require('moment');
 }
 
-if ('undefined' === typeof define) {
-  var define = function(deps, callback) { callback(moment); };
-}
-
-define(['moment'], function(moment) {
+define([], function() {
 
   return{
     /**
