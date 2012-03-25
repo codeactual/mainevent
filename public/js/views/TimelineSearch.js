@@ -24,7 +24,7 @@
       $('#time-gte,#time-lte').each(function() {
         var input = $(this);
         // Invalidate the preset time range after a custom one is selected.
-        input.change(function() { $('#time-preset').val(''); });
+        input.change(function() { view.$('.time-preset').val(''); });
         // Activate date/time widgets when inputs gain focus.
         input.datetimepicker({});
       });
@@ -93,7 +93,7 @@
 
     events: {
       'submit': 'submit',
-      'change #time-preset': 'applyPresetTime'
+      'change .time-preset': 'applyPresetTime'
     },
 
     /**
@@ -112,7 +112,7 @@
      * @param event {Object} jQuery event object.
      */
     applyPresetTime: function(event) {
-      $('#time-gte').val(moment().subtract('seconds', $('#time-preset').val()).format(this.datetimePickerFormat));
+      $('#time-gte').val(moment().subtract('seconds', this.$('.time-preset').val()).format(this.datetimePickerFormat));
       $('#time-lte').val(moment().format(this.datetimePickerFormat));
     },
 

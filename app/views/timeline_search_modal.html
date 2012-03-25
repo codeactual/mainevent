@@ -12,16 +12,7 @@
         </span>
       </div>
       <div class="form-row">
-        <select id="time-preset">
-          <option value="">Time ...</option>
-          <option value="60">Last 1 min</option>
-          <option value="300">Last 5 mins</option>
-          <option value="900">Last 15 mins</option>
-          <option value="3600">Last 1 hour</option>
-          <option value="86400">Last 1 day</option>
-          <option value="604800">Last 1 wk</option>
-          <option value="2592000">Last 30 days</option>
-        </select>
+        {>select_time_preset/}
         <input id="time-gte" type="text" class="input-medium" placeholder="Earliest Event" /><input id="time-lte" type="text" class="input-medium" placeholder="Latest Event" />
         <a id="time-preset-clear" class="btn btn-danger" href="#"><i class="icon-trash icon-white" /></a>
       </div>
