@@ -87,7 +87,8 @@
       } else {
         this.searchView = new diana.views.TimelineSearch({
           el: modal,
-          searchArgs: this.options.searchArgs
+          searchArgs: this.options.searchArgs,
+          title: 'Search'
         });
       }
     },

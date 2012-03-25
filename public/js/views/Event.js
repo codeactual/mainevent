@@ -62,7 +62,8 @@
         });
         this.searchView = new diana.views.TimelineSearch({
           el: modal,
-          searchArgs: searchArgs
+          searchArgs: searchArgs,
+          title: 'Find Similar'
         });
       }
     },

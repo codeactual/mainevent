@@ -12,7 +12,15 @@
     datetimePickerFormat: 'MM/DD/YYYY HH:mm:ss',
 
     initialize: function(options) {
+      this.render();
+    },
+
+    render: function() {
       var view = this;
+      var body = this.$('.modal-body');
+      var parser = this.$('#parser');
+
+      this.$('.modal-header > h4').text(this.options.title);
 
       // Auto-expand the 'x = y' <input> rows.
       $(this.el).delegate('.condition-pair:last-child', 'focus', function(event) {
@@ -45,13 +53,6 @@
         $('#time-preset,#time-gte,#time-lte').val('');
       });
 
-      this.render();
-    },
-
-    render: function() {
-      var view = this;
-      var body = this.$('.modal-body');
-      var parser = this.$('#parser');
 
       diana.helpers.Widget.fillParserSelect(parser);
 
