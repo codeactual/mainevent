@@ -252,8 +252,8 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
  *   - Optionally supply __filename of a job script and the basename will be used.
  * - map {Function}
  * - reduce {Function}
- * - query {Object} (Optional) Filter query object.
- * - out {Object} (Optional, Default: {replace: <name>}) Output directive.
+ * - options {Object} (Optional) Collection.mapReduce() options.
+ *   out {Object} (Default: {replace: <name>}) Output directive.
  * - return {String} (Optional, Default: none) Callback receives 'cursor' or 'array'.
  * - callback {Function} Fires after success/error.
  *   - If 'return' not set:
@@ -266,8 +266,7 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
  */
 MongoDbStorage.prototype.mapReduce = function(job) {
   job.name = diana.extractJobName(job.name);
-  var options = {out: job.out || {replace: job.name}};
-  if (job.query) { options.query = job.query; delete job.query; }
+  var options = _.extend(job.options, {out: job.out || {replace: job.name}});
   var mongo = this;
   this.dbConnectAndOpen(job.callback, function(err, db) {
     mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {

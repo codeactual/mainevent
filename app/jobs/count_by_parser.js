@@ -24,7 +24,7 @@ exports.run = function(startTime, endTime, query, callback) {
     name: __filename,
     map: map,
     reduce: reduce,
-    query: query,
+    options: {query: query},
     return: 'array',
     callback: callback
   });
