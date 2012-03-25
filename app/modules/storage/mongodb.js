@@ -185,6 +185,10 @@ requirejs(['shared/Lang'], function(Lang) {
             delete params['sort-dir'];
           }
           delete params['sort-attr'];
+
+          if ('time' == options.sort[0][0]) {
+            options.sort.push(['_id', options.sort[0][1]]);
+          }
         }
         if (params.limit) {
           options.limit = Math.min(parseInt(params.limit, 10), config.maxResultSize);
@@ -232,14 +236,16 @@ requirejs(['shared/Lang'], function(Lang) {
   };
 
   /**
-   * Retrieve the attributes of all logs newer than a given ID.
+   * Retrieve the attributes of all logs newer than a given ID/time.
    *
    * @param id {String}
+   * @param time {Number} Timestamp in seconds.
    * @param params {Object} getTimeline() compatible parameters.
    * @param callback {Function} Receives find() results.
    */
-  MongoDbStorage.prototype.getTimelineUpdates = function(id, params, callback) {
+  MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callback) {
     params._id = {$gt: new BSON.ObjectID(id)};
+    params['time-gte'] = time;
     params['sort-attr'] = 'time';
     params['sort-dir'] = 'desc';
     this.getTimeline(params, callback);

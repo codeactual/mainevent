@@ -18,8 +18,9 @@ define([
    * fetches the result set based on router options passed via initialize().
    */
   return Backbone.View.extend({
-    // Track the most recent event ID seen by initial fetch() and automatic updates.
+    // Track the most recent event seen by initial fetch() and automatic updates.
     newestEventId: null,
+    newestEventTime: null,
 
     // socket.io connection.
     socket: null,
@@ -111,7 +112,7 @@ define([
       this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
-        this.startTimelineUpdate(this.newestEventId);
+        this.startTimelineUpdate(this.newestEventId, this.newestEventTime);
       } else {
         this.closeSocket();
       }
@@ -270,7 +271,7 @@ define([
           // tbody was already part of the DOM, so above rows were added live.
         } else {
           $('#timeline-table').append(tbody);
-          view.startTimelineUpdate.call(view, events[0]._id);
+          view.startTimelineUpdate.call(view, events[0]._id, events[0].time);
         }
       });
     },
@@ -315,10 +316,12 @@ define([
      * update payloads.
      *
      * @param initialId {String} All updates (if any) will be newer than this ID.
+     * @param initialTime {Number} All updates (if any) will be newer than this time.
      */
-    startTimelineUpdate: function(initialId) {
+    startTimelineUpdate: function(initialId, initialTime) {
       var view = this;
       view.newestEventId = initialId;
+      view.newestEventTime = initialTime;
 
       if (!this.prefs.autoUpdate || !diana.features.timelineUpdate) {
         return;
@@ -330,6 +333,7 @@ define([
             // Start/restart automatic updates.
             view.socket.emit('startTimelineUpdate', {
               newestEventId: view.newestEventId,
+              newestEventTime: view.newestEventTime,
               searchArgs: view.options.searchArgs
             });
           }
