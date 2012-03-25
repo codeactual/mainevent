@@ -54,6 +54,19 @@
       event.preventDefault();
       $('.modal').modal('hide');
       diana.helpers.Event.trigger('ModalClose');
+    },
+
+    /**
+     * Add <option> list based on configured parser list.
+     *
+     * @param select {Object} jQuery object or selector.
+     */
+    fillParserSelect: function(select) {
+      select = $(select);
+      select.append('<option value="">Any</option>');
+      _.each(diana.parsers, function(name) {
+        select.append('<option value="' + name + '">' + name + '</option>');
+      });
     }
   };
 })();

@@ -53,10 +53,7 @@
       var body = this.$('.modal-body');
       var parser = this.$('#parser');
 
-      parser.append('<option value="">Any</option>');
-      _.each(diana.parsers, function(name) {
-        parser.append('<option value="' + name + '">' + name + '</option>');
-      });
+      diana.helpers.Widget.fillParserSelect(parser);
 
       var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
       _.each(basicArgNames, function(name) {
@@ -88,7 +85,7 @@
       }
 
       this.$el.modal('show');
-      this.$('#parser').focus().select();
+      parser.focus().select();
     },
 
     events: {

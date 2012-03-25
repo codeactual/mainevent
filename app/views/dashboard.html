@@ -1,0 +1,25 @@
+<div id="dashboard-header-grid" class="row-fluid header-grid">
+  <div class="span4">
+    <div class="btn-group-center">
+      <div class="btn-group">
+        <a class="btn" href="">Create From Search</a>
+        <a class="btn" href="">Related Timeline</a>
+      </div>
+    </div>
+  </div>
+  <div class="span4">
+    <form class="form-inline">
+      <span class="input-prepend">
+        <span class="add-on">Event Type</span>
+        <select id="parser"></select>
+      </span>
+      <span class="input-prepend">
+        <span class="add-on">Time</span>
+        {>select_time_preset/}
+      </span>
+    </form>
+  </div>
+  <div class="span4">
+    {>keyboard_shortcuts/}
+  </div>
+</div>

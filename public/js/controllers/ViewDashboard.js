@@ -10,7 +10,9 @@
    *
    * @return {Object} View object.
    */
-  diana.controllers.ViewIndex = function() {
-    return null;
+  diana.controllers.ViewDashboard = function() {
+    return new diana.views.Dashboard({
+      el: $('#backbone-view')
+    });
   };
 })();
