@@ -8,7 +8,7 @@
 
 'use strict';
 
-$(function() {
+require(['libs', 'templates', 'shared', 'mvc'], function() {
   window.diana = window.diana || {};
   var diana = window.diana;
 
