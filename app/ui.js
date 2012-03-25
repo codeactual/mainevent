@@ -103,10 +103,11 @@ app.get('/event/:id', function(req, res) {
 
 // Serve automatic timeline updates.
 io.sockets.on('connection', function (socket) {
+  var timelineUpdate = null;
 
   // Client seeds the update stream with the last-seen ID.
   socket.on('startTimelineUpdate', function (options) {
-    var timelineUpdate = setInterval(function () {
+    timelineUpdate = setInterval(function () {
       if (!options.newestEventId) {
         // Client never sent the ID for some reason -- don't stop the updates.
         return;
@@ -130,7 +131,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    if ("undefined" != typeof timelineUpdate) {
+    if (timelineUpdate) {
       clearInterval(timelineUpdate);
     }
   });
