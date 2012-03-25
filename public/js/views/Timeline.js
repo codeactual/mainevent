@@ -8,8 +8,6 @@ define([
     'helpers/Socket',
     'helpers/View',
     'helpers/Widget',
-    'templates',
-    'order!backbone/View',
     'bootstrap-dropdown'
   ], function(TimelineCollection, EditSingleValue, TimelineSearch, Event, Socket, View, Widget) {
 

@@ -2,7 +2,6 @@
 
 define([
     'helpers/Widget',
-    'templates',
     'bootstrap-modal'
   ], function(Widget) {
 

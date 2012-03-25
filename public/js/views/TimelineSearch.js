@@ -2,8 +2,6 @@
 
 define([
     'helpers/Widget',
-    'templates',
-    'order!backbone/View',
     'order!jquery-ui',
     'order!jquery-ui-timepicker-addon',
     'bootstrap-modal'

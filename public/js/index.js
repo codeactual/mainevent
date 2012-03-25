@@ -9,16 +9,16 @@
 'use strict';
 
 require([
-  'order!helpers/Event',
-  'order!observers/ContentPreRender',
   'order!jquery',
   'order!underscore',
   'order!backbone',
-  'moment',
-  'clientsiiide',
-  'socket.io',
-  'templates'
-  ], function(Event) {
+  'order!backbone/View',
+  'order!moment',
+  'order!clientsiiide',
+  'order!socket.io',
+  'order!templates',
+  'order!observers/ContentPreRender'
+  ], function() {
 
   window.diana = window.diana || {};
   var diana = window.diana;
@@ -71,7 +71,7 @@ require([
         route = route.match(/\^/) ? new RegExp(route) : route;
         router.route(route, config.controller, function() {
           var routeArgs = arguments;
-          require(['controllers/' + config.controller], function(controller) {
+          require(['helpers/Event', 'controllers/' + config.controller], function(Event, controller) {
             // Apply 'context' options to the 'content' template, ex. show sidebar.
             dust.render(
               'content',
@@ -104,15 +104,17 @@ require([
     }
   });
 
-  /**
-   * Common error handler for all fetch/sync operations.
-   *
-   * @param response {Object} AJAX response.
-   */
-  Event.on('CritFetchError', function(response) {
-    var context = {message: JSON.parse(response.responseText).__error};
-    dust.render('error', context, function(err, out) {
-      $('#content').html(out);
+  require(['helpers/Event'], function(Event) {
+    /**
+     * Common error handler for all fetch/sync operations.
+     *
+     * @param response {Object} AJAX response.
+     */
+    Event.on('CritFetchError', function(response) {
+      var context = {message: JSON.parse(response.responseText).__error};
+      dust.render('error', context, function(err, out) {
+        $('#content').html(out);
+      });
     });
   });
 

@@ -1,9 +1,6 @@
 'use strict';
 
-define([
-    'backbone',
-    'backbone/View'
-  ], function() {
+define([], function() {
 
   return Backbone.View.extend({
     initialize: function(options) {

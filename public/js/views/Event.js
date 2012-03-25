@@ -5,9 +5,7 @@ define([
     'helpers/Event',
     'helpers/Widget',
     'models/Event',
-    'views/TimelineSearch',
-    'templates',
-    'order!backbone/View'
+    'views/TimelineSearch'
   ], function(DateShared, EventHelper, Widget, EventModel, TimelineSearch) {
 
   // View of an individual event.

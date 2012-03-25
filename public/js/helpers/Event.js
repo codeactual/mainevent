@@ -1,9 +1,6 @@
 'use strict';
 
-define([
-  'order!underscore',
-  'order!backbone'
-  ], function() {
+define([], function() {
 
   /**
    * Global dispatch object.

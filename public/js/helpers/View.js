@@ -1,6 +1,6 @@
 'use strict';
 
-define(['templates'], function() {
+define([], function() {
 
   return {
     /**

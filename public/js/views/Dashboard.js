@@ -1,10 +1,7 @@
 'use strict';
 
 define([
-    'helpers/Widget',
-    'templates',
-    'backbone/View',
-    'helpers/Event'
+    'helpers/Widget'
   ], function(Widget) {
 
   // View the dashboard container.
