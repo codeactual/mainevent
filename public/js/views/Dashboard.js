@@ -26,6 +26,9 @@
         null,
         function(err, out) {
           view.$el.html(out);
+          new diana.views.DashboardMainGraph({
+            el: $('#dashboard-main-graph')
+          });
         }
       );
     }
