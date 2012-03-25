@@ -10,6 +10,11 @@
 GLOBAL._ = require('underscore');
 GLOBAL.util = require('util');
 
+GLOBAL.requirejs = require('requirejs');
+requirejs.config({
+  baseUrl: __dirname + '/../../public/js'
+});
+
 GLOBAL.diana = {
   /**
    * Load core module.
@@ -59,6 +64,3 @@ GLOBAL.diana = {
     return require(file).read();
   }
 };
-
-// Import diana.shared.* modules.
-diana.requireModule('build').combineAndLoadSharedJavascript();

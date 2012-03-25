@@ -1,14 +1,18 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'helpers/Widget',
+    'templates',
+    'order!backbone/View',
+    'order!jquery-ui',
+    'order!jquery-ui-timepicker-addon',
+    'bootstrap-modal'
+  ], function(Widget) {
 
   /**
    * Displays the search box modal.
    */
-  diana.views.TimelineSearch = Backbone.View.extend({
+  return Backbone.View.extend({
     datetimePickerFormat: 'MM/DD/YYYY HH:mm:ss',
 
     initialize: function(options) {
@@ -53,8 +57,7 @@
         $('#time-preset,#time-gte,#time-lte').val('');
       });
 
-
-      diana.helpers.Widget.fillParserSelect(parser);
+      Widget.fillParserSelect(parser);
 
       var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
       _.each(basicArgNames, function(name) {
@@ -100,7 +103,7 @@
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
+      Widget.closeModal(event);
       this.navigate('timeline', this.getSearchArgs());
     },
 
@@ -158,4 +161,4 @@
       return args;
     }
   });
-})();
+});

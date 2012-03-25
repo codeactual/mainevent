@@ -1,14 +1,16 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'helpers/Widget',
+    'templates',
+    'order!backbone/View',
+    'bootstrap-modal'
+  ], function(Widget) {
 
   /**
    * Displays the editor modal.
    */
-  diana.views.EditSingleValue = Backbone.View.extend({
+  return Backbone.View.extend({
     initialize: function(options) {
       this.setElement('#edit-singlevalue-modal');
       this.render();
@@ -33,8 +35,8 @@
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
+      Widget.closeModal(event);
       this.options.onEdit(this.$('input').val());
     }
   });
-})();
+});

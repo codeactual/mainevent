@@ -1,9 +1,6 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.controllers = window.diana.controllers || {};
-  var diana = window.diana;
+define(['views/Timeline'], function(view) {
 
   /**
    * Handler for /#timeline* requests.
@@ -11,7 +8,7 @@
    * @param options {Object} Search/pagination options. See searchArgs below.
    * @return {Object} View object.
    */
-  diana.controllers.ViewTimeline = function(options) {
+  return function(options) {
     var searchArgs = {
       // Holds all pairs with keys that do not match those below, ex. parser=php.
       conditions: {},
@@ -61,6 +58,6 @@
       && !_.has(searchArgs, 'skip')
       && !_.has(searchArgs, '_id');
 
-    return new diana.views.Timeline({searchArgs: searchArgs, el: $('#backbone-view')});
+    return new view({searchArgs: searchArgs, el: $('#backbone-view')});
   };
-})();
+});

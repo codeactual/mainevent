@@ -1,12 +1,17 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'shared/Date',
+    'helpers/Event',
+    'helpers/Widget',
+    'models/Event',
+    'views/TimelineSearch',
+    'templates',
+    'order!backbone/View'
+  ], function(DateShared, EventHelper, Widget, EventModel, TimelineSearch) {
 
   // View of an individual event.
-  diana.views.Event = Backbone.View.extend({
+  return Backbone.View.extend({
     // Modal sub-views.
     searchView: null,
 
@@ -18,12 +23,12 @@
         }
       });
 
-      this.model = new diana.models.Event({id: options.id});
+      this.model = new EventModel({id: options.id});
       this.model.bind('change', this.render, this);
 
       // Bubble up the model error.
-      diana.helpers.Event.on('EventSyncError', function(response) {
-        diana.helpers.Event.trigger('CritFetchError', response);
+      EventHelper.on('EventSyncError', function(response) {
+        EventHelper.trigger('CritFetchError', response);
       });
 
       this.model.fetch();
@@ -60,7 +65,7 @@
             delete searchArgs[key];
           }
         });
-        this.searchView = new diana.views.TimelineSearch({
+        this.searchView = new TimelineSearch({
           el: modal,
           searchArgs: searchArgs,
           title: 'Find Similar'
@@ -99,7 +104,7 @@
         // Ex. format the time attribute.
         context.list = _.map(context.list, function(pair, index) {
           if ('time' == pair.key) {
-            context.time = diana.shared.Date.formatTime(pair.value);
+            context.time = DateShared.formatTime(pair.value);
             context.timeFromNow = moment(pair.value * 1000).fromNow();
           }
           return pair;
@@ -115,7 +120,7 @@
       } else {
         var context = event;
         context.timeFromNow = moment(context.time * 1000).fromNow();
-        context.time = diana.shared.Date.formatTime(context.time);
+        context.time = DateShared.formatTime(context.time);
         delete context.previewAttr;
       }
 
@@ -136,4 +141,4 @@
       );
     }
   });
-})();
+});

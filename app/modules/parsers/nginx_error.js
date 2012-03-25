@@ -1,18 +1,19 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new NginxErrorParser();
-};
+requirejs(['shared/Lang'], function(Lang) {
+  exports.createInstance = function() {
+    return new NginxErrorParser();
+  };
 
-var NginxErrorParser = function() {
-  Parser.call(this, 'nginx_error');
-};
+  var NginxErrorParser = function() {
+    Parser.call(this, 'nginx_error');
+  };
 
-diana.shared.Lang.inheritPrototype(NginxErrorParser, Parser);
+  Lang.inheritPrototype(NginxErrorParser, Parser);
 
-NginxErrorParser.prototype.parse = function(log) {
-  return this.candidateCapture(log, [
-    {
+  NginxErrorParser.prototype.parse = function(log) {
+    return this.candidateCapture(log, [
+                                 {
       // Ex. 2012/02/05 00:19:34 [error] 13816#0: *1 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: diana, request: "GET / HTTP/1.1", upstream: "fastcgi://unix:/path/to/php-fpm.sock:", host: "diana"
       names: ['time', 'level', 'errno', 'errstr', 'client', 'server', 'method', 'path', 'upstream', 'host'],
       regex: /(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) \[([^\]]*)\] ([0-9#]*): (?:(.*), client:)(?: (.*), server:)(?: (.*), request:) "(\S+)(?: +([^ ]*) +\S*)?".*upstream: "([^\"]*)", host: "([^\"]*)"/,
@@ -30,21 +31,22 @@ NginxErrorParser.prototype.parse = function(log) {
       regex: /(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) \[([^\]]*)\] ([0-9#]*): (.*)/,
       subtype: 'internal'
     }
-  ]);
-};
+    ]);
+  };
 
-NginxErrorParser.prototype.addPreviewContext = function(log) {
-  if (log.level) {
-    switch (log.level) {
-      case 'debug': log.__levelClass = 'info'; break;
-      case 'info': log.__levelClass = 'info'; break;
-      case 'warn': log.__levelClass = 'warning'; break;
-      default: log.__levelClass = 'important'; break;
+  NginxErrorParser.prototype.addPreviewContext = function(log) {
+    if (log.level) {
+      switch (log.level) {
+        case 'debug': log.__levelClass = 'info'; break;
+        case 'info': log.__levelClass = 'info'; break;
+        case 'warn': log.__levelClass = 'warning'; break;
+        default: log.__levelClass = 'important'; break;
+      }
     }
-  }
-  return log;
-};
+    return log;
+  };
 
-NginxErrorParser.prototype.extractTime = function(date) {
-  return Date.parse(date);
-};
+  NginxErrorParser.prototype.extractTime = function(date) {
+    return Date.parse(date);
+  };
+});

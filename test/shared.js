@@ -6,26 +6,28 @@
 
 var testutil = require(__dirname + '/modules/testutil.js');
 
-exports.testWalkAsync = function(test) {
-  var list = [1, 2, 3];
-  var consumed = [];
-  var calledBack = [];
+requirejs(['shared/Async'], function(Async) {
+  exports.testWalkAsync = function(test) {
+    var list = [1, 2, 3];
+    var consumed = [];
+    var calledBack = [];
 
-  var consumer = function(num, callback) {
-    consumed.push(num);
-    callback(num);
+    var consumer = function(num, callback) {
+      consumed.push(num);
+      callback(num);
+    };
+
+    var consumerCallback = function(num) {
+      calledBack.push(num);
+    };
+
+    var onDone = function() {
+      test.deepEqual(consumed, list);
+      test.deepEqual(calledBack, list);
+      test.done();
+    };
+
+    test.expect(2);
+    Async.runOrdered(list, consumer, consumerCallback, onDone);
   };
-
-  var consumerCallback = function(num) {
-    calledBack.push(num);
-  };
-
-  var onDone = function() {
-    test.deepEqual(consumed, list);
-    test.deepEqual(calledBack, list);
-    test.done();
-  };
-
-  test.expect(2);
-  diana.shared.Async.runOrdered(list, consumer, consumerCallback, onDone);
-};
+});

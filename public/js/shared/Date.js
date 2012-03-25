@@ -4,14 +4,13 @@ if ('undefined' != typeof require) {
   var moment = require('moment');
 }
 
-(function() {
-  var root = "undefined" == typeof window ? GLOBAL : window;
-  root.diana = root.diana || {};
-  root.diana.shared = root.diana.shared || {};
+if ('undefined' === typeof define) {
+  var define = function(deps, callback) { callback(moment); };
+}
 
-  var diana = root.diana;
+define(['moment'], function(moment) {
 
-  diana.shared.Date = {
+  return{
     /**
      * Convert a UNIX timestamp in seconds to string format.
      *
@@ -42,5 +41,4 @@ if ('undefined' != typeof require) {
        return (new Date(str)).getTime() / 1000;
      }
   };
-})();
-
+});

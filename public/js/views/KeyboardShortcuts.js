@@ -1,14 +1,15 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'helpers/Widget',
+    'templates',
+    'bootstrap-modal'
+  ], function(Widget) {
 
   /**
    * Displays the shortcut list modal.
    */
-  diana.views.KeyboardShortcuts = Backbone.View.extend({
+  return Backbone.View.extend({
     initialize: function(options) {
       this.setElement('#keyboard-shortcuts-modal');
       this.render();
@@ -24,7 +25,7 @@
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
+      Widget.closeModal(event);
     },
 
     render: function() {
@@ -56,4 +57,4 @@
       this.$el.modal('show');
     }
   });
-})();
+});

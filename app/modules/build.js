@@ -24,20 +24,23 @@ var stripStrict = function(str) {
 exports.compileViews = function() {
   var fd = fs.openSync(__dirname + '/../../public/js/templates.js', 'w');
 
+  // For server-side loading w/out RequireJS.
+  fs.writeSync(fd, "if ('undefined' === typeof define) { var define = function(deps, callback) { callback(dust); }; }");
+
+  // Load 'dust' here so we only need to load templates.js w/ RequireJS.
+  fs.writeSync(fd, "define(['dust'], function(dust) {");
   _.each(fs.readdirSync(__dirname + '/../views'), function(template) {
     // Ex. 'index'
     var baseName = path.basename(template, '.html');
     // Append the compiled template.
     fs.writeSync(
       fd,
-      dust.compile(
-        fs.readFileSync(exports.getPath(baseName), 'UTF-8'),
-        baseName
-      ),
+      dust.compile(fs.readFileSync(exports.getPath(baseName), 'UTF-8'), baseName),
       null,
       'utf8'
     );
   });
+  fs.writeSync(fd, "return dust; });");
 
   fs.closeSync(fd);
 };
@@ -60,68 +63,6 @@ exports.combineCss = function() {
   });
   fs.closeSync(fd);
 }
-
-/**
- * Combine client-side Javascript.
- */
-exports.combineClientJavascript = function() {
-  var baseJsDir = __dirname + '/../../public/js/';
-
-  var fd = fs.openSync(__dirname + '/../../public/js/mvc.js', 'w');
-  var backboneDirs = [
-    'helpers', 'backbone', 'models', 'collections', 'views', 'observers', 'controllers'
-  ];
-  _.each(backboneDirs, function(dir) {
-    _.each(fs.readdirSync(baseJsDir + dir), function(jsFile, fileNum) {
-      var content = fs.readFileSync(baseJsDir + dir + '/' + jsFile, 'UTF-8');
-      if (fileNum) {
-        content = stripStrict(content);
-      }
-      fs.writeSync(fd, content, null, 'utf8');
-    });
-  });
-  fs.closeSync(fd);
-
-  fd = fs.openSync(__dirname + '/../../public/js/libs.js', 'w');
-  var libs = [
-    'jquery.js',
-    'jquery-ui.js',
-    'jquery-ui-timepicker-addon.js',
-    'underscore.js',
-    'backbone.js',
-    'bootstrap-modal.js',
-    'bootstrap-alert.js',
-    'bootstrap-dropdown.js',
-    'dust.js',
-    'moment.js',
-    'clientsiiide.js',
-    'socket.io.js'
-  ];
-  _.each(libs, function(jsFile) {
-    fs.writeSync(fd, fs.readFileSync(baseJsDir + 'libs/' + jsFile, 'UTF-8') + "\n", null, 'utf8');
-  });
-  fs.closeSync(fd);
-};
-
-/**
- * Combine Javascript shared by client and server. Load into server-side.
- */
-exports.combineAndLoadSharedJavascript = function() {
-  var baseJsDir = __dirname + '/../../public/js/shared/';
-  var outputFile = __dirname + '/../../public/js/shared.js';
-
-  var fd = fs.openSync(outputFile, 'w');
-  _.each(fs.readdirSync(baseJsDir), function(jsFile, fileNum) {
-      var content = fs.readFileSync(baseJsDir + jsFile, 'UTF-8');
-      if (fileNum) {
-        content = stripStrict(content);
-      }
-    fs.writeSync(fd, content + "\n", null, 'utf8');
-  });
-  fs.closeSync(fd);
-
-  require(outputFile);
-};
 
 /**
  * Return the location of a named view.

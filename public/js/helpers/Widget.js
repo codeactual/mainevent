@@ -1,15 +1,12 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.helpers = window.diana.helpers || {};
-  var diana = window.diana;
+define(['helpers/Event'], function(Event) {
 
   var config = {
     alert: {max: 3, format: 'LT'}
   };
 
-  diana.helpers.Widget = {
+  return {
     /**
      * Add an alert above the main content area.
      *
@@ -53,7 +50,7 @@
     closeModal: function(event) {
       event.preventDefault();
       $('.modal').modal('hide');
-      diana.helpers.Event.trigger('ModalClose');
+      Event.trigger('ModalClose');
     },
 
     /**
@@ -69,5 +66,5 @@
       });
     }
   };
-})();
+});
 

@@ -1,16 +1,17 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'helpers/Widget',
+    'templates',
+    'backbone/View',
+    'helpers/Event'
+  ], function(Widget) {
 
   // View the dashboard container.
-  diana.views.Dashboard = Backbone.View.extend({
+  return Backbone.View.extend({
     initialize: function(options) {
       this.initKeyEvents({});
       this.render();
-      diana.helpers.Widget.fillParserSelect('#parser');
     },
 
     events: {
@@ -26,11 +27,14 @@
         null,
         function(err, out) {
           view.$el.html(out);
-          new diana.views.DashboardMainGraph({
-            el: $('#dashboard-main-graph')
+          require(['views/DashboardMainGraph'], function(DashboardMainGraph) {
+            new DashboardMainGraph({
+              el: $('#dashboard-main-graph')
+            });
+            Widget.fillParserSelect('#parser');
           });
         }
       );
     }
   });
-})();
+});

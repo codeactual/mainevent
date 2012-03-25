@@ -1,11 +1,11 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'backbone',
+    'backbone/View'
+  ], function() {
 
-  diana.views.DashboardMainGraph = Backbone.View.extend({
+  return Backbone.View.extend({
     initialize: function(options) {
       this.render();
     },
@@ -19,4 +19,4 @@
     render: function() {
     }
   });
-})();
+});

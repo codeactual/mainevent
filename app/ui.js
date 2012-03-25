@@ -23,7 +23,6 @@ var io = require('socket.io').listen(app);
 var build = diana.requireModule('build');
 build.compileViews();
 build.combineCss();
-build.combineClientJavascript();
 
 // Required for using *.html with res.render().
 app.register('.html', {

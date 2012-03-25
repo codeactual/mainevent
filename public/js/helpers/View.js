@@ -1,13 +1,8 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.helpers = window.diana.helpers || {};
-  var diana = window.diana;
+define(['templates'], function() {
 
-  var cache = {};
-
-  diana.helpers.View = {
+  return {
     /**
      * Creates a Deferred dust.render() call.
      *
@@ -25,5 +20,5 @@
       return deferred.promise();
     }
   };
-})();
+});
 

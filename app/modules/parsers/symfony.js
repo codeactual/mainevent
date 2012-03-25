@@ -1,18 +1,19 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new SymfonyParser();
-};
+requirejs(['shared/Lang'], function(Lang) {
+  exports.createInstance = function() {
+    return new SymfonyParser();
+  };
 
-var SymfonyParser = function() {
-  Parser.call(this, 'symfony');
-};
+  var SymfonyParser = function() {
+    Parser.call(this, 'symfony');
+  };
 
-diana.shared.Lang.inheritPrototype(SymfonyParser, Parser);
+  Lang.inheritPrototype(SymfonyParser, Parser);
 
-SymfonyParser.prototype.parse = function(log) {
-  return this.candidateCapture(log, [
-    {
+  SymfonyParser.prototype.parse = function(log) {
+    return this.candidateCapture(log, [
+                                 {
       'names': ['time', 'type', 'level', 'event', 'listener'],
       'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,
       subtype: 'event'
@@ -22,21 +23,22 @@ SymfonyParser.prototype.parse = function(log) {
       'regex' : /^\[([^\]]*)\] ([^\.]+)\.([^:]+): ([^:]+):(?: (.*) at )(?:(\/.*) line )(\d+)/,
       subtype: 'uncaught_exception'
     }
-  ]);
-};
+    ]);
+  };
 
-SymfonyParser.prototype.addPreviewContext = function(log) {
-  if (log.level) {
-    switch (log.level) {
-      case 'DEBUG': log.__levelClass = 'default'; break;
-      case 'INFO': log.__levelClass = 'info'; break;
-      case 'WARNING': log.__levelClass = 'warning'; break;
-      default: log.__levelClass = 'important'; break;
+  SymfonyParser.prototype.addPreviewContext = function(log) {
+    if (log.level) {
+      switch (log.level) {
+        case 'DEBUG': log.__levelClass = 'default'; break;
+        case 'INFO': log.__levelClass = 'info'; break;
+        case 'WARNING': log.__levelClass = 'warning'; break;
+        default: log.__levelClass = 'important'; break;
+      }
     }
-  }
-  return log;
-};
+    return log;
+  };
 
-SymfonyParser.prototype.extractTime = function(date) {
-  return Date.parse(date.replace(/-/, '/'));
-};
+  SymfonyParser.prototype.extractTime = function(date) {
+    return Date.parse(date.replace(/-/, '/'));
+  };
+});

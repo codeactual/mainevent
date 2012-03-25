@@ -1,15 +1,12 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.models = window.diana.models || {};
-  var diana = window.diana;
+define(['helpers/Event'], function(Event) {
 
   /**
    * Represents one logged event. Shared by multiple views.
    * Attributes vary from one event to the next based on the parser.
    */
-  diana.models.Event = Backbone.Model.extend({
+  return Backbone.Model.extend({
     urlRoot: '/event',
 
     sync: function(method, model, options) {
@@ -36,11 +33,11 @@
               onMissDone(write);
             },
             error: function(response) {
-              diana.helpers.Event.trigger('EventSyncError', response);
+              Event.trigger('EventSyncError', response);
             }
           });
         }
       });
     }
   });
-})();
+});

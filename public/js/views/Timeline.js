@@ -1,15 +1,23 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.views = window.diana.views || {};
-  var diana = window.diana;
+define([
+    'collections/Timeline',
+    'views/EditSingleValue',
+    'views/TimelineSearch',
+    'helpers/Event',
+    'helpers/Socket',
+    'helpers/View',
+    'helpers/Widget',
+    'templates',
+    'order!backbone/View',
+    'bootstrap-dropdown'
+  ], function(TimelineCollection, EditSingleValue, TimelineSearch, Event, Socket, View, Widget) {
 
   /**
    * Displays the <table> into which result sets are rendered. Automatically
    * fetches the result set based on router options passed via initialize().
    */
-  diana.views.Timeline = Backbone.View.extend({
+  return Backbone.View.extend({
     // Track the most recent event ID seen by initial fetch() and automatic updates.
     newestEventId: null,
 
@@ -44,7 +52,7 @@
       });
 
       $.when(
-        diana.helpers.View.deferRender(
+        View.deferRender(
           'timeline_table',
           null,
           function(err, out) {
@@ -74,7 +82,7 @@
      * @param event {Object} jQuery event object.
      */
     openSearch: function(event) {
-      diana.helpers.Widget.closeDropdown(event);
+      Widget.closeDropdown(event);
 
       var modal = $('#timeline-search-modal');
 
@@ -85,7 +93,7 @@
       if (this.searchView) {
         modal.modal('show');
       } else {
-        this.searchView = new diana.views.TimelineSearch({
+        this.searchView = new TimelineSearch({
           el: modal,
           searchArgs: this.options.searchArgs,
           title: 'Search'
@@ -99,7 +107,7 @@
      * @param event {Object} jQuery event object.
      */
     toggleUpdates: function(event) {
-      diana.helpers.Widget.closeDropdown(event);
+      Widget.closeDropdown(event);
       this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
@@ -108,7 +116,7 @@
         this.closeSocket();
       }
 
-      diana.helpers.Widget.alert(
+      Widget.alert(
         'Updates ' + (this.prefs.autoUpdate ? 'enabled' : 'disabled') + '.',
         'info',
         3
@@ -124,9 +132,9 @@
      */
     editRowLimit: function(event) {
       var view = this;
-      diana.helpers.Widget.closeDropdown(event);
+      Widget.closeDropdown(event);
 
-      this.rowLimitView = new diana.views.EditSingleValue({
+      this.rowLimitView = new EditSingleValue({
         default: this.prefs.rowLimit,
         help: 'Event count. Only enforced when updates are enabled.',
         placeholder: "20-100",
@@ -167,7 +175,7 @@
       var view = this;
 
       // Supply search filters/options for the collection's URL generation.
-      view.collection = new diana.collections.Timeline(
+      view.collection = new TimelineCollection(
         null, {searchArgs: view.options.searchArgs}
       );
 
@@ -206,7 +214,7 @@
         },
 
         error: function(collection, response) {
-          diana.helpers.Event.trigger('CritFetchError', response);
+          Event.trigger('CritFetchError', response);
           callback.call(view, []);
         }
       });
@@ -278,7 +286,7 @@
       event.relTime = moment(event.time * 1000).fromNow();
       event.intReferer = this.buildUrl('timeline', this.options.searchArgs);
 
-      return diana.helpers.View.deferRender(
+      return View.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
@@ -316,7 +324,7 @@
         return;
       }
 
-      this.socket = diana.helpers.Socket.create({
+      this.socket = (new Socket()).create({
         event: {
           connect: function() {
             // Start/restart automatic updates.
@@ -362,4 +370,4 @@
       this.truncateRows();
     }
   });
-})();
+});

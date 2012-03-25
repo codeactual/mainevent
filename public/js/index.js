@@ -8,7 +8,18 @@
 
 'use strict';
 
-require(['libs', 'templates', 'shared', 'mvc'], function() {
+require([
+  'order!helpers/Event',
+  'order!observers/ContentPreRender',
+  'order!jquery',
+  'order!underscore',
+  'order!backbone',
+  'moment',
+  'clientsiiide',
+  'socket.io',
+  'templates'
+  ], function(Event) {
+
   window.diana = window.diana || {};
   var diana = window.diana;
 
@@ -37,19 +48,19 @@ require(['libs', 'templates', 'shared', 'mvc'], function() {
         */
       var routes = {
         '': {
-           handler: diana.controllers.ViewDashboard,
+           controller: 'ViewDashboard',
            context: {sidebar: false, tab: 'nav-dashboard'}
         },
         'timeline': {
-          handler: diana.controllers.ViewTimeline,
+          controller: 'ViewTimeline',
           context: {sidebar: false, tab: 'nav-timeline'}
         },
         '^timeline/(.*)$': {
-          handler: diana.controllers.ViewTimeline,
+          controller: 'ViewTimeline',
           context: {sidebar: false, tab: 'nav-timeline'}
         },
         '^event\/([a-f0-9]+)(?:\/(.*))?$': {
-          handler: diana.controllers.ViewEvent,
+          controller: 'ViewEvent',
           context: {sidebar: false, tab: 'nav-timeline'}
         }
       };
@@ -58,34 +69,36 @@ require(['libs', 'templates', 'shared', 'mvc'], function() {
       _.each(routes, function(config, route) {
         // Accept both standard routing string and RegExp() string.
         route = route.match(/\^/) ? new RegExp(route) : route;
-        router.route(route, config.handler, function() {
+        router.route(route, config.controller, function() {
           var routeArgs = arguments;
-          // Apply 'context' options to the 'content' template, ex. show sidebar.
-          dust.render(
-            'content',
-            config.context,
-            function(err, out) {
-              // Allow observers to tweak the layout based on configuration.
-              diana.helpers.Event.trigger('ContentPreRender', config.context);
+          require(['controllers/' + config.controller], function(controller) {
+            // Apply 'context' options to the 'content' template, ex. show sidebar.
+            dust.render(
+              'content',
+              config.context,
+              function(err, out) {
+                // Allow observers to tweak the layout based on configuration.
+                Event.trigger('ContentPreRender', config.context);
 
-              // Display the rendered content container.
-              $('#content').html(out);
+                // Display the rendered content container.
+                $('#content').html(out);
 
-              // Let the preexisting view clean itself up.
-              if (diana.mainView) {
-                diana.mainView.close();
-                diana.mainView = null;
+                // Let the preexisting view clean itself up.
+                if (diana.mainView) {
+                  diana.mainView.close();
+                  diana.mainView = null;
+                }
+
+                routeArgs = _.map(routeArgs, decodeURIComponent);
+
+                // Pass the matched route parameters to the actual controller.
+                var mainView = controller.apply(config.context, routeArgs);
+                if (mainView) {
+                  diana.mainView = mainView;
+                }
               }
-
-              routeArgs = _.map(routeArgs, decodeURIComponent);
-
-              // Pass the matched route parameters to the actual handler.
-              var mainView = config.handler.apply(config.context, routeArgs);
-              if (mainView) {
-                diana.mainView = mainView;
-              }
-            }
-          );
+            );
+          });
         });
       });
     }
@@ -96,7 +109,7 @@ require(['libs', 'templates', 'shared', 'mvc'], function() {
    *
    * @param response {Object} AJAX response.
    */
-  diana.helpers.Event.on('CritFetchError', function(response) {
+  Event.on('CritFetchError', function(response) {
     var context = {message: JSON.parse(response.responseText).__error};
     dust.render('error', context, function(err, out) {
       $('#content').html(out);

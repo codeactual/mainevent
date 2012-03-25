@@ -1,6 +1,6 @@
 'use strict';
 
-(function() {
+requirejs(['helpers/Event'], function(Event) {
 
   /**
    * Triggered by rendering of the basic content template.
@@ -14,6 +14,6 @@
   });
 
   _.each(observers, function(observer) {
-    diana.helpers.Event.on('ContentPreRender', observer);
+    Event.on('ContentPreRender', observer);
   });
-})();
+});

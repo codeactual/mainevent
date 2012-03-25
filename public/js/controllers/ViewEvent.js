@@ -1,9 +1,6 @@
 'use strict';
 
-(function() {
-  window.diana = window.diana || {};
-  window.diana.controllers = window.diana.controllers || {};
-  var diana = window.diana;
+define(['views/Event'], function(view) {
 
   /**
    * Handler for /#event/:id requests.
@@ -11,11 +8,11 @@
    * @param id {String} Event ID.
    * @return {Object} View object.
    */
-  diana.controllers.ViewEvent = function(id, intReferer) {
-    return new diana.views.Event({
+  return function(id, intReferer) {
+    return new view({
       id: id,
       el: $('#backbone-view'),
       intReferer: intReferer
     });
   };
-})();
+});
