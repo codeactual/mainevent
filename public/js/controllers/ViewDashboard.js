@@ -1,6 +1,7 @@
 define([
-  'views/Dashboard',
-  'jquery.jqplot'
+  'order!views/Dashboard',
+  'order!jquery.jqplot',
+  'order!jqplot.dateAxisRenderer'
   ], function(view) {
 
   'use strict';
