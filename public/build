@@ -9,7 +9,7 @@ rm -rf $BUILD
 # Combine JS.
 r.js -o $SOURCE/js/app.build.js
 
-# Combine and compress CSS>
+# Combine and compress CSS.
 mkdir $BUILD/css
 cat \
   $SOURCE/css/bootstrap.css \

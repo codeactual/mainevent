@@ -19,7 +19,6 @@ var storage = diana.requireModule('storage/storage').createInstance();
 var parsers = diana.requireModule('parsers/parsers');
 var io = require('socket.io').listen(app);
 
-// Merge/compile/combine HTML and JS assets.
 var build = diana.requireModule('build');
 build.compileViews();
 build.staticDir();
