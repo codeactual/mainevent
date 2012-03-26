@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 APP="$( cd "$( dirname "$0" )" && pwd )/.."
 SOURCE=$APP/public
 BUILD=$APP/public-build
+MODE=$1
 
 # Clean last build.
 rm -rf $BUILD
@@ -9,7 +10,9 @@ mkdir $BUILD
 
 # Compress app JS.
 cp -a $SOURCE/js $BUILD/js-compressed
-find $BUILD/js-compressed -regex ".*\(index\|\(backbone\|collections\|controllers\|helpers\|models\|observers\|shared\|views\)\/\).*js" -exec java -jar $SOURCE/yuicompressor.jar -o {} {} \;
+if [ "$MODE" == "prod" ]; then
+  find $BUILD/js-compressed -regex ".*\(index\|\(backbone\|collections\|controllers\|helpers\|models\|observers\|shared\|views\)\/\).*js" -exec java -jar $SOURCE/yuicompressor.jar -o {} {} \;
+fi
 
 # Combine JS based on configured dependencies.
 r.js -o $BUILD/js-compressed/app.build.js
@@ -21,8 +24,10 @@ cat \
   $SOURCE/css/jquery-ui.css \
   $SOURCE/css/jquery-ui-timepicker-addon.css \
   $SOURCE/css/index.css \
-  > $BUILD/css/all-full.css
-java -jar $SOURCE/yuicompressor.jar -o $BUILD/css/all.css $BUILD/css/all-full.css
+  > $BUILD/css/all.css
+if [ "$MODE" == "prod" ]; then
+  java -jar $SOURCE/yuicompressor.jar -o $BUILD/css/all.css $BUILD/css/all.css
+fi
 
 # Copy jquery-ui-timepicker-addon images.
 cp -a $SOURCE/css/images $BUILD/css/
