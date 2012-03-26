@@ -1,6 +1,6 @@
-'use strict';
-
 define(['views/Dashboard' ], function(view) {
+
+  'use strict';
 
   /**
    * Handler for / requests.

@@ -1,10 +1,10 @@
-'use strict';
-
-if ('undefined' != typeof require) {
-  var moment = require('moment');
-}
-
 define([], function() {
+
+  'use strict';
+
+  if ('undefined' != typeof require) {
+    var moment = require('moment');
+  }
 
   return{
     /**

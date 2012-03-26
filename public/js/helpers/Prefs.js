@@ -1,6 +1,6 @@
-'use strict';
-
 define([], function() {
+
+  'use strict';
 
   var Prefs = {
     ns: 'prefs',

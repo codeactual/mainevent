@@ -1,6 +1,6 @@
-'use strict';
-
 define(['views/Event'], function(view) {
+
+  'use strict';
 
   /**
    * Handler for /#event/:id requests.

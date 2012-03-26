@@ -1,6 +1,6 @@
-'use strict';
-
 define([], function() {
+
+  'use strict';
 
   /**
    * Global dispatch object.

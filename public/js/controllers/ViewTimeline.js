@@ -1,6 +1,6 @@
-'use strict';
-
 define(['views/Timeline'], function(view) {
+
+  'use strict';
 
   /**
    * Handler for /#timeline* requests.

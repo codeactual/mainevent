@@ -1,6 +1,6 @@
-'use strict';
-
 define(['helpers/Event'], function(Event) {
+
+  'use strict';
 
   /**
    * Represents one logged event. Shared by multiple views.

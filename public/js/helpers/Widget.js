@@ -1,6 +1,6 @@
-'use strict';
-
 define(['helpers/Event'], function(Event) {
+
+  'use strict';
 
   var config = {
     alert: {max: 3, format: 'LT'}

@@ -6,8 +6,6 @@
  * content.html is injected into #content that's also in index.html.
  */
 
-'use strict';
-
 require([
   'order!jquery',
   'order!jquery-ui',
@@ -21,6 +19,8 @@ require([
   'order!templates',
   'order!observers/ContentPreRender'
   ], function() {
+
+  'use strict';
 
   window.diana = window.diana || {};
   var diana = window.diana;
