@@ -1,16 +1,12 @@
 ({
   baseDir: '.',
   dir: '../../public-build/js',
-  wrap: false,
-  optimize: "none",
-  useStrict: true,
+  mainConfigFile: 'index.js',
   modules: [
     {name: 'index'},
     {
       name: 'controllers/ViewTimeline',
       exclude: [
-        'bootstrap-modal',
-        'order'
       ]
     },
     {
@@ -19,9 +15,10 @@
     {
       name: 'controllers/ViewEvent',
       exclude: [
-        'bootstrap-modal',
-        'order'
       ]
     }
-  ]
+  ],
+  optimize: "none",
+  useStrict: true,
+  wrap: false
 })

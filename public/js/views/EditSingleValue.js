@@ -1,8 +1,7 @@
 'use strict';
 
 define([
-    'helpers/Widget',
-    'bootstrap-modal'
+    'helpers/Widget'
   ], function(Widget) {
 
   /**

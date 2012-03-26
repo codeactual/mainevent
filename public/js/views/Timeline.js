@@ -8,7 +8,8 @@ define([
     'helpers/Socket',
     'helpers/View',
     'helpers/Widget',
-    'bootstrap-dropdown'
+    'bootstrap-dropdown',
+    'socket.io'
   ], function(TimelineCollection, EditSingleValue, TimelineSearch, Event, Socket, View, Widget) {
 
   /**

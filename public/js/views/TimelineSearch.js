@@ -1,10 +1,7 @@
 'use strict';
 
 define([
-    'helpers/Widget',
-    'order!jquery-ui',
-    'order!jquery-ui-timepicker-addon',
-    'bootstrap-modal'
+    'helpers/Widget'
   ], function(Widget) {
 
   /**

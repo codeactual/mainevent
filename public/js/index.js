@@ -10,12 +10,14 @@
 
 require([
   'order!jquery',
+  'order!jquery-ui',
+  'order!jquery-ui-timepicker-addon',
   'order!underscore',
   'order!backbone',
   'order!backbone/View',
+  'order!bootstrap-modal',
   'order!moment',
   'order!clientsiiide',
-  'order!socket.io',
   'order!templates',
   'order!observers/ContentPreRender'
   ], function() {

@@ -1,5 +1,5 @@
 #!/bin/sh
-APP="$( cd "$( dirname "$0" )" && pwd )/../"
+APP="$( cd "$( dirname "$0" )" && pwd )/.."
 SOURCE=$APP/public
 BUILD=$APP/public-build
 
