@@ -4,19 +4,9 @@
   mainConfigFile: 'index.js',
   modules: [
     {name: 'index'},
-    {
-      name: 'controllers/ViewTimeline',
-      exclude: [
-      ]
-    },
-    {
-      name: 'controllers/ViewDashboard'
-    },
-    {
-      name: 'controllers/ViewEvent',
-      exclude: [
-      ]
-    }
+    {name: 'controllers/ViewTimeline'},
+    {name: 'controllers/ViewDashboard'},
+    {name: 'controllers/ViewEvent'}
   ],
   optimize: "none",
   useStrict: true,
