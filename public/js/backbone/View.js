@@ -222,7 +222,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    * @param args {Object}
    * @return {String}
    */
-  Backbone.View.prototype.buildUrl = function (fragment, args) {
+  Backbone.View.prototype.buildUrl = function(fragment, args) {
     var pairs = [];
     _.each(args, function(value, key) {
       if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
@@ -241,7 +241,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    * @param args {Object}
    * @param options {Object} Backbone.History.navigate() options.
    */
-  Backbone.View.prototype.navigate = function (fragment, args, options) {
+  Backbone.View.prototype.navigate = function(fragment, args, options) {
     options = options || {};
     options.trigger = _.has(options, 'trigger') ? options.trigger : true;
     Backbone.history.navigate(this.buildUrl(fragment, args), options);
