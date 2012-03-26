@@ -46,22 +46,10 @@ exports.compileViews = function() {
 };
 
 /**
- * Combine CSS.
+ * Build public-build/ static directory.
  */
-exports.combineCss = function() {
-  var baseCssDir = __dirname + '/../../public/css/';
-  var fd = fs.openSync(baseCssDir + 'all.css', 'w');
-  var cssFiles = [
-    'bootstrap.css',
-    'jquery-ui.css',
-    'jquery-ui-timepicker-addon.css',
-    'index.css'
-  ];
-  _.each(cssFiles, function(cssFile) {
-    var content = fs.readFileSync(baseCssDir + '/' + cssFile, 'UTF-8');
-    fs.writeSync(fd, content, null, 'utf8');
-  });
-  fs.closeSync(fd);
+exports.staticDir = function() {
+  require('child_process').spawn(__dirname + '/../../public/build');
 }
 
 /**

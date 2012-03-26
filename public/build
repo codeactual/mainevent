@@ -2,8 +2,14 @@
 APP="$( cd "$( dirname "$0" )" && pwd )/../"
 SOURCE=$APP/public
 BUILD=$APP/public-build
+
+# Clean last build.
 rm -rf $BUILD
+
+# Combine JS.
 r.js -o $SOURCE/js/app.build.js
+
+# Combine and compress CSS>
 mkdir $BUILD/css
 cat \
   $SOURCE/css/bootstrap.css \
@@ -12,5 +18,9 @@ cat \
   $SOURCE/css/index.css \
   > $BUILD/css/all-full.css
 java -jar $SOURCE/yuicompressor.jar $BUILD/css/all-full.css > $BUILD/css/all.css
+
+# Copy jquery-ui-timepicker-addon images.
 cp -a $SOURCE/css/images $BUILD/css/
+
+# Copy app/Bootstrap images.
 cp -a $SOURCE/img $BUILD/
