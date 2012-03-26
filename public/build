@@ -5,9 +5,14 @@ BUILD=$APP/public-build
 
 # Clean last build.
 rm -rf $BUILD
+mkdir $BUILD
 
-# Combine JS.
-r.js -o $SOURCE/js/app.build.js
+# Compress app JS.
+cp -a $SOURCE/js $BUILD/js-compressed
+find $BUILD/js-compressed -regex ".*\(index\|\(backbone\|collections\|controllers\|helpers\|models\|observers\|shared\|views\)\/\).*js" -exec java -jar $SOURCE/yuicompressor.jar -o {} {} \;
+
+# Combine JS based on configured dependencies.
+r.js -o $BUILD/js-compressed/app.build.js
 
 # Combine and compress CSS.
 mkdir $BUILD/css
@@ -17,7 +22,7 @@ cat \
   $SOURCE/css/jquery-ui-timepicker-addon.css \
   $SOURCE/css/index.css \
   > $BUILD/css/all-full.css
-java -jar $SOURCE/yuicompressor.jar $BUILD/css/all-full.css > $BUILD/css/all.css
+java -jar $SOURCE/yuicompressor.jar -o $BUILD/css/all.css $BUILD/css/all-full.css
 
 # Copy jquery-ui-timepicker-addon images.
 cp -a $SOURCE/css/images $BUILD/css/
