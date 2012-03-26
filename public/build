@@ -23,6 +23,7 @@ cat \
   $SOURCE/css/bootstrap.css \
   $SOURCE/css/jquery-ui.css \
   $SOURCE/css/jquery-ui-timepicker-addon.css \
+  $SOURCE/css/jquery.jqplot.css \
   $SOURCE/css/index.css \
   > $BUILD/css/all.css
 if [ "$MODE" == "prod" ]; then

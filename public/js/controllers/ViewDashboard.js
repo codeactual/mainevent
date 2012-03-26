@@ -1,4 +1,7 @@
-define(['views/Dashboard' ], function(view) {
+define([
+  'views/Dashboard',
+  'jquery.jqplot'
+  ], function(view) {
 
   'use strict';
 
