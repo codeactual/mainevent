@@ -1,12 +1,16 @@
-define(['helpers/Event'], function(Event) {
+define([], function() {
 
   'use strict';
+
+  window.diana = window.diana || {};
+  window.diana.helpers = window.diana.helpers || {};
+  var diana = window.diana;
 
   var config = {
     alert: {max: 3, format: 'LT'}
   };
 
-  return {
+  diana.helpers.Widget = {
     /**
      * Add an alert above the main content area.
      *
@@ -50,7 +54,7 @@ define(['helpers/Event'], function(Event) {
     closeModal: function(event) {
       event.preventDefault();
       $('.modal').modal('hide');
-      Event.trigger('ModalClose');
+      diana.helpers.Event.trigger('ModalClose');
     },
 
     /**

@@ -1,6 +1,4 @@
-define([
-    'helpers/Widget'
-  ], function(Widget) {
+define([], function() {
 
   'use strict';
 
@@ -32,7 +30,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      Widget.closeModal(event);
+      diana.helpers.Widget.closeModal(event);
       this.options.onEdit(this.$('input').val());
     }
   });

@@ -2,7 +2,11 @@ define([], function() {
 
   'use strict';
 
-  return {
+  window.diana = window.diana || {};
+  window.diana.helpers = window.diana.helpers || {};
+  var diana = window.diana;
+
+  diana.helpers.View = {
     /**
      * Creates a Deferred dust.render() call.
      *

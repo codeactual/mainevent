@@ -2,13 +2,11 @@ define([
     'collections/Timeline',
     'views/EditSingleValue',
     'views/TimelineSearch',
-    'helpers/Event',
     'helpers/Socket',
     'helpers/View',
-    'helpers/Widget',
     'bootstrap-dropdown',
     'socket.io'
-  ], function(TimelineCollection, EditSingleValue, TimelineSearch, Event, Socket, View, Widget) {
+  ], function(TimelineCollection, EditSingleValue, TimelineSearch) {
 
   'use strict';
 
@@ -52,7 +50,7 @@ define([
       });
 
       $.when(
-        View.deferRender(
+        diana.helpers.View.deferRender(
           'timeline_table',
           null,
           function(err, out) {
@@ -82,7 +80,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     openSearch: function(event) {
-      Widget.closeDropdown(event);
+      diana.helpers.Widget.closeDropdown(event);
 
       var modal = $('#timeline-search-modal');
 
@@ -107,7 +105,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     toggleUpdates: function(event) {
-      Widget.closeDropdown(event);
+      diana.helpers.Widget.closeDropdown(event);
       this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
@@ -116,7 +114,7 @@ define([
         this.closeSocket();
       }
 
-      Widget.alert(
+      diana.helpers.Widget.alert(
         'Updates ' + (this.prefs.autoUpdate ? 'enabled' : 'disabled') + '.',
         'info',
         3
@@ -132,7 +130,7 @@ define([
      */
     editRowLimit: function(event) {
       var view = this;
-      Widget.closeDropdown(event);
+      diana.helpers.Widget.closeDropdown(event);
 
       this.rowLimitView = new EditSingleValue({
         defaults: this.prefs.rowLimit,
@@ -286,7 +284,7 @@ define([
       event.relTime = moment(event.time * 1000).fromNow();
       event.intReferer = this.buildUrl('timeline', this.options.searchArgs);
 
-      return View.deferRender(
+      return diana.helpers.View.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
@@ -326,7 +324,7 @@ define([
         return;
       }
 
-      this.socket = (new Socket()).create({
+      this.socket = diana.helpers.Socket.create({
         event: {
           connect: function() {
             // Start/restart automatic updates.

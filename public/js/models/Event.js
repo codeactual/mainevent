@@ -1,4 +1,4 @@
-define(['helpers/Event'], function(Event) {
+define([], function() {
 
   'use strict';
 
@@ -18,7 +18,7 @@ define(['helpers/Event'], function(Event) {
 
       // Divert all reads through localStorage cache.
       var cacheKey = 'id-' + model.id;
-      diana.cache.get({
+      diana.helpers.cache.get({
         ns: 'event',
         keys: cacheKey,
         onDone: function(results) {
@@ -33,7 +33,7 @@ define(['helpers/Event'], function(Event) {
               onMissDone(write);
             },
             error: function(response) {
-              Event.trigger('EventSyncError', response);
+              diana.helpers.Event.trigger('EventSyncError', response);
             }
           });
         }

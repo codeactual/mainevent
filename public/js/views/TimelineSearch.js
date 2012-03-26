@@ -1,8 +1,6 @@
 'use strict';
 
-define([
-    'helpers/Widget'
-  ], function(Widget) {
+define([], function() {
 
   /**
    * Displays the search box modal.
@@ -52,7 +50,7 @@ define([
         $('#time-preset,#time-gte,#time-lte').val('');
       });
 
-      Widget.fillParserSelect(parser);
+      diana.helpers.Widget.fillParserSelect(parser);
 
       var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
       _.each(basicArgNames, function(name) {
@@ -98,7 +96,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      Widget.closeModal(event);
+      diana.helpers.Widget.closeModal(event);
       this.navigate('timeline', this.getSearchArgs());
     },
 

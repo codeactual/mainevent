@@ -1,6 +1,4 @@
-define([
-    'helpers/Widget'
-  ], function(Widget) {
+define([], function() {
 
   'use strict';
 
@@ -28,7 +26,7 @@ define([
             new DashboardMainGraph({
               el: $('#dashboard-main-graph')
             });
-            Widget.fillParserSelect('#parser');
+            diana.helpers.Widget.fillParserSelect('#parser');
           });
         }
       );

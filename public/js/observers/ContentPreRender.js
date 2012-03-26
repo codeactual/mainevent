@@ -1,4 +1,4 @@
-requirejs(['helpers/Event'], function(Event) {
+define([], function() {
 
   'use strict';
 
@@ -14,6 +14,6 @@ requirejs(['helpers/Event'], function(Event) {
   });
 
   _.each(observers, function(observer) {
-    Event.on('ContentPreRender', observer);
+    diana.helpers.Event.on('ContentPreRender', observer);
   });
 });

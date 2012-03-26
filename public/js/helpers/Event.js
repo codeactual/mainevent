@@ -2,21 +2,25 @@ define([], function() {
 
   'use strict';
 
+  window.diana = window.diana || {};
+  window.diana.helpers = window.diana.helpers || {};
+  var diana = window.diana;
+
   /**
    * Global dispatch object.
    *
    * @author SendHub http://goo.gl/mEMwr
    */
-  var Event = _.extend({}, Backbone.Events);
+  diana.helpers.Event = _.extend({}, Backbone.Events);
 
   /**
    * Global events.
    */
   $('body').delegate('.modal', 'show', function() {
-    Event.trigger('ModalOpen');
+    diana.helpers.Event.trigger('ModalOpen');
   });
   $('body').delegate('.modal', 'hide', function() {
-    Event.trigger('ModalClose');
+    diana.helpers.Event.trigger('ModalClose');
   });
   $('body').delegate('a.disabled', 'click', function(event) {
     event.preventDefault();
@@ -25,9 +29,7 @@ define([], function() {
   // view's 'events' map would need to handle it redundantly.
   $('body').delegate('#keyboard-shortcuts', 'click', function(event) {
     event.preventDefault();
-    Event.trigger('KeyboardShortcutsHelp');
+    diana.helpers.Event.trigger('KeyboardShortcutsHelp');
   });
-
-  return Event;
 });
 

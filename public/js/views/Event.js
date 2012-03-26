@@ -1,10 +1,8 @@
 define([
     'shared/Date',
-    'helpers/Event',
-    'helpers/Widget',
     'models/Event',
     'views/TimelineSearch'
-  ], function(DateShared, EventHelper, Widget, EventModel, TimelineSearch) {
+  ], function(DateShared, EventModel, TimelineSearch) {
 
   'use strict';
 
@@ -25,8 +23,8 @@ define([
       this.model.bind('change', this.render, this);
 
       // Bubble up the model error.
-      EventHelper.on('EventSyncError', function(response) {
-        EventHelper.trigger('CritFetchError', response);
+      diana.helpers.Event.on('EventSyncError', function(response) {
+        diana.helpers.Event.trigger('CritFetchError', response);
       });
 
       this.model.fetch();

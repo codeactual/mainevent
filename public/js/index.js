@@ -17,6 +17,10 @@ require([
   'order!moment',
   'order!clientsiiide',
   'order!templates',
+  'order!helpers/Cache',
+  'order!helpers/Event',
+  'order!helpers/Prefs',
+  'order!helpers/Widget',
   'order!observers/ContentPreRender'
   ], function() {
 
@@ -24,9 +28,6 @@ require([
 
   window.diana = window.diana || {};
   var diana = window.diana;
-
-  // localStorage cache for items like /event/:id responses.
-  diana.cache = new clientsiiide('Diana');
 
   // Feature switches.
   diana.features = {
@@ -80,7 +81,7 @@ require([
               config.context,
               function(err, out) {
                 // Allow observers to tweak the layout based on configuration.
-                Event.trigger('ContentPreRender', config.context);
+                diana.helpers.Event.trigger('ContentPreRender', config.context);
 
                 // Display the rendered content container.
                 $('#content').html(out);
@@ -106,13 +107,13 @@ require([
     }
   });
 
-  require(['helpers/Event'], function(Event) {
+  require([], function() {
     /**
      * Common error handler for all fetch/sync operations.
      *
      * @param response {Object} AJAX response.
      */
-    Event.on('CritFetchError', function(response) {
+    diana.helpers.Event.on('CritFetchError', function(response) {
       var context = {message: JSON.parse(response.responseText).__error};
       dust.render('error', context, function(err, out) {
         $('#content').html(out);
