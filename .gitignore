@@ -1,6 +1,6 @@
 *.log
 config/*.js
-public/css/all.css
 public/js/bootstrap-modal-full.js
 public/js/backbone-full.js
 public/js/templates.js
+public-build

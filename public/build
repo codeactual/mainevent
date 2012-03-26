@@ -1,0 +1,16 @@
+#!/bin/sh
+APP="$( cd "$( dirname "$0" )" && pwd )/../"
+SOURCE=$APP/public
+BUILD=$APP/public-build
+rm -rf $BUILD
+r.js -o $SOURCE/js/app.build.js
+mkdir $BUILD/css
+cat \
+  $SOURCE/css/bootstrap.css \
+  $SOURCE/css/jquery-ui.css \
+  $SOURCE/css/jquery-ui-timepicker-addon.css \
+  $SOURCE/css/index.css \
+  > $BUILD/css/all-full.css
+java -jar $SOURCE/yuicompressor.jar $BUILD/css/all-full.css > $BUILD/css/all.css
+cp -a $SOURCE/css/images $BUILD/css/
+cp -a $SOURCE/img $BUILD/
