@@ -19,7 +19,7 @@ define([
       this.$('#modal-title').text(this.options.title);
       this.$('.help-block').text(this.options.help);
       var input = this.$('input').focus().select();
-      input.val(this.options.default || '')
+      input.val(this.options.defaults || '')
       input.attr('placeholder', this.options.placeholder);
     },
 

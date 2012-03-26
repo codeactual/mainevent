@@ -134,7 +134,7 @@ define([
       Widget.closeDropdown(event);
 
       this.rowLimitView = new EditSingleValue({
-        default: this.prefs.rowLimit,
+        defaults: this.prefs.rowLimit,
         help: 'Event count. Only enforced when updates are enabled.',
         placeholder: "20-100",
         title: 'Limit Size',
