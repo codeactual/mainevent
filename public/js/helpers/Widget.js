@@ -64,7 +64,7 @@ define([], function() {
      */
     fillParserSelect: function(select) {
       select = $(select);
-      select.append('<option value="">Any</option>');
+      select.append('<option value="">Any Event Type</option>');
       _.each(diana.parsers, function(name) {
         select.append('<option value="' + name + '">' + name + '</option>');
       });
