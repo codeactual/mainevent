@@ -1,6 +1,6 @@
-'use strict';
-
 requirejs(['helpers/Event'], function(Event) {
+
+  'use strict';
 
   /**
    * Triggered by rendering of the basic content template.

@@ -1,5 +1,3 @@
-'use strict';
-
 define([
     'collections/Timeline',
     'views/EditSingleValue',
@@ -11,6 +9,8 @@ define([
     'bootstrap-dropdown',
     'socket.io'
   ], function(TimelineCollection, EditSingleValue, TimelineSearch, Event, Socket, View, Widget) {
+
+  'use strict';
 
   /**
    * Displays the <table> into which result sets are rendered. Automatically

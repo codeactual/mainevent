@@ -1,8 +1,8 @@
-'use strict';
-
 define([
     'helpers/Widget'
   ], function(Widget) {
+
+  'use strict';
 
   /**
    * Displays the shortcut list modal.

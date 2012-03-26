@@ -1,10 +1,10 @@
-'use strict';
-
-if ('undefined' === typeof define) {
-  var define = function(deps, callback) { callback(); };
-}
-
 define([], function() {
+
+  'use strict';
+
+  if ('undefined' === typeof define) {
+    var define = function(deps, callback) { callback(); };
+  }
 
   var Async = function() {};
 

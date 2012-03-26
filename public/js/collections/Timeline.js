@@ -1,6 +1,6 @@
-'use strict';
-
 define([], function() {
+
+  'use strict';
 
   /**
    * Holds events from a timeline search result set.

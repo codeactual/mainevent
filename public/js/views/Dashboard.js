@@ -1,8 +1,8 @@
-'use strict';
-
 define([
     'helpers/Widget'
   ], function(Widget) {
+
+  'use strict';
 
   // View the dashboard container.
   return Backbone.View.extend({

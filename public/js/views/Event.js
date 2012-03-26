@@ -1,5 +1,3 @@
-'use strict';
-
 define([
     'shared/Date',
     'helpers/Event',
@@ -7,6 +5,8 @@ define([
     'models/Event',
     'views/TimelineSearch'
   ], function(DateShared, EventHelper, Widget, EventModel, TimelineSearch) {
+
+  'use strict';
 
   // View of an individual event.
   return Backbone.View.extend({

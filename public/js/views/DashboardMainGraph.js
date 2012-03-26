@@ -1,6 +1,6 @@
-'use strict';
-
 define([], function() {
+
+  'use strict';
 
   return Backbone.View.extend({
     initialize: function(options) {
