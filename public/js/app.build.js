@@ -6,8 +6,22 @@
   useStrict: true,
   modules: [
     {name: 'index'},
-    {name: 'controllers/ViewTimeline'},
-    {name: 'controllers/ViewDashboard'},
-    {name: 'controllers/ViewEvent'}
+    {
+      name: 'controllers/ViewTimeline',
+      exclude: [
+        'bootstrap-modal',
+        'order'
+      ]
+    },
+    {
+      name: 'controllers/ViewDashboard'
+    },
+    {
+      name: 'controllers/ViewEvent',
+      exclude: [
+        'bootstrap-modal',
+        'order'
+      ]
+    }
   ]
 })
