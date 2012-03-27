@@ -15,7 +15,15 @@ var map = function() {
       seconds = this.time.getSeconds() + '',
       group = '';
 
-  switch (i) {
+  switch (interval) {
+    case 'year':
+      group = this.time.getFullYear();
+      break;
+    case 'month':
+      group =
+        this.time.getFullYear()
+        + '-' + (month.length == 2 ? month : '0' + month);
+      break;
     case 'day':
       group =
         (month.length == 2 ? month : '0' + month)
@@ -75,7 +83,7 @@ exports.run = function(startTime, endTime, interval, query, callback) {
     reduce: reduce,
     options: {
       query: query,
-      scope: {i: interval}
+      scope: {interval: interval}
     },
     return: 'array',
     callback: callback
