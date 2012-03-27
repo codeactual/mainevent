@@ -33,7 +33,7 @@ requirejs(['shared/Date'], function(DateShared) {
       storage.getTimeline(params, function(err, docs) {
         var actual = [];
         _.each(expected, function(time, index) {
-          actual.push(docs[index].time.getTime());
+          actual.push(docs[index].time);
         });
         test.deepEqual(testutil.sortNum(actual), testutil.sortNum(expected));
         test.done();

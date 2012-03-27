@@ -50,6 +50,10 @@ requirejs(['shared/Lang'], function(Lang) {
       if (post.info.nextPage) { // Discard next-page hint doc.
         post.docs.pop();
       }
+      post.docs = _.map(post.docs, function(doc) {
+        doc.time = doc.time.getTime();
+        return doc;
+      });
     }
     return post;
   };

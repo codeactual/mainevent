@@ -37,7 +37,7 @@ exports.testImport = function(test) {
   // Verify fields.
   tailJs.on('exit', function(code) {
     storage.getTimeline({run: run}, function(err, docs) {
-      test.equal(docs[0].time.getTime(), parsed.t);
+      test.equal(docs[0].time, parsed.t);
       test.equal(docs[0].message, source.path);
       test.deepEqual(docs[0].previewAttr, source.previewAttr);
       test.deepEqual(docs[0].tags, source.tags);
