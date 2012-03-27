@@ -238,9 +238,6 @@ requirejs(['shared/Lang'], function(Lang) {
         collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
           if (err) { mongo.dbClose(err, callback); return; }
           mongo.dbClose();
-          if (doc) {
-            doc = mongo.unpackTime(doc);
-          }
           var post = mongo.eventPostFind(doc);
           callback(err, post.docs[0]);
         });
