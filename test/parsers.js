@@ -202,7 +202,7 @@ exports.testUnparsableLine = function(test) {
   test.expect(3);
   parsers.parseAndInsert({source: source, lines: line}, function() {
     storage.getTimeline({message: line}, function(err, docs) {
-      test.equal(docs[0].time, time);
+      test.ok(Math.abs(docs[0].time - time) < 1000);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 'line');
       test.done();
