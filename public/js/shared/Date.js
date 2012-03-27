@@ -14,7 +14,7 @@ define([], function() {
      * @return {String}
      */
     formatTime: function(time) {
-      return moment(new Date(time * 1000)).format('ddd, MMM D YYYY, HH:mm:ss');
+      return moment(new Date(time)).format('ddd, MMM D YYYY, HH:mm:ss');
     },
 
     /**

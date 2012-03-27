@@ -101,7 +101,7 @@ define([
         context.list = _.map(context.list, function(pair, index) {
           if ('time' == pair.key) {
             context.time = DateShared.formatTime(pair.value);
-            context.timeFromNow = moment(pair.value * 1000).fromNow();
+            context.timeFromNow = moment(pair.value).fromNow();
           }
           return pair;
         });
@@ -115,7 +115,7 @@ define([
       // Attributes are in a one-dimensional object, ex. from nginx_access parser.
       } else {
         var context = event;
-        context.timeFromNow = moment(context.time * 1000).fromNow();
+        context.timeFromNow = moment(context.time).fromNow();
         context.time = DateShared.formatTime(context.time);
         delete context.previewAttr;
       }

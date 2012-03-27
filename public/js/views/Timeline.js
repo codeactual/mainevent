@@ -212,7 +212,7 @@ define([
         },
 
         error: function(collection, response) {
-          Event.trigger('CritFetchError', response);
+          diana.helpers.Event.trigger('CritFetchError', response);
           callback.call(view, []);
         }
       });
@@ -281,7 +281,7 @@ define([
      * @return {Object} jQuery Promise.
      */
     renderEvent: function(event, tr) {
-      event.relTime = moment(event.time * 1000).fromNow();
+      event.relTime = moment(event.time).fromNow();
       event.intReferer = this.buildUrl('timeline', this.options.searchArgs);
 
       return diana.helpers.View.deferRender(
@@ -363,7 +363,7 @@ define([
       // Update relative dates.
       this.$('td:first-child a').each(function() {
         var a = $(this);
-        a.text(moment(a.data('time') * 1000).fromNow());
+        a.text(moment(a.data('time')).fromNow());
       });
 
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});

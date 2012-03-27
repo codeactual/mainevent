@@ -56,7 +56,7 @@ define([], function() {
       _.each(basicArgNames, function(name) {
         if (view.options.searchArgs[name]) {
           if (('time-gte' == name || 'time-lte' == name)) {
-            view.options.searchArgs[name] = moment(view.options.searchArgs[name] * 1000).format(view.datetimePickerFormat);
+            view.options.searchArgs[name] = moment(view.options.searchArgs[name]).format(view.datetimePickerFormat);
           }
           view.$('#' + name).val(view.options.searchArgs[name]);
           delete view.options.searchArgs[name];
@@ -130,8 +130,8 @@ define([], function() {
       var args = {};
 
       args['parser'] = $('#parser').val();
-      args['time-gte'] = (new Date($('#time-gte').val())).getTime() / 1000;
-      args['time-lte'] = (new Date($('#time-lte').val())).getTime() / 1000;
+      args['time-gte'] = (new Date($('#time-gte').val())).getTime();
+      args['time-lte'] = (new Date($('#time-lte').val())).getTime();
 
       // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
