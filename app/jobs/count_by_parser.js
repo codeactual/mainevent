@@ -19,6 +19,13 @@ var reduce = function(key, values) {
   return result;
 };
 
+/**
+ * @param startTime {Number} UNIX timestamp in seconds.
+ * @param endTime {Number} UNIX timestamp in seconds.
+ * @param query {Object} Additional query arguments.
+ * @param callback {Function} Fires after success/error.
+ * - See MongoDbStorage.mapReduce for payload arguments.
+ */
 exports.run = function(startTime, endTime, query, callback) {
   storage.mapReduceTimeRange(startTime, endTime, {
     name: __filename,

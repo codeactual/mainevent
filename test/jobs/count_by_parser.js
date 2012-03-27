@@ -23,14 +23,15 @@ requirejs(['shared/Date'], function(DateShared) {
     }
     ];
     var expected = {php: {count: 2}, json: {count: 1}};
-    job.verifyTimeRange(
+    job.verifyJob(
       test,
       __filename,
       run,
+      logs,
+      expected,
       strtotime('3/12/2012 09:00:00'),
       strtotime('3/12/2012 12:00:00'),
-      logs,
-      expected
+      {message: run}
     );
   };
 });

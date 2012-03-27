@@ -13,18 +13,19 @@ var parsers = diana.requireModule('parsers/parsers');
  * @param test {Object} Test instance.
  * @param jobName {String}
  * @param run {String} Unique run ID.
- * @param startTime {Number}
- * @param endTime {Number}
  * @param logs {Array} Event objects.
  * @param expected {Object} Reduce results indexed by their _id values.
+ *
+ * Additional arguments are passed to the job's run() function.
  */
-exports.verifyTimeRange = function(test, jobName, run, startTime, endTime, logs, expected) {
-  var job = diana.requireJob(jobName).run;
+exports.verifyJob = function(test, jobName, run, logs, expected) {
+  var job = diana.requireJob(jobName).run,
+      args = Array.prototype.slice.call(arguments, 5);
+  args.push(function(err, docs) {
+    test.deepEqual(docs, expected);
+    test.done();
+  });
   parsers.parseAndInsert(logs, function() {
-    var query = {message: run}; // Only for verification lookup.
-    job(startTime, endTime, query, function(err, docs) {
-      test.deepEqual(docs, expected);
-      test.done();
-    });
+    job.apply(null, args);
   });
 };
