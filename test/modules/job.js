@@ -20,8 +20,8 @@ var parsers = diana.requireModule('parsers/parsers');
 exports.verifyJob = function(test, jobName, logs, expected) {
   var job = diana.requireJob(jobName).run,
       args = Array.prototype.slice.call(arguments, 4);
-  args.push(function(err, docs) {
-    test.deepEqual(docs, expected);
+  args.push(function(err, results) {
+    test.deepEqual(results, expected);
     test.done();
   });
   parsers.parseAndInsert(logs, function() {
