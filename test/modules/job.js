@@ -12,15 +12,14 @@ var parsers = diana.requireModule('parsers/parsers');
  *
  * @param test {Object} Test instance.
  * @param jobName {String}
- * @param run {String} Unique run ID.
  * @param logs {Array} Event objects.
  * @param expected {Object} Reduce results indexed by their _id values.
  *
  * Additional arguments are passed to the job's run() function.
  */
-exports.verifyJob = function(test, jobName, run, logs, expected) {
+exports.verifyJob = function(test, jobName, logs, expected) {
   var job = diana.requireJob(jobName).run,
-      args = Array.prototype.slice.call(arguments, 5);
+      args = Array.prototype.slice.call(arguments, 4);
   args.push(function(err, docs) {
     test.deepEqual(docs, expected);
     test.done();

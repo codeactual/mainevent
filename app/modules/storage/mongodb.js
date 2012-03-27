@@ -273,11 +273,12 @@ requirejs(['shared/Lang'], function(Lang) {
    */
   MongoDbStorage.prototype.mapReduce = function(job) {
     job.name = diana.extractJobName(job.name);
-    var options = _.extend(job.options, {out: job.out || {replace: job.name}});
+    job.options = job.options || {};
+    job.options.out = job.options.out || {replace: job.name};
     var mongo = this;
     this.dbConnectAndOpen(job.callback, function(err, db) {
       mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
-        collection.mapReduce(job.map, job.reduce, options, function(err, stats) {
+        collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
           if (err) { storage.dbClose(); job.callback(err); return; }
           if (job.return) {
             mongo.getMapReduceResults(job.name, function(err, results) {
@@ -298,11 +299,12 @@ requirejs(['shared/Lang'], function(Lang) {
    *
    * @param startTime {Number}
    * @param endTime {Number}
-   * @param job {Object} mapReduce() argument.
+   * @param job {Object} MongoDbStorage.mapReduce() 'job' argument.
    */
   MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
-    job.query = job.query || {};
-    job.query.time = {
+    job.options = job.options || {};
+    job.options.query = job.options.query || {};
+    job.options.query.time = {
       $gte: new mongodb.Timestamp(null, startTime),
       $lte: new mongodb.Timestamp(null, endTime)
     };
