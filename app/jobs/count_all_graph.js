@@ -16,6 +16,13 @@ var map = function() {
       group = '';
 
   switch (i) {
+    case 'day':
+      group =
+        (month.length == 2 ? month : '0' + month)
+        + '/' + (date.length == 2 ? date : '0' + date)
+        + '/' + this.time.getFullYear()
+        + ' 00:00:00';
+      break;
     case 'hour':
       group =
         (month.length == 2 ? month : '0' + month)
@@ -55,6 +62,11 @@ var reduce = function(key, values) {
  * @param query {Object} Additional query arguments.
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
+ * - Results format:
+ *   {
+ *     '<mm:dd:yyyy hh:mm:ss>': {count: 1},
+ *     ...
+ *   }
  */
 exports.run = function(startTime, endTime, interval, query, callback) {
   storage.mapReduceTimeRange(startTime, endTime, {

@@ -25,6 +25,11 @@ var reduce = function(key, values) {
  * @param query {Object} Additional query arguments.
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
+ * - Results example:
+ *   {
+ *     <parser_name>: {count: 1},
+ *     ...
+ *   }
  */
 exports.run = function(startTime, endTime, query, callback) {
   storage.mapReduceTimeRange(startTime, endTime, {
