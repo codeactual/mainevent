@@ -22,3 +22,7 @@ exports.getTempFile = function() {
     fd: fs.openSync(path, 'w')
   };
 };
+
+exports.sortNum = function(arr) {
+  return _.sortBy(arr, function(num) { return num; });
+};

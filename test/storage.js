@@ -28,13 +28,14 @@ requirejs(['shared/Date'], function(DateShared) {
       lines.push(JSON.stringify(log));
     });
 
-    test.expect(expected.length + 1);
+    test.expect(1);
     parsers.parseAndInsert({source: source, lines: lines}, function() {
       storage.getTimeline(params, function(err, docs) {
-        test.equal(docs.length, expected.length);
+        var actual = [];
         _.each(expected, function(time, index) {
-          test.equal(docs[index].time, time);
+          actual.push(docs[index].time);
         });
+        test.deepEqual(testutil.sortNum(actual), testutil.sortNum(expected));
         test.done();
       });
     });
