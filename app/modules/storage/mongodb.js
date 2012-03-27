@@ -367,4 +367,24 @@ requirejs(['shared/Lang'], function(Lang) {
       });
     });
   };
- });
+
+  /**
+   * Check if a collection exists.
+   *
+   * @param name {String}
+   * @param callback {Function} Fires after success/error.
+   * - {Boolean}
+   */
+  MongoDbStorage.prototype.collectionExists = function(name, callback) {
+    var mongo = this;
+    mongo.dbConnectAndOpen(callback, function(err, db) {
+      db.collections(function(err, results) {
+        var names = {};
+        _.each(results, function(collection) {
+          names[collection.collectionName] = true;
+        });
+        callback(err, _.has(names, name));
+      });
+    });
+  };
+});

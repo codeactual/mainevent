@@ -72,6 +72,9 @@ app.get('/timeline', function(req, res) {
 });
 
 app.get('/event/:id', function(req, res) {
+  var sendError = function() {
+    res.send({__error: 'Event not found.'}, 404);
+  };
   if (req.params.id.match(/^[a-z0-9]{24}$/)) {
     storage.getLog(req.params.id, function(err, doc) {
       if (err) {
@@ -91,12 +94,39 @@ app.get('/event/:id', function(req, res) {
             res.send(doc);
           }
         } else {
-          res.send({__error: 'Event not found.'}, 404);
+          sendError();
         }
       }
     });
   } else {
-    res.send({__error: 'Event not found.'}, 404);
+    sendError();
+  }
+});
+
+app.get('/job/:name', function(req, res) {
+  var sendError = function() {
+    res.send({__error: 'Job not found.'}, 404);
+  };
+  if (req.params.name.match(/^[a-z_]+$/)) {
+    storage.collectionExists(req.params.name, function(err, results) {
+      if (!results) {
+        sendError();
+        return;
+      }
+      storage.getMapReduceResults(req.params.name, function(err, results) {
+        if (err) {
+          res.send({__error: err}, 500);
+        } else {
+          if (results) {
+            res.send(results);
+          } else {
+            sendError();
+          }
+        }
+      });
+    });
+  } else {
+    sendError();
   }
 });
 
