@@ -28,13 +28,13 @@ define([], function() {
     },
 
     /**
-     * Convert a string date/time to UNIX timestamp in seconds.
+     * Convert a string date/time to UNIX timestamp in milliseconds.
      *
      * @param str {String}
      * @return {Number}
      */
      strtotime: function(str) {
-       return (new Date(str)).getTime() / 1000;
+       return (new Date(str)).getTime();
      }
   };
 });

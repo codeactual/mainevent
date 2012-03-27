@@ -195,14 +195,14 @@ exports.testJson = function(test) {
 };
 
 exports.testUnparsableLine = function(test) {
-  var time = Math.round((new Date()).getTime() / 1000);
+  var time = Math.round((new Date()).getTime());
   var source = {parser: 'php', tags: ['a', 'b']};
   var parser = parsers.createInstance('php');
   var line = testutil.getRandHash();  // Only for verification lookup.
   test.expect(3);
   parsers.parseAndInsert({source: source, lines: line}, function() {
     storage.getTimeline({message: line}, function(err, docs) {
-      test.equal(docs[0].time, time);
+      test.equal(docs[0].time.getTime(), time);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 'line');
       test.done();
@@ -280,7 +280,7 @@ exports.testCustomTimeAttr = function(test) {
   parsers.parseAndInsert({source: source, lines: log}, function() {
     storage.getTimeline({run: expected.run}, function(err, docs) {
       test.equal(docs[0].message, expected.message);
-      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].time.getTime(), 1331543011000);
       test.strictEqual(docs[0].logtime, undefined);
       test.done();
     });
@@ -361,7 +361,7 @@ exports.testDirectTimeExtraction = function(test) {
   test.expect(2);
   parsers.parseAndInsert({source: source, lines: JSON.stringify(log)}, function() {
     storage.getTimeline({run: run}, function(err, docs) {
-      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].time.getTime(), 1331543011000);
       test.equal(docs[0].message, log.message);
       test.done();
     });
@@ -376,7 +376,7 @@ exports.testDirectTimeParse = function(test) {
   test.expect(2);
   parsers.parseAndInsert({source: source, lines: JSON.stringify(log)}, function() {
     storage.getTimeline({run: run}, function(err, docs) {
-      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].time.getTime(), 1331543011000);
       test.equal(docs[0].message, log.message);
       test.done();
     });
@@ -393,14 +393,14 @@ exports.testExtractedTimeInsertion = function(test) {
   parsers.parseAndInsert({source: source, lines: line}, function() {
     storage.getTimeline({message: run}, function(err, docs) {
       test.equal(docs[0].message, run);
-      test.equal(docs[0].time, 1331543011);
+      test.equal(docs[0].time.getTime(), 1331543011000);
       test.done();
     });
   });
 };
 
 exports.testUnparsableTime = function(test) {
-  var time = Math.round((new Date()).getTime() / 1000);
+  var time = Math.round((new Date()).getTime());
   var source = {parser: 'php', tags: ['a', 'b']};
   var parser = parsers.createInstance('php');
   var message = testutil.getRandHash();  // Only for verification lookup.
@@ -408,7 +408,7 @@ exports.testUnparsableTime = function(test) {
   test.expect(3);
   parsers.parseAndInsert({source: source, lines: line}, function() {
     storage.getTimeline({message: message}, function(err, docs) {
-      test.equal(docs[0].time, time);
+      test.ok(Math.abs(docs[0].time.getTime() - time) < 1000);
       test.deepEqual(docs[0].tags, source.tags);
       test.equal(docs[0].__parse_error, 'time');
       test.done();

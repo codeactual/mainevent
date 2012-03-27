@@ -26,25 +26,6 @@ requirejs(['shared/Lang'], function(Lang) {
   MongoDbStorage.prototype.collection = null;
 
   /**
-   * In one or more documents, convert BSON Timestamp objects to their UNIX
-   * timestamp integer values.
-   *
-   * @param docs {Array|Object} Query result(s).
-   * @return {Array}
-   */
-  MongoDbStorage.prototype.unpackTime = function(docs) {
-    if (_.isArray(docs)) {
-      return _.map(docs, function(doc) {
-        doc.time = doc.time.high_;
-        return doc;
-      });
-    } else {
-      docs.time = docs.time.high_;
-      return docs;
-    }
-  };
-
-  /**
    * Post-process events found via findOne(), find(), etc.
    *
    * @param docs {Array|Object} Query result(s).
@@ -69,7 +50,6 @@ requirejs(['shared/Lang'], function(Lang) {
       if (post.info.nextPage) { // Discard next-page hint doc.
         post.docs.pop();
       }
-      post.docs = this.unpackTime(post.docs);
     }
     return post;
   };
@@ -122,7 +102,7 @@ requirejs(['shared/Lang'], function(Lang) {
       var matches = null;
       if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
         if ('time' == matches[1]) {
-          value = new mongodb.Timestamp(null, value);
+          value = new Date(value);
         }
         if (!params[matches[1]]) {
           params[matches[1]] = {};
@@ -211,7 +191,7 @@ requirejs(['shared/Lang'], function(Lang) {
         var docs = [];
         logs = _.isArray(logs) ? logs : [logs];
         _.each(logs, function(log) {
-          log.time = new mongodb.Timestamp(null, log.time);
+          log.time = new Date(log.time);
           docs.push(log);
         });
         collection.insert(docs, {safe: true}, function(err, docs) {
@@ -280,7 +260,7 @@ requirejs(['shared/Lang'], function(Lang) {
    * Retrieve the attributes of all logs newer than a given ID/time.
    *
    * @param id {String}
-   * @param time {Number} Timestamp in seconds.
+   * @param time {Number} Timestamp in milliseconds.
    * @param params {Object} getTimeline() compatible parameters.
    * @param callback {Function} Receives find() results.
    */
@@ -320,7 +300,7 @@ requirejs(['shared/Lang'], function(Lang) {
     this.dbConnectAndOpen(job.callback, function(err, db) {
       mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
         collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
-          if (err) { storage.dbClose(); job.callback(err); return; }
+          if (err) { mongo.dbClose(); job.callback(err); return; }
           if (job.return) {
             mongo.getMapReduceResults(job.name, function(err, results) {
               mongo.dbClose();
@@ -338,16 +318,16 @@ requirejs(['shared/Lang'], function(Lang) {
   /**
    * Time-ranged wrapped for mapReduce().
    *
-   * @param startTime {Number}
-   * @param endTime {Number}
+   * @param startTime {Number} UNIX timestamp in milliseconds.
+   * @param endTime {Number} UNIX timestamp in milliseconds.
    * @param job {Object} MongoDbStorage.mapReduce() 'job' argument.
    */
   MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
     job.options = job.options || {};
     job.options.query = job.options.query || {};
     job.options.query.time = {
-      $gte: new mongodb.Timestamp(null, startTime),
-      $lte: new mongodb.Timestamp(null, endTime)
+      $gte: new Date(startTime),
+      $lte: new Date(endTime)
     };
     this.mapReduce(job);
   };

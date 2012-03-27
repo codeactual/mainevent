@@ -48,7 +48,7 @@ Parser.prototype.parseLines = function(source, lines) {
       };
     }
 
-    log.time = Math.round(log.time / 1000);
+    log.time = Math.round(log.time);
     log.parser = source.parser;
     log.tags = source.tags || [];
 
