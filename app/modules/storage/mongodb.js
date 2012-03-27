@@ -45,6 +45,97 @@ requirejs(['shared/Lang'], function(Lang) {
   };
 
   /**
+   * Post-process events found via findOne(), find(), etc.
+   *
+   * @param docs {Array|Object} Query result(s).
+   * @param options {Object} Query options used to produce 'docs'.
+   * @return {Object}
+   * - info {Object}
+   *   prevPage {Boolean}
+   *   nextPage {Boolean}
+   * - docs {Array}
+   */
+  MongoDbStorage.prototype.eventPostFind = function(docs, options) {
+    docs = _.isArray(docs) ? docs : [docs];
+    options = options || {};
+    var post = {
+      info: {
+        prevPage: docs && options.skip > 0,
+        nextPage: docs && (docs.length == options.limit)
+      },
+      docs: docs
+    };
+    if (post.docs) {
+      if (post.info.nextPage) { // Discard next-page hint doc.
+        post.docs.pop();
+      }
+      post.docs = this.unpackTime(post.docs);
+    }
+    return post;
+  };
+
+  /**
+   * Extract find()-compatible options from an object containing app-specific
+   * keys, e.g. 'sort-dir' and 'sort-attr' which are converted into {sort: {...}}.
+   *
+   * @param params {Object}
+   * @return {Object}
+   */
+  MongoDbStorage.prototype.extractSortOptions = function(params) {
+    var options = {};
+    if (params['sort-attr']) {
+      if ('desc' == params['sort-dir']) {
+        options.sort = [[params['sort-attr'], 'desc']];
+        delete params['sort-dir'];
+      } else if ('asc' == params['sort-dir']) {
+        options.sort = [[params['sort-attr'], 'asc']];
+        delete params['sort-dir'];
+      }
+      delete params['sort-attr'];
+
+      if ('time' == options.sort[0][0]) {
+        options.sort.push(['_id', options.sort[0][1]]);
+      }
+    }
+    if (params.limit) {
+      options.limit = Math.min(parseInt(params.limit, 10), config.maxResultSize);
+      delete params.limit;
+    } else {
+      options.limit = config.maxResultSize;
+    }
+    if (params.skip) {
+      options.skip = parseInt(params.skip, 10);
+      delete params.skip;
+    }
+    options.limit += 1; // For next-page detection.
+    return options;
+  };
+
+  /**
+   * Extract find()-compatible filters from an object containing app-specific
+   * keys, e.g. 'time-gte' which is converted into {time: {$gte: ...}}.
+   *
+   * @param params {Object} Modified in-place with extracted options.
+   */
+  MongoDbStorage.prototype.extractFilterOptions = function(params) {
+    _.each(params, function(value, key) {
+      var matches = null;
+      if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
+        if ('time' == matches[1]) {
+          value = new mongodb.Timestamp(null, value);
+        }
+        if (!params[matches[1]]) {
+          params[matches[1]] = {};
+        }
+        params[matches[1]]['$' + matches[2]] = value;
+        delete params[key];
+      } else if ('_id' == key && _.isString(value)) {
+        params[key] = new BSON.ObjectID(value);
+      }
+    });
+  };
+
+  /**
    * Connect to the DB based on config.js. Reuse a link if available.
    *
    * @param error {Function} Fired after error.
@@ -150,7 +241,8 @@ requirejs(['shared/Lang'], function(Lang) {
           if (doc) {
             doc = mongo.unpackTime(doc);
           }
-          callback(err, doc);
+          var post = mongo.eventPostFind(doc);
+          callback(err, post.docs[0]);
         });
       });
     });
@@ -175,61 +267,13 @@ requirejs(['shared/Lang'], function(Lang) {
     var mongo = this;
     mongo.dbConnectAndOpen(callback, function(err, db) {
       mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
-        var options = {};
-        if (params['sort-attr']) {
-          if ('desc' == params['sort-dir']) {
-            options.sort = [[params['sort-attr'], 'desc']];
-            delete params['sort-dir'];
-          } else if ('asc' == params['sort-dir']) {
-            options.sort = [[params['sort-attr'], 'asc']];
-            delete params['sort-dir'];
-          }
-          delete params['sort-attr'];
-
-          if ('time' == options.sort[0][0]) {
-            options.sort.push(['_id', options.sort[0][1]]);
-          }
-        }
-        if (params.limit) {
-          options.limit = Math.min(parseInt(params.limit, 10), config.maxResultSize);
-          delete params.limit;
-        } else {
-          options.limit = config.maxResultSize;
-        }
-        if (params.skip) {
-          options.skip = parseInt(params.skip, 10);
-          delete params.skip;
-        }
-        _.each(params, function(value, key) {
-          var matches = null;
-          if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
-            if ('time' == matches[1]) {
-              value = new mongodb.Timestamp(null, value);
-            }
-            if (!params[matches[1]]) {
-              params[matches[1]] = {};
-            }
-            params[matches[1]]['$' + matches[2]] = value;
-            delete params[key];
-          } else if ('_id' == key && _.isString(value)) {
-            params[key] = new BSON.ObjectID(value);
-          }
-        });
-        options.limit += 1; // For next-page detection.
+        var options = mongo.extractSortOptions(params);
+        mongo.extractFilterOptions(params);
         collection.find(params, options).toArray(function(err, docs) {
           if (err) { mongo.dbClose(err, callback); return; }
           mongo.dbClose();
-          var info = {
-            prevPage: docs && options.skip > 0,
-            nextPage: docs && (docs.length == options.limit)
-          };
-          if (docs) {
-            if (info.nextPage) { // Discard next-page hint doc.
-              docs.pop();
-            }
-            docs = mongo.unpackTime(docs);
-          }
-          callback(err, docs, info);
+          var post = mongo.eventPostFind(docs, options);
+          callback(err, post.docs, post.info);
         });
       });
     });
