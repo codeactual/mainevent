@@ -72,9 +72,15 @@ var reduce = function(key, values) {
  * - See MongoDbStorage.mapReduce for payload arguments.
  * - Results format:
  *   {
- *     '<mm:dd:yyyy hh:mm:ss>': {count: 1},
+ *     <Date.parse() compatible string>: {count: 5},
  *     ...
  *   }
+ * - Key formats based on 'interval':
+ *   minute: MM-DD-YYYY HH:MM:00
+ *   hour: MM-DD-YYYY HH:00:00
+ *   day: MM-DD-YYYY 00:00:00
+ *   month: YYYY-MM
+ *   year; YYYY
  */
 exports.run = function(startTime, endTime, interval, query, callback) {
   storage.mapReduceTimeRange(startTime, endTime, {
