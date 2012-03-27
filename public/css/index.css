@@ -62,3 +62,6 @@ select.time-preset {
 .header-grid form > * {
   margin-right: 8px;
 }
+#dashboard-main-graph .jqplot-target {
+  height: 400px;
+}
