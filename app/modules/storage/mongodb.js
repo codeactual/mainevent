@@ -4,7 +4,6 @@
 
 'use strict';
 
-var Lang = requirejs('shared/Lang');
 var mongodb = require('mongodb');
 var BSON = mongodb.BSONPure;
 var config = diana.getConfig().storage;
@@ -17,7 +16,7 @@ var MongoDbStorage = function() {
   Storage.call(this);
 };
 
-Lang.inheritPrototype(MongoDbStorage, Storage);
+diana.shared.Lang.inheritPrototype(MongoDbStorage, Storage);
 
 // Db instance.
 MongoDbStorage.prototype.link = null;

@@ -3,7 +3,6 @@
 // Load GLOBAL.Parser.
 require(__dirname + '/prototype.js');
 
-var Async = requirejs('shared/Async');
 var storage = diana.requireModule('storage/storage').createInstance();
 
 /**
@@ -80,7 +79,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
     );
   };
 
-  Async.runOrdered(
+  diana.shared.Async.runOrdered(
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);

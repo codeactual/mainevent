@@ -1,7 +1,5 @@
 'use strict';
 
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new JsonParser();
 };
@@ -10,7 +8,7 @@ var JsonParser = function() {
   Parser.call(this, 'json');
 };
 
-Lang.inheritPrototype(JsonParser, Parser);
+diana.shared.Lang.inheritPrototype(JsonParser, Parser);
 
 JsonParser.prototype.parse = function(log) {
   return JSON.parse(log);

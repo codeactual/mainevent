@@ -1,7 +1,5 @@
 'use strict';
 
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new NginxErrorParser();
 };
@@ -10,7 +8,7 @@ var NginxErrorParser = function() {
   Parser.call(this, 'nginx_error');
 };
 
-Lang.inheritPrototype(NginxErrorParser, Parser);
+diana.shared.Lang.inheritPrototype(NginxErrorParser, Parser);
 
 NginxErrorParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [

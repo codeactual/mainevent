@@ -1,8 +1,7 @@
 define([
-    'shared/Date',
     'models/Event',
     'views/TimelineSearch'
-  ], function(DateShared, EventModel, TimelineSearch) {
+  ], function(EventModel, TimelineSearch) {
 
   'use strict';
 
@@ -100,7 +99,7 @@ define([
         // Ex. format the time attribute.
         context.list = _.map(context.list, function(pair, index) {
           if ('time' == pair.key) {
-            context.time = DateShared.formatTime(pair.value);
+            context.time = diana.shared.Date.formatTime(pair.value);
             context.timeFromNow = moment(pair.value).fromNow();
           }
           return pair;
@@ -116,7 +115,7 @@ define([
       } else {
         var context = event;
         context.timeFromNow = moment(context.time).fromNow();
-        context.time = DateShared.formatTime(context.time);
+        context.time = diana.shared.Date.formatTime(context.time);
         delete context.previewAttr;
       }
 

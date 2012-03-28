@@ -1,8 +1,5 @@
 'use strict';
 
-var DateShared = requirejs('shared/Date');
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new PhpParser();
 };
@@ -11,7 +8,7 @@ var PhpParser = function() {
   Parser.call(this, 'php');
 };
 
-Lang.inheritPrototype(PhpParser, Parser);
+diana.shared.Lang.inheritPrototype(PhpParser, Parser);
 
 PhpParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [
@@ -46,7 +43,7 @@ PhpParser.prototype.extractTime = function(date) {
 
   var parsable = util.format(
     '%d/%d/%d %s',
-    DateShared.monthNameToNum(matches[2]),
+    diana.shared.Date.monthNameToNum(matches[2]),
     matches[1],
     matches[3],
     matches[4]

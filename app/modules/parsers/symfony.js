@@ -1,7 +1,5 @@
 'use strict';
 
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new SymfonyParser();
 };
@@ -10,7 +8,7 @@ var SymfonyParser = function() {
   Parser.call(this, 'symfony');
 };
 
-Lang.inheritPrototype(SymfonyParser, Parser);
+diana.shared.Lang.inheritPrototype(SymfonyParser, Parser);
 
 SymfonyParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [

@@ -1,8 +1,5 @@
 'use strict';
 
-var DateShared = requirejs('shared/Date');
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new SyslogParser();
 };
@@ -11,7 +8,7 @@ var SyslogParser = function() {
   Parser.call(this, 'syslog');
 };
 
-Lang.inheritPrototype(SyslogParser, Parser);
+diana.shared.Lang.inheritPrototype(SyslogParser, Parser);
 
 SyslogParser.prototype.parse = function(log) {
   return this.namedCapture(
@@ -40,7 +37,7 @@ SyslogParser.prototype.extractTime = function(date, now) {
 
   var parsable = util.format(
     '%d/%d/%d %s',
-    DateShared.monthNameToNum(matches[1]),
+    diana.shared.Date.monthNameToNum(matches[1]),
     matches[2],
     now.getFullYear(), // syslog dates do not include years
     matches[3]
@@ -53,7 +50,7 @@ SyslogParser.prototype.extractTime = function(date, now) {
   if (parsed > now.getTime()) {
     parsable = util.format(
       '%d/%d/%d %s',
-      DateShared.monthNameToNum(matches[1]),
+      diana.shared.Date.monthNameToNum(matches[1]),
       matches[2],
       now.getFullYear() - 1,  // Current year is in the future, try last year.
       matches[3]

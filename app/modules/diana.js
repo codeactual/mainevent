@@ -64,3 +64,7 @@ GLOBAL.diana = {
     return require(file).read();
   }
 };
+
+requirejs('shared/Async');
+requirejs('shared/Date');
+requirejs('shared/Lang');

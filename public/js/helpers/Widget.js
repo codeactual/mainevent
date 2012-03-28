@@ -68,6 +68,19 @@ define([], function() {
       _.each(diana.parsers, function(name) {
         select.append('<option value="' + name + '">' + name + '</option>');
       });
+    },
+
+    /**
+     * Add <option> list based on configured interval list.
+     *
+     * @param select {Object} jQuery object or selector.
+     */
+    fillPresetTimeSelect: function(select) {
+      select = $(select);
+      select.append('<option value="">Any Time</option>');
+      _.each(diana.shared.Date.presetTimeIntervals, function(interval, name) {
+        select.append('<option value="' + interval + '">' + name + '</option>');
+      });
     }
   };
 });

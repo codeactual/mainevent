@@ -29,7 +29,7 @@ define([], function() {
       $('#time-gte,#time-lte').each(function() {
         var input = $(this);
         // Invalidate the preset time range after a custom one is selected.
-        input.change(function() { view.$('.time-preset').val(''); });
+        input.change(function() { view.$('.time-interval').val(''); });
         // Activate date/time widgets when inputs gain focus.
         input.datetimepicker({});
       });
@@ -45,20 +45,22 @@ define([], function() {
         }
       });
 
-      $('#time-preset-clear').on('click', function(event) {
+      $('#time-interval-clear').on('click', function(event) {
         event.preventDefault();
-        $('#time-preset,#time-gte,#time-lte').val('');
+        $('#time-interval,#time-gte,#time-lte').val('');
       });
 
       diana.helpers.Widget.fillParserSelect(parser);
+      diana.helpers.Widget.fillPresetTimeSelect(this.$('.time-interval'));
 
       var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
       _.each(basicArgNames, function(name) {
-        if (view.options.searchArgs[name]) {
+        if (_.has(view.options.searchArgs, name)) {
+          var value = view.options.searchArgs[name];
           if (('time-gte' == name || 'time-lte' == name)) {
-            view.options.searchArgs[name] = moment(view.options.searchArgs[name]).format(view.datetimePickerFormat);
+            value = moment(parseInt(value, 10)).format(view.datetimePickerFormat);
           }
-          view.$('#' + name).val(view.options.searchArgs[name]);
+          view.$('#' + name).val(value);
           delete view.options.searchArgs[name];
         }
       });
@@ -87,7 +89,7 @@ define([], function() {
 
     events: {
       'submit': 'submit',
-      'change .time-preset': 'applyPresetTime'
+      'change .time-interval': 'applyPresetTime'
     },
 
     /**
@@ -106,7 +108,7 @@ define([], function() {
      * @param event {Object} jQuery event object.
      */
     applyPresetTime: function(event) {
-      $('#time-gte').val(moment().subtract('seconds', this.$('.time-preset').val()).format(this.datetimePickerFormat));
+      $('#time-gte').val(moment().subtract('milliseconds', this.$('.time-interval').val()).format(this.datetimePickerFormat));
       $('#time-lte').val(moment().format(this.datetimePickerFormat));
     },
 

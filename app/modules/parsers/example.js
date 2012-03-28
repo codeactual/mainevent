@@ -4,8 +4,6 @@
 
 'use strict';
 
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new ExampleParser();
 };
@@ -14,7 +12,7 @@ var ExampleParser = function() {
   Parser.call(this, 'example');
 };
 
-Lang.inheritPrototype(ExampleParser, Parser);
+diana.shared.Lang.inheritPrototype(ExampleParser, Parser);
 
 /**
  * REQUIRED: Convert a log line string into an object of parsed key/value pairs

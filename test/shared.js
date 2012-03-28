@@ -6,8 +6,6 @@
 
 var testutil = require(__dirname + '/modules/testutil.js');
 
-var Async = requirejs('shared/Async');
-
 exports.testWalkAsync = function(test) {
   var list = [1, 2, 3];
   var consumed = [];
@@ -29,5 +27,5 @@ exports.testWalkAsync = function(test) {
   };
 
   test.expect(2);
-  Async.runOrdered(list, consumer, consumerCallback, onDone);
+  diana.shared.Async.runOrdered(list, consumer, consumerCallback, onDone);
 };

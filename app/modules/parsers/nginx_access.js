@@ -1,8 +1,5 @@
 'use strict';
 
-var DateShared = requirejs('shared/Date');
-var Lang = requirejs('shared/Lang');
-
 exports.createInstance = function() {
   return new NginxAccessParser();
 };
@@ -11,7 +8,7 @@ var NginxAccessParser = function() {
   Parser.call(this, 'nginx_access');
 };
 
-Lang.inheritPrototype(NginxAccessParser, Parser);
+diana.shared.Lang.inheritPrototype(NginxAccessParser, Parser);
 
 NginxAccessParser.prototype.parse = function(log) {
   return this.namedCapture(
@@ -51,7 +48,7 @@ NginxAccessParser.prototype.extractTime = function(date) {
 
   var parsable = util.format(
     '%d/%d/%d %s',
-    DateShared.monthNameToNum(matches[2]),
+    diana.shared.Date.monthNameToNum(matches[2]),
     matches[1],
     matches[3],
     matches[4]

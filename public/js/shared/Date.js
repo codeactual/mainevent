@@ -6,7 +6,25 @@ define([], function() {
     var moment = require('moment');
   }
 
-  return{
+  var root = 'undefined' == typeof window ? GLOBAL : window;
+  root.diana = root.diana || {};
+  root.diana.shared = root.diana.shared || {};
+  var diana = root.diana;
+
+  diana.shared.Date = {
+    /**
+     * Time units used by background jobs and UI widgets.
+     */
+    presetTimeIntervals: {
+      'Last 1 min': 60000,
+      'Last 5 mins': 300000,
+      'Last 15 mins': 900000,
+      'Last 1 hour': 3600000,
+      'Last 1 day': 86400000,
+      'Last 1 week': 604800000,
+      'Last 30 days': 2592000000
+    },
+
     /**
      * Convert a UNIX timestamp in seconds to string format.
      *

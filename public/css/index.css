@@ -17,7 +17,7 @@
 select#parser {
   width: 140px;
 }
-select.time-preset {
+select.time-interval {
   width: 110px;
 }
 .alert {
