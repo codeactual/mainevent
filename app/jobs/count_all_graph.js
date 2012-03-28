@@ -80,8 +80,10 @@ var reduce = function(key, values) {
  *   day: MM-DD-YYYY 00:00:00
  *   month: YYYY-MM
  *   year; YYYY
+ * @param suffix {String} Appended to the default results collection name.
+ * - suffix 'hourly' -> collection name 'count_all_graph_hourly'
  */
-exports.run = function(startTime, endTime, interval, query, callback) {
+exports.run = function(startTime, endTime, interval, query, callback, suffix) {
   storage.mapReduceTimeRange(startTime, endTime, {
     name: __filename,
     map: map,
@@ -91,6 +93,7 @@ exports.run = function(startTime, endTime, interval, query, callback) {
       scope: {interval: interval}
     },
     return: 'array',
-    callback: callback
+    callback: callback,
+    suffix: suffix
   });
 };

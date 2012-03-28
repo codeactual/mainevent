@@ -27,6 +27,7 @@ define([], function() {
               el: $('#dashboard-main-graph')
             });
             diana.helpers.Widget.fillParserSelect('#parser');
+            diana.helpers.Widget.fillPresetTimeSelect(view.$('.time-interval'));
           });
         }
       );

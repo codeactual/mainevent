@@ -53,6 +53,26 @@ define([], function() {
      */
      strtotime: function(str) {
        return (new Date(str)).getTime();
+     },
+
+     /**
+      * Find the best-fit time interval for a given duration.
+      *
+      * @param duration {Number} Milliseconds
+      * @param {String} year, month, day, hour, minute
+      */
+     bestFitInterval: function(duration) {
+       if (duration < 3600000) {
+         return 'minute';
+       } else if (duration < 86400000) {
+         return 'hour';
+       } else if (duration < 2592000000) { // 30 days
+         return 'day';
+       } else if (duration < 31536000000) { // 365 days
+         return 'month';
+       } else {
+         return 'year';
+       }
      }
   };
 });

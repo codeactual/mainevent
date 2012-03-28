@@ -297,15 +297,16 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callbac
  */
 MongoDbStorage.prototype.mapReduce = function(job) {
   job.name = diana.extractJobName(job.name);
+  var collectionName = job.suffix ? job.name + '_' + job.suffix : job.name;
   job.options = job.options || {};
-  job.options.out = job.options.out || {replace: job.name};
+  job.options.out = job.options.out || {replace: collectionName};
   var mongo = this;
   this.dbConnectAndOpen(job.callback, function(err, db) {
     mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
       collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
         if (err) { mongo.dbClose(); job.callback(err); return; }
         if (job.return) {
-          mongo.getMapReduceResults(job.name, function(err, results) {
+          mongo.getMapReduceResults(collectionName, function(err, results) {
             mongo.dbClose();
             job.callback(err, results, stats);
           }, job.return != 'cursor');
