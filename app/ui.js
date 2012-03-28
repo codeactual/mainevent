@@ -108,12 +108,14 @@ app.get('/job/:name', function(req, res) {
     res.send({__error: 'Job not found.'}, 404);
   };
   if (req.params.name.match(/^[a-z_]+$/)) {
-    storage.collectionExists(req.params.name, function(err, results) {
+    var interval = req.query['interval'] ? parseInt(req.query['interval'], 10) : '';
+    var collectionName = req.params.name + (interval ? '_' + interval : '');
+    storage.collectionExists(collectionName, function(err, results) {
       if (!results) {
         sendError();
         return;
       }
-      storage.getMapReduceResults(req.params.name, function(err, results) {
+      storage.getMapReduceResults(collectionName, function(err, results) {
         if (err) {
           res.send({__error: err}, 500);
         } else {

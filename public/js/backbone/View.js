@@ -216,13 +216,13 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
   };
 
   /**
-   * Build a fragment URL.
+   * Build a URL.
    *
-   * @param fragment {String} Ex. 'timeline', w/out trailing slash.
+   * @param base {String} Ex. 'timeline', w/out trailing slash.
    * @param args {Object}
    * @return {String}
    */
-  Backbone.View.prototype.buildUrl = function(fragment, args, prependHash) {
+  Backbone.View.prototype.buildUrl = function(base, args, prependHash) {
     prependHash = _.isUndefined(prependHash) ? true : prependHash;
     var pairs = [];
     _.each(args, function(value, key) {
@@ -231,8 +231,9 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
       }
       pairs.push(key + '=' + encodeURIComponent(value));
     });
-    pairs = pairs.join('&');
-    return (prependHash ? '#' : '') + fragment + (pairs ? '/' + pairs : '');
+
+    pairs = (prependHash && pairs.length ? '/' : '') + pairs.join('&');
+    return (prependHash ? '#' : '') + base + pairs;
   };
 
   /**

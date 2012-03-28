@@ -4,15 +4,22 @@ define([], function() {
 
   // View the dashboard container.
   return Backbone.View.extend({
+    interval: '',
+
     initialize: function(options) {
       this.initKeyEvents({});
       this.render();
     },
 
     events: {
+      'change .time-interval': 'onTimeIntervalChange'
     },
 
-    onClose: function() {
+    onTimeIntervalChange: function() {
+      diana.helpers.Event.trigger(
+        'DashboardTimeIntervalChange',
+        this.$('.time-interval').val()
+      );
     },
 
     render: function() {
@@ -22,15 +29,20 @@ define([], function() {
         null,
         function(err, out) {
           view.$el.html(out);
-          require(['views/DashboardMainGraph'], function(DashboardMainGraph) {
-            new DashboardMainGraph({
-              el: $('#dashboard-main-graph')
-            });
-            diana.helpers.Widget.fillParserSelect('#parser');
-            diana.helpers.Widget.fillPresetTimeSelect(view.$('.time-interval'));
-          });
+          view.renderMainGraph();
+          diana.helpers.Widget.fillParserSelect('#parser');
+          diana.helpers.Widget.fillPresetTimeSelect(view.$('.time-interval'));
         }
       );
+    },
+
+    renderMainGraph: function() {
+      var view = this;
+      require(['views/DashboardMainGraph'], function(DashboardMainGraph) {
+        view.mainGraph = new DashboardMainGraph({
+          el: $('#dashboard-main-graph')
+        });
+      });
     }
   });
 });

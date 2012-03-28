@@ -3,35 +3,61 @@ define([], function() {
   'use strict';
 
   return Backbone.View.extend({
+    graphId: null,
+
+    interval: '',
+
     initialize: function(options) {
       this.render();
-    },
 
-    events: {
-    },
-
-    onClose: function() {
+      var view = this;
+      diana.helpers.Event.on('DashboardTimeIntervalChange', function(interval) {
+        view.interval = interval;
+        view.render();
+      });
     },
 
     render: function() {
       // Use convention-based IDs so markup can just hold positional containers.
-      var id = this.el.id + '-canvas';
-      this.$el.append($('<div>').attr('id', id));
+      this.graphId = this.el.id + '-canvas';
 
-      $.jqplot(
-        id,
-        [
-          [[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]],
-          [[2, 4],[6,10.12],[10,26.1],[14,66.6],[18,170.9],[22,440.9]]
-        ],
-        {
-          title: 'Events',
-          series: [
-            {color:'#5FAB78'},
-            {color:'#000000'},
-          ]
+      var url = this.buildUrl('/job/count_all_graph?', {
+        interval: this.interval
+      }, false);
+
+      var view = this;
+      $.ajax(
+        url, {
+        success: function(data) {
+          view.$el.children().remove();
+          view.$el.append($('<div>').attr('id', view.graphId));
+
+          var graphData = [];
+          _.each(data, function(result, time) {
+            graphData.push([time, result.count]);
+          });
+
+          try {
+            $.jqplot(
+              view.graphId,
+              [graphData],
+              {
+                title: 'Events',
+                axes: {
+                  xaxis: {
+                    renderer: $.jqplot.DateAxisRenderer,
+                  }
+                },
+                series:[{lineWidth:2}]
+              }
+            );
+          } catch (e) {
+            if (e.message != 'No data to plot.') {
+              console.log(e);
+            }
+          }
         }
-      );
+      });
     }
   });
 });
