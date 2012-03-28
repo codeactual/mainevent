@@ -13,24 +13,24 @@ requirejs(['shared/Date'], function(DateShared) {
       {
         source: {parser: 'json'},
         lines: [
-          '{"time":"03/12/2012 09:00:05","message":"' + run + '"}',
-          '{"time":"04/13/2013 10:00:15","message":"' + run + '"}',
-          '{"time":"04/23/2013 10:00:20","message":"' + run + '"}',
-          '{"time":"05/14/2014 11:00:25","message":"' + run + '"}'
+          '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
+          '{"time":"04/13/2010 10:00:15","message":"' + run + '"}',
+          '{"time":"04/23/2010 10:00:20","message":"' + run + '"}',
+          '{"time":"05/14/2011 11:00:25","message":"' + run + '"}'
         ]
       }
     ];
     var expected = {};
-    expected['2012'] = {count: 1};
-    expected['2013'] = {count: 2};
-    expected['2014'] = {count: 1};
+    expected['2009'] = {count: 1};
+    expected['2010'] = {count: 2};
+    expected['2011'] = {count: 1};
     job.verifyJob(
       test,
       __filename,
       logs,
       expected,
-      strtotime('03/12/2012 09:00:00'),
-      strtotime('05/15/2014 12:00:00'),
+      strtotime('03/12/2009 09:00:00'),
+      strtotime('05/15/2011 12:00:00'),
       'year',
       {message: run}
     );
@@ -43,24 +43,24 @@ requirejs(['shared/Date'], function(DateShared) {
       {
         source: {parser: 'json'},
         lines: [
-          '{"time":"03/12/2012 09:00:05","message":"' + run + '"}',
-          '{"time":"04/13/2012 10:00:15","message":"' + run + '"}',
-          '{"time":"04/23/2012 10:00:20","message":"' + run + '"}',
-          '{"time":"05/14/2012 11:00:25","message":"' + run + '"}'
+          '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
+          '{"time":"04/13/2009 10:00:15","message":"' + run + '"}',
+          '{"time":"04/23/2009 10:00:20","message":"' + run + '"}',
+          '{"time":"05/14/2009 11:00:25","message":"' + run + '"}'
         ]
       }
     ];
     var expected = {};
-    expected['2012-03'] = {count: 1};
-    expected['2012-04'] = {count: 2};
-    expected['2012-05'] = {count: 1};
+    expected['2009-03'] = {count: 1};
+    expected['2009-04'] = {count: 2};
+    expected['2009-05'] = {count: 1};
     job.verifyJob(
       test,
       __filename,
       logs,
       expected,
-      strtotime('03/12/2012 09:00:00'),
-      strtotime('05/15/2012 12:00:00'),
+      strtotime('03/12/2009 09:00:00'),
+      strtotime('05/15/2009 12:00:00'),
       'month',
       {message: run}
     );
@@ -73,24 +73,24 @@ requirejs(['shared/Date'], function(DateShared) {
       {
         source: {parser: 'json'},
         lines: [
-          '{"time":"03/12/2012 09:00:05","message":"' + run + '"}',
-          '{"time":"03/13/2012 10:00:15","message":"' + run + '"}',
-          '{"time":"03/13/2012 10:00:20","message":"' + run + '"}',
-          '{"time":"03/14/2012 11:00:25","message":"' + run + '"}'
+          '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
+          '{"time":"03/13/2009 10:00:15","message":"' + run + '"}',
+          '{"time":"03/13/2009 10:00:20","message":"' + run + '"}',
+          '{"time":"03/14/2009 11:00:25","message":"' + run + '"}'
         ]
       }
     ];
     var expected = {};
-    expected['03/12/2012 00:00:00'] = {count: 1};
-    expected['03/13/2012 00:00:00'] = {count: 2};
-    expected['03/14/2012 00:00:00'] = {count: 1};
+    expected['03/12/2009 00:00:00'] = {count: 1};
+    expected['03/13/2009 00:00:00'] = {count: 2};
+    expected['03/14/2009 00:00:00'] = {count: 1};
     job.verifyJob(
       test,
       __filename,
       logs,
       expected,
-      strtotime('03/12/2012 09:00:00'),
-      strtotime('03/15/2012 12:00:00'),
+      strtotime('03/12/2009 09:00:00'),
+      strtotime('03/15/2009 12:00:00'),
       'day',
       {message: run}
     );
@@ -103,24 +103,24 @@ requirejs(['shared/Date'], function(DateShared) {
       {
         source: {parser: 'json'},
         lines: [
-          '{"time":"03/12/2012 09:00:05","message":"' + run + '"}',
-          '{"time":"03/12/2012 10:00:15","message":"' + run + '"}',
-          '{"time":"03/12/2012 10:00:20","message":"' + run + '"}',
-          '{"time":"03/12/2012 11:00:25","message":"' + run + '"}'
+          '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
+          '{"time":"03/12/2009 10:00:15","message":"' + run + '"}',
+          '{"time":"03/12/2009 10:00:20","message":"' + run + '"}',
+          '{"time":"03/12/2009 11:00:25","message":"' + run + '"}'
         ]
       }
     ];
     var expected = {};
-    expected['03/12/2012 09:00:00'] = {count: 1};
-    expected['03/12/2012 10:00:00'] = {count: 2};
-    expected['03/12/2012 11:00:00'] = {count: 1};
+    expected['03/12/2009 09:00:00'] = {count: 1};
+    expected['03/12/2009 10:00:00'] = {count: 2};
+    expected['03/12/2009 11:00:00'] = {count: 1};
     job.verifyJob(
       test,
       __filename,
       logs,
       expected,
-      strtotime('03/12/2012 09:00:00'),
-      strtotime('03/12/2012 12:00:00'),
+      strtotime('03/12/2009 09:00:00'),
+      strtotime('03/12/2009 12:00:00'),
       'hour',
       {message: run}
     );
@@ -133,24 +133,24 @@ requirejs(['shared/Date'], function(DateShared) {
       {
         source: {parser: 'json'},
         lines: [
-          '{"time":"03/12/2012 09:00:05","message":"' + run + '"}',
-          '{"time":"03/12/2012 09:05:15","message":"' + run + '"}',
-          '{"time":"03/12/2012 09:05:20","message":"' + run + '"}',
-          '{"time":"03/12/2012 09:10:25","message":"' + run + '"}'
+          '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
+          '{"time":"03/12/2009 09:05:15","message":"' + run + '"}',
+          '{"time":"03/12/2009 09:05:20","message":"' + run + '"}',
+          '{"time":"03/12/2009 09:10:25","message":"' + run + '"}'
         ]
       }
     ];
     var expected = {};
-    expected['03/12/2012 09:00:00'] = {count: 1};
-    expected['03/12/2012 09:05:00'] = {count: 2};
-    expected['03/12/2012 09:10:00'] = {count: 1};
+    expected['03/12/2009 09:00:00'] = {count: 1};
+    expected['03/12/2009 09:05:00'] = {count: 2};
+    expected['03/12/2009 09:10:00'] = {count: 1};
     job.verifyJob(
       test,
       __filename,
       logs,
       expected,
-      strtotime('03/12/2012 09:00:00'),
-      strtotime('03/12/2012 10:00:00'),
+      strtotime('03/12/2009 09:00:00'),
+      strtotime('03/12/2009 10:00:00'),
       'minute',
       {message: run}
     );
