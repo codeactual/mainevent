@@ -4,7 +4,6 @@
 
 'use strict';
 
-require(__dirname + '/../modules/diana.js');
 var storage = diana.requireModule('storage/storage').createInstance();
 
 var map = function() {
