@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Diana Tests</title>
+  <meta charset="utf-8" />
+  <script src="/js/yui-min.js" charset="utf-8"></script>
+  <script charset="utf-8">
+    'use strict';
+    YUI({ useBrowserConsole: true }).use('test', function(Y) {
+      // Each script will define its suites and invoke runners.
+      Y.Get.script(<%= testScripts %>);
+    });
+  </script>
+</head>
+<body>
+</body>
+</html>
