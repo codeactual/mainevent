@@ -36,7 +36,7 @@ var map = function() {
         + '/' + (date.length == 2 ? date : '0' + date)
         + '/' + this.time.getFullYear()
         + ' ' + (hours.length == 2 ? hours : '0' + hours)
-        + ':00:00';
+        + ':00';
       break;
     case 'minute':
       group =

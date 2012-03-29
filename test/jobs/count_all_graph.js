@@ -110,9 +110,9 @@ exports.testCountAllByHour = function(test) {
     }
   ];
   var expected = {};
-  expected['03/12/2009 09:00:00'] = {count: 1};
-  expected['03/12/2009 10:00:00'] = {count: 2};
-  expected['03/12/2009 11:00:00'] = {count: 1};
+  expected['03/12/2009 09:00'] = {count: 1};
+  expected['03/12/2009 10:00'] = {count: 2};
+  expected['03/12/2009 11:00'] = {count: 1};
   job.verifyJob(
     test,
     __filename,
