@@ -51,6 +51,10 @@ define([], function() {
 
         // Add proportional top-padding.
         axes.yaxis.max = data[0][1] * 1.5;
+      } else {
+        // Remove all x-axis padding.
+        axes.xaxis.min = data[0][0];
+        axes.xaxis.max = data[data.length - 1][0];
       }
 
       axes.yaxis.min = 0;
