@@ -4,12 +4,20 @@
   <title>Diana Tests</title>
   <meta charset="utf-8" />
   <script src="/js/yui-min.js" charset="utf-8"></script>
-  <script src="/js/underscore.js" charset="utf-8"></script>
   <script src="/js/require.js" charset="utf-8"></script>
+  <script src="/js/moment.js" charset="utf-8"></script>
+  <script src="/js/underscore.js" charset="utf-8"></script>
   <script charset="utf-8">
     'use strict';
     require.config({baseUrl: '/js'});
     YUI().use('test', function(Y) {
+      // Universal test helpers.
+      window.areDeepEqual = function(a, b) {
+        var aJson = JSON.stringify(a),
+            bJson = JSON.stringify(b);
+        Y.Assert.isTrue(_.isEqual(a, b), aJson + ' != ' + bJson);
+      };
+
       // Each script will define its suites and invoke runners.
       Y.Get.script(<%= testScripts %>);
     });

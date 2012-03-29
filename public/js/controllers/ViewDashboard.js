@@ -1,5 +1,6 @@
 define([
   'order!views/Dashboard',
+  'order!helpers/Graph',
   'order!jquery.jqplot',
   'order!jqplot.dateAxisRenderer'
   ], function(view) {
