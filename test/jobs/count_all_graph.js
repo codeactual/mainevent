@@ -154,3 +154,33 @@ exports.testCountAllByMinute = function(test) {
     {message: run}
   );
 };
+
+exports.testCountAllBySecond = function(test) {
+  test.expect(1);
+  var run = testutil.getRandHash();
+  var logs = [
+    {
+      source: {parser: 'json'},
+      lines: [
+        '{"time":"03/12/2009 09:05:05","message":"' + run + '"}',
+        '{"time":"03/12/2009 09:05:20","message":"' + run + '"}',
+        '{"time":"03/12/2009 09:05:20","message":"' + run + '"}',
+        '{"time":"03/12/2009 09:05:25","message":"' + run + '"}'
+      ]
+    }
+  ];
+  var expected = {};
+  expected['03/12/2009 09:05:05'] = {count: 1};
+  expected['03/12/2009 09:05:20'] = {count: 2};
+  expected['03/12/2009 09:05:25'] = {count: 1};
+  job.verifyJob(
+    test,
+    __filename,
+    logs,
+    expected,
+    strtotime('03/12/2009 09:05:00'),
+    strtotime('03/12/2009 09:06:00'),
+    'second',
+    {message: run}
+  );
+};

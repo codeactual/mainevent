@@ -62,7 +62,9 @@ define([], function() {
       * @param {String} year, month, day, hour, minute
       */
      bestFitInterval: function(duration) {
-       if (duration < 3600000) {
+       if (duration < 60000) {
+         return 'second';
+       } else if (duration < 3600000) {
          return 'minute';
        } else if (duration < 86400000) {
          return 'hour';

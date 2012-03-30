@@ -47,6 +47,15 @@ var map = function() {
         + ':' + (minutes.length == 2 ? minutes : '0' + minutes)
         + ':00';
       break;
+    case 'second':
+      group =
+        (month.length == 2 ? month : '0' + month)
+        + '/' + (date.length == 2 ? date : '0' + date)
+        + '/' + this.time.getFullYear()
+        + ' ' + (hours.length == 2 ? hours : '0' + hours)
+        + ':' + (minutes.length == 2 ? minutes : '0' + minutes)
+        + ':' + (seconds.length == 2 ? seconds : '0' + seconds);
+      break;
     default:
       return;
   }
