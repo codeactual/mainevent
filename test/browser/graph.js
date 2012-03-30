@@ -27,6 +27,7 @@ require(['helpers/Graph'], function() {
         },
 
         'should add date unit': function() {
+          Y.Assert.areEqual('03/12/2012 10:02:01', Graph.addDateUnit('03/12/2012 10:02:00', 1, 'second'));
           Y.Assert.areEqual('03/12/2012 10:03:00', Graph.addDateUnit('03/12/2012 10:02:00', 1));
           Y.Assert.areEqual('03/12/2012 11:00', Graph.addDateUnit('03/12/2012 10:00', 1));
           Y.Assert.areEqual('03/13/2012', Graph.addDateUnit('03/12/2012', 1));
@@ -35,6 +36,7 @@ require(['helpers/Graph'], function() {
         },
 
         'should subtract date unit': function() {
+          Y.Assert.areEqual('03/12/2012 10:01:59', Graph.subtractDateUnit('03/12/2012 10:02:00', 1, 'second'));
           Y.Assert.areEqual('03/12/2012 10:01:00', Graph.subtractDateUnit('03/12/2012 10:02:00', 1));
           Y.Assert.areEqual('03/12/2012 09:00', Graph.subtractDateUnit('03/12/2012 10:00', 1));
           Y.Assert.areEqual('03/11/2012', Graph.subtractDateUnit('03/12/2012', 1));
@@ -43,7 +45,8 @@ require(['helpers/Graph'], function() {
         },
 
         'should detect date unit': function() {
-          Y.Assert.areEqual('minute', Graph.detectDateUnit('03/12/2012 10:01:00'));
+          Y.Assert.areEqual('second', Graph.detectDateUnit('03/12/2012 10:01:05', 'second'));
+          Y.Assert.areEqual('minute', Graph.detectDateUnit('03/12/2012 10:01:00', 'minute'));
           Y.Assert.areEqual('hour', Graph.detectDateUnit('03/12/2012 10:00'));
           Y.Assert.areEqual('day', Graph.detectDateUnit('03/12/2012'));
           Y.Assert.areEqual('month', Graph.detectDateUnit('2012-03'));

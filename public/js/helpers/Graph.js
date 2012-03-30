@@ -1,4 +1,4 @@
-define([], function() {
+define(['shared/Date'], function() {
 
   'use strict';
 
@@ -9,7 +9,7 @@ define([], function() {
   var Graph = diana.helpers.Graph = {
 
     formatRegex: {
-      minute: /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:00$/,
+      'minute|second': /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/,
       hour: /^\d{2}\/\d{2}\/\d{4} \d{2}:00$/,
       day: /^\d{2}\/\d{2}\/\d{4}$/,
       month: /^\d{4}-\d{2}$/,
@@ -17,6 +17,7 @@ define([], function() {
     },
 
     momentFormat: {
+      second: 'MM/DD/YYYY HH:mm:ss',
       minute: 'MM/DD/YYYY HH:mm:ss',
       hour: 'MM/DD/YYYY HH:mm',
       day: 'MM/DD/YYYY',
@@ -25,6 +26,7 @@ define([], function() {
     },
 
     jqplotFormat: {
+      second: '%m/%d/%Y %H:%M:%S',
       minute: '%m/%d/%Y %H:%M:%S',
       hour: '%m/%d/%Y %H:%M',
       day: '%m/%d/%Y',
@@ -83,12 +85,14 @@ define([], function() {
      *
      * @param str {String} Ex. '03/12/2012'.
      * @param amount {Number} Ex. 1
+     * @param unit {String} (Optional) Override unit detection.
      * @return {String} Ex. '03/11/2012'
      */
-    addDateUnit: function(str, amount) {
-      var unit = Graph.detectDateUnit(str);
+    addDateUnit: function(str, amount, unit) {
+      unit = unit || Graph.detectDateUnit(str);
       var format = Graph.momentFormat[unit];
       switch (unit) {
+        case 'second':
         case 'minute':
         case 'hour':
         case 'day':
@@ -104,23 +108,33 @@ define([], function() {
      *
      * @param str {String} Ex. '03/12/2012'.
      * @param amount {Number} Ex. 1
+     * @param unit {String} (Optional) Override unit detection.
      * @return {String} Ex. '03/11/2012'
      */
-    subtractDateUnit: function(str, amount) {
-      return Graph.addDateUnit(str, -1 * amount);
+    subtractDateUnit: function(str, amount, unit) {
+      return Graph.addDateUnit(str, -1 * amount, unit);
     },
 
     /**
      * Detect a formatted date/time's unit.
      *
      * @param str {String} Ex. '03/12/2012'.
+     * @param hint {String} (Optional) Unit hint.
+     * - Ex. 'second' hint will tie-break a regex match on 'minute|second'.
      * @return {String} minute, hour, day, month, year
      */
-    detectDateUnit: function(str) {
+    detectDateUnit: function(str, hint) {
       var match = null;
       _.any(Graph.formatRegex, function(regex, unit) {
         if (str.match(regex)) {
-          match = unit;
+          var candidates = unit.split('|');
+          if (hint) {
+            var hintIndex = _.indexOf(candidates, hint);
+            // Unhelpful hint, just pick the first one.
+            match = -1 == hintIndex ? candidates[0] : candidates[hintIndex];
+          } else {
+            match = candidates[0];
+          }
           return true;
         }
         return false;
