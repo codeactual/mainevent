@@ -6,7 +6,7 @@ define([], function() {
   window.diana.helpers = window.diana.helpers || {};
   var diana = window.diana;
 
-  diana.helpers.Graph = {
+  var Graph = diana.helpers.Graph = {
 
     formatRegex: {
       minute: /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:00$/,
@@ -16,12 +16,20 @@ define([], function() {
       year: /^\d{4}$/
     },
 
-    unitFormat: {
+    momentFormat: {
       minute: 'MM/DD/YYYY HH:mm:ss',
       hour: 'MM/DD/YYYY HH:mm',
       day: 'MM/DD/YYYY',
       month: 'YYYY-MM',
       year: 'YYYY'
+    },
+
+    jqplotFormat: {
+      minute: '%m/%d/%Y %H:%M:%S',
+      hour: '%m/%d/%Y %H:%M',
+      day: '%m/%d/%Y',
+      month: '%Y-%m',
+      year: '%Y'
     },
 
     /**
@@ -37,17 +45,16 @@ define([], function() {
      * @return {Object} Modified 'axes'.
      */
     adjustAxes: function(data, axes) {
+      var date = diana.shared.Date;
       axes = _.clone(axes);
       axes.xaxis = axes.xaxis || {};
       axes.yaxis = axes.yaxis || {};
 
-      var xunit = diana.helpers.Graph.detectDateUnit(data[0][0]);
-
       if (data.length == 1) {
         // Zoom in, one unit padding on both sides.
-        axes.xaxis.min = diana.helpers.Graph.subtractDateUnit(data[0][0], 1);
-        axes.xaxis.max = diana.helpers.Graph.addDateUnit(data[0][0], 1);
-        axes.xaxis.tickInterval = '1 ' + xunit;
+        axes.xaxis.min = Graph.subtractDateUnit(data[0][0], 1);
+        axes.xaxis.max = Graph.addDateUnit(data[0][0], 1);
+        axes.xaxis.tickInterval = '1 ' + Graph.detectDateUnit(data[0][0]);
 
         // Add proportional top-padding.
         axes.yaxis.max = data[0][1] * 1.5;
@@ -55,6 +62,12 @@ define([], function() {
         // Remove all x-axis padding.
         axes.xaxis.min = data[0][0];
         axes.xaxis.max = data[data.length - 1][0];
+
+        var xunit = date.bestFitInterval(
+          date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0])
+        );
+        axes.xaxis.tickInterval = '1 ' + xunit;
+        axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
       }
 
       axes.yaxis.min = 0;
@@ -70,8 +83,8 @@ define([], function() {
      * @return {String} Ex. '03/11/2012'
      */
     addDateUnit: function(str, amount) {
-      var unit = diana.helpers.Graph.detectDateUnit(str);
-      var format = diana.helpers.Graph.unitFormat[unit];
+      var unit = Graph.detectDateUnit(str);
+      var format = Graph.momentFormat[unit];
       switch (unit) {
         case 'minute':
         case 'hour':
@@ -91,7 +104,7 @@ define([], function() {
      * @return {String} Ex. '03/11/2012'
      */
     subtractDateUnit: function(str, amount) {
-      return diana.helpers.Graph.addDateUnit(str, -1 * amount);
+      return Graph.addDateUnit(str, -1 * amount);
     },
 
     /**
@@ -102,7 +115,7 @@ define([], function() {
      */
     detectDateUnit: function(str) {
       var match = null;
-      _.any(diana.helpers.Graph.formatRegex, function(regex, unit) {
+      _.any(Graph.formatRegex, function(regex, unit) {
         if (str.match(regex)) {
           match = unit;
           return true;
