@@ -63,9 +63,8 @@ define([], function() {
         axes.xaxis.min = data[0][0];
         axes.xaxis.max = data[data.length - 1][0];
 
-        var xunit = date.bestFitInterval(
-          date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0])
-        );
+        var span = date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0]);
+        var xunit = date.bestFitInterval(span);
         axes.xaxis.tickInterval = '1 ' + xunit;
         axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
       }

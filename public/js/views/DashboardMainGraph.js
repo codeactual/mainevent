@@ -29,7 +29,7 @@ define([], function() {
       $.ajax(
         url, {
         success: function(data) {
-          view.$el.children().remove();
+          view.$el.empty();
           view.$el.append($('<div>').attr('id', view.graphId));
 
           var graphData = [];
@@ -37,17 +37,20 @@ define([], function() {
             graphData.push([time, result.count]);
           });
 
+          var defaults = {
+            xaxis: {
+              renderer: $.jqplot.DateAxisRenderer
+            }
+          };
+          var axes = diana.helpers.Graph.adjustAxes(graphData, defaults);
+
           try {
             $.jqplot(
               view.graphId,
               [graphData],
               {
                 title: 'Events',
-                axes: {
-                  xaxis: {
-                    renderer: $.jqplot.DateAxisRenderer,
-                  }
-                },
+                axes: axes,
                 series:[{lineWidth:2}]
               }
             );

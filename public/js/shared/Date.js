@@ -66,7 +66,7 @@ define([], function() {
          return 'minute';
        } else if (duration < 86400000) {
          return 'hour';
-       } else if (duration < 2592000000) { // 30 days
+       } else if (duration < 2419200000) { // 28 days
          return 'day';
        } else if (duration < 31536000000) { // 365 days
          return 'month';
