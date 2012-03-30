@@ -11,6 +11,9 @@ define([], function() {
       var view = this;
       diana.helpers.Event.on('DashboardTimeIntervalChange', function(interval) {
         view.options.dashArgs.interval = interval;
+
+        view.navigate('dashboard', view.options.dashArgs, {trigger: false});
+
         view.render();
       });
     },
