@@ -55,11 +55,7 @@ require([
            controller: 'ViewDashboard',
            context: {sidebar: false, tab: 'nav-dashboard'}
         },
-        'timeline': {
-          controller: 'ViewTimeline',
-          context: {sidebar: false, tab: 'nav-timeline'}
-        },
-        '^timeline/(.*)$': {
+        '^timeline(?:\/?(.*))$': {
           controller: 'ViewTimeline',
           context: {sidebar: false, tab: 'nav-timeline'}
         },
