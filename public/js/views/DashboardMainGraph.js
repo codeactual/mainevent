@@ -3,26 +3,24 @@ define([], function() {
   'use strict';
 
   return Backbone.View.extend({
-    graphId: null,
-
-    interval: '',
+    jqplotId: null,
 
     initialize: function(options) {
       this.render();
 
       var view = this;
       diana.helpers.Event.on('DashboardTimeIntervalChange', function(interval) {
-        view.interval = interval;
+        view.options.dashArgs.interval = interval;
         view.render();
       });
     },
 
     render: function() {
       // Use convention-based IDs so markup can just hold positional containers.
-      this.graphId = this.el.id + '-canvas';
+      this.jqplotId = this.el.id + '-canvas';
 
       var url = this.buildUrl('/job/count_all_graph?', {
-        interval: this.interval
+        interval: this.options.dashArgs.interval
       }, false);
 
       var view = this;
@@ -30,7 +28,7 @@ define([], function() {
         url, {
         success: function(data) {
           view.$el.empty();
-          view.$el.append($('<div>').attr('id', view.graphId));
+          view.$el.append($('<div>').attr('id', view.jqplotId));
 
           var graphData = [];
           _.each(data, function(result, time) {
@@ -46,7 +44,7 @@ define([], function() {
 
           try {
             $.jqplot(
-              view.graphId,
+              view.jqplotId,
               [graphData],
               {
                 title: 'Events',

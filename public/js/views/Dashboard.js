@@ -31,7 +31,10 @@ define([], function() {
           view.$el.html(out);
           view.renderMainGraph();
           diana.helpers.Widget.fillParserSelect('#parser');
-          diana.helpers.Widget.fillPresetTimeSelect(view.$('.time-interval'));
+
+          var timeInterval = view.$('.time-interval');
+          diana.helpers.Widget.fillPresetTimeSelect(timeInterval);
+          timeInterval.val(view.options.dashArgs.interval);
         }
       );
     },
@@ -40,7 +43,8 @@ define([], function() {
       var view = this;
       require(['views/DashboardMainGraph'], function(DashboardMainGraph) {
         view.mainGraph = new DashboardMainGraph({
-          el: $('#dashboard-main-graph')
+          el: $('#dashboard-main-graph'),
+          dashArgs: view.options.dashArgs
         });
       });
     }
