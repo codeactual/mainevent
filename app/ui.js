@@ -15,7 +15,6 @@ require(__dirname + '/modules/diana.js');
 
 var express = require('express'),
     app = express.createServer(),
-    config = diana.getConfig(),
     storage = diana.requireModule('storage/storage').createInstance(),
     parsers = diana.requireModule('parsers/parsers'),
     parserNames = parsers.getConfiguredParsers(),
@@ -41,104 +40,17 @@ app.use(express.static(__dirname + '/../public-build'));
 app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
-// Serve the backbone.js MVC app.
-app.get('/', function(req, res) {
-  res.render('index.html', {
-    // Injected into global client-side 'diana' object.
-    parsers: JSON.stringify(parserNames),
-    maxResultSize: config.storage.maxResultSize
-  });
-});
+var routes = {
+  '/': 'index',
+  '/event/:id': 'event',
+  '/job/:name': 'job',
+  '/timeline': 'timeline'
+};
 
-app.get('/timeline', function(req, res) {
-  if ('time' == req.query['sort-attr'] && 'desc' == req.query['sort-dir']) {
-    res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
-  }
-
-  _.each(req.query, function(value, key) {
-    req.query[key] = decodeURIComponent(value);
-  });
-
-  storage.getTimeline(req.query, function(err, docs, info) {
-    if (err) {
-      res.send({__error: err}, 500);
-    } else if (docs.length) {
-      // Augment each document object with preview text for the view table.
-      diana.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
-        res.send({info: info, results: updated});
-      });
-    } else {
-      res.send({info: info, results: []});
-    }
-  });
-});
-
-app.get('/event/:id', function(req, res) {
-  var sendError = function() {
-    res.send({__error: 'Event not found.'}, 404);
-  };
-  if (req.params.id.match(/^[a-z0-9]{24}$/)) {
-    storage.getLog(req.params.id, function(err, doc) {
-      if (err) {
-        res.send({__error: err}, 500);
-      } else {
-        if (doc) {
-          if ('json' == doc.parser) {
-            var list = [];
-            _.each(doc, function(value, key) {
-              list.push({key: key, value: value});
-            });
-            res.send({__list: list, parser: doc.parser});
-          } else {
-            doc = diana.requireModule('parsers/parsers')
-              .createInstance(doc.parser)
-              .decorateFullContext(doc);
-            res.send(doc);
-          }
-        } else {
-          sendError();
-        }
-      }
-    });
-  } else {
-    sendError();
-  }
-});
-
-app.get('/job/:name', function(req, res) {
-  var sendError = function() {
-    res.send({__error: 'Job not found.'}, 404);
-  };
-
-  if (!req.params.name.match(/^[a-z_]+$/)) {
-    sendError();
-    return;
-  }
-
-  if (req.query.parser && -1 == _.indexOf(parserNames, req.query.parser)) {
-    sendError();
-    return;
-  }
-
-  var parser = req.query.parser ? '_' + req.query.parser : '',
-      interval = req.query.interval ? '_' + parseInt(req.query.interval, 10) : '',
-      collectionName = req.params.name + parser + interval;
-
-  storage.collectionExists(collectionName, function(err, results) {
-    if (!results) {
-      sendError();
-      return;
-    }
-    storage.getMapReduceResults(collectionName, function(err, results) {
-      if (err) {
-        res.send({__error: err}, 500);
-      } else {
-        if (results) {
-          res.send(results);
-        } else {
-          sendError();
-        }
-      }
+_.each(routes, function(controller, route) {
+  app.get(route, function(req, res) {
+    requirejs([__dirname + '/controllers/' + controller + '.js'], function(controller) {
+      controller(req, res);
     });
   });
 });
