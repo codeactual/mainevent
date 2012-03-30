@@ -328,7 +328,7 @@ define([
         event: {
           connect: function() {
             // Start/restart automatic updates.
-            view.socket.emit('startTimelineUpdate', {
+            view.socket.emit('StartTimelineUpdate', {
               newestEventId: view.newestEventId,
               newestEventTime: view.newestEventTime,
               searchArgs: view.options.searchArgs
@@ -338,7 +338,7 @@ define([
       });
 
       // Update the view with events fresher than newestEventId.
-      this.socket.on('timelineUpdate', function(data) {
+      this.socket.on('TimelineUpdate', function(data) {
         view.onTimelineUpdate.call(view, data);
       });
     },

@@ -1,7 +1,7 @@
 /**
  * Serve HTTP requests for the backbone.js powered frontend, assets, and log JSON.
  *
- * Example usage: supervisor --extensions 'js|html' app/ui.js
+ * Example usage: supervisor --extensions 'css|js|html' app/ui.js
  *
  * Example flow:
  *   browser - GET /#event/4f44bc7ea679dd8866000002
@@ -15,9 +15,6 @@ require(__dirname + '/modules/diana.js');
 
 var express = require('express'),
     app = express.createServer(),
-    storage = diana.requireModule('storage/storage').createInstance(),
-    parsers = diana.requireModule('parsers/parsers'),
-    parserNames = parsers.getConfiguredParsers(),
     io = require('socket.io').listen(app),
     build = diana.requireModule('build');
 
@@ -40,13 +37,13 @@ app.use(express.static(__dirname + '/../public-build'));
 app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
+// Route patterns mapped to app/controllers/*.js modules.
 var routes = {
   '/': 'index',
   '/event/:id': 'event',
   '/job/:name': 'job',
   '/timeline': 'timeline'
 };
-
 _.each(routes, function(controller, route) {
   app.get(route, function(req, res) {
     requirejs([__dirname + '/controllers/' + controller + '.js'], function(controller) {
@@ -55,40 +52,16 @@ _.each(routes, function(controller, route) {
   });
 });
 
-// Serve automatic timeline updates.
+// Load all socket controllers under app/sockets/.
 io.sockets.on('connection', function (socket) {
-  var timelineUpdate = null;
-
-  // Client seeds the update stream with the last-seen ID.
-  socket.on('startTimelineUpdate', function (options) {
-    timelineUpdate = setInterval(function () {
-      if (!options.newestEventId || !options.newestEventTime) {
-        // Client never sent the ID for some reason -- don't stop the updates.
-        return;
-      }
-      storage.getTimelineUpdates(options.newestEventId, options.newestEventTime, options.searchArgs, function(err, docs) {
-        if (err) {
-          docs = {__socket_error: err};
-          socket.emit('timelineUpdate', docs);
-        } else {
-          if (docs.length) {
-            options.newestEventId = docs[0]._id.toString();
-            options.newestEventTime = docs[0].time;
-            parsers.addPreviewContext(docs, function(docs) {
-              socket.emit('timelineUpdate', docs);
-            });
-          } else {
-            socket.emit('timelineUpdate', docs);
-          }
-        }
+  var dir = __dirname + '/sockets',
+      fs = require('fs');
+  fs.readdir(dir, function(err, files) {
+    _.each(files, function(socketController) {
+      requirejs([dir + '/' + socketController], function(addEventHandlers) {
+        addEventHandlers(socket);
       });
-    }, diana.getConfig().timelineUpdateDelay);
-  });
-
-  socket.on('disconnect', function () {
-    if (timelineUpdate) {
-      clearInterval(timelineUpdate);
-    }
+    });
   });
 });
 
