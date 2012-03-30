@@ -14,7 +14,7 @@
 .condition-pair select {
   width: 50px;
 }
-select#parser {
+select.parser {
   width: 140px;
 }
 select.time-interval {

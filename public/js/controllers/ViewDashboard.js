@@ -13,7 +13,7 @@ define([
    * @return {Object} View object.
    */
   return function(options) {
-    var dashArgs = {interval: ''};
+    var dashArgs = {interval: '', parser: ''};
 
     if (undefined !== options) {
       // Ex. '/#dashboard/interval=60000'.

@@ -45,6 +45,10 @@ define([], function() {
      * @return {Object} Modified 'axes'.
      */
     adjustAxes: function(data, axes) {
+      if (!data || !data.length) {
+        return axes;
+      }
+
       var date = diana.shared.Date;
       axes = _.clone(axes);
       axes.xaxis = axes.xaxis || {};

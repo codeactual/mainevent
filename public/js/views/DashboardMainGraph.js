@@ -9,11 +9,12 @@ define([], function() {
       this.render();
 
       var view = this;
-      diana.helpers.Event.on('DashboardTimeIntervalChange', function(interval) {
-        view.options.dashArgs.interval = interval;
-
+      diana.helpers.Event.on('DashboardArgsChange', function(changed) {
+        // Merge changed args with current.
+        view.options.dashArgs = _.extend(view.options.dashArgs, changed);
+        // Save a history point but don't trigger the router.
         view.navigate('dashboard', view.options.dashArgs, {trigger: false});
-
+        // Apply updated args.
         view.render();
       });
     },
@@ -23,7 +24,8 @@ define([], function() {
       this.jqplotId = this.el.id + '-canvas';
 
       var url = this.buildUrl('/job/count_all_graph?', {
-        interval: this.options.dashArgs.interval
+        interval: this.options.dashArgs.interval,
+        parser: this.options.dashArgs.parser
       }, false);
 
       var view = this;
@@ -33,17 +35,24 @@ define([], function() {
           view.$el.empty();
           view.$el.append($('<div>').attr('id', view.jqplotId));
 
-          var graphData = [];
-          _.each(data, function(result, time) {
-            graphData.push([time, result.count]);
-          });
-
-          var defaults = {
+          var defaultAxes = {
             xaxis: {
               renderer: $.jqplot.DateAxisRenderer
             }
           };
-          var axes = diana.helpers.Graph.adjustAxes(graphData, defaults);
+
+          if (_.size(data)) {
+            var graphData = [];
+            _.each(data, function(result, time) {
+              graphData.push([time, result.count]);
+            });
+
+            var axes = diana.helpers.Graph.adjustAxes(graphData, defaultAxes);
+          } else {
+            var axes = defaultAxes;
+            var graphData = [[0,0]];
+            diana.helpers.Widget.alert('No events found.', 'info', 3);
+          }
 
           try {
             $.jqplot(

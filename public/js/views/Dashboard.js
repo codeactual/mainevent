@@ -12,13 +12,21 @@ define([], function() {
     },
 
     events: {
-      'change .time-interval': 'onTimeIntervalChange'
+      'change .time-interval': 'onTimeIntervalChange',
+      'change .parser': 'onParserChange'
     },
 
     onTimeIntervalChange: function() {
       diana.helpers.Event.trigger(
-        'DashboardTimeIntervalChange',
-        this.$('.time-interval').val()
+        'DashboardArgsChange',
+        {interval: this.$('.time-interval').val()}
+      );
+    },
+
+    onParserChange: function() {
+      diana.helpers.Event.trigger(
+        'DashboardArgsChange',
+        {parser: this.$('.parser').val()}
       );
     },
 
@@ -30,9 +38,13 @@ define([], function() {
         function(err, out) {
           view.$el.html(out);
           view.renderMainGraph();
-          diana.helpers.Widget.fillParserSelect('#parser');
 
-          var timeInterval = view.$('.time-interval');
+          var parser = view.$('.parser'),
+              timeInterval = view.$('.time-interval');
+
+          diana.helpers.Widget.fillParserSelect(parser);
+          parser.val(view.options.dashArgs.parser);
+
           diana.helpers.Widget.fillPresetTimeSelect(timeInterval);
           timeInterval.val(view.options.dashArgs.interval);
         }

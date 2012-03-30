@@ -11,15 +11,17 @@
 
 'use strict';
 
-var express = require('express');
-var app = express.createServer();
 require(__dirname + '/modules/diana.js');
-var config = diana.getConfig();
-var storage = diana.requireModule('storage/storage').createInstance();
-var parsers = diana.requireModule('parsers/parsers');
-var io = require('socket.io').listen(app);
 
-var build = diana.requireModule('build');
+var express = require('express'),
+    app = express.createServer(),
+    config = diana.getConfig(),
+    storage = diana.requireModule('storage/storage').createInstance(),
+    parsers = diana.requireModule('parsers/parsers'),
+    parserNames = parsers.getConfiguredParsers(),
+    io = require('socket.io').listen(app),
+    build = diana.requireModule('build');
+
 build.compileViews();
 build.staticDir();
 
@@ -43,7 +45,7 @@ app.set('view options', {layout: false});
 app.get('/', function(req, res) {
   res.render('index.html', {
     // Injected into global client-side 'diana' object.
-    parsers: JSON.stringify(parsers.getConfiguredParsers()),
+    parsers: JSON.stringify(parserNames),
     maxResultSize: config.storage.maxResultSize
   });
 });
@@ -107,29 +109,38 @@ app.get('/job/:name', function(req, res) {
   var sendError = function() {
     res.send({__error: 'Job not found.'}, 404);
   };
-  if (req.params.name.match(/^[a-z_]+$/)) {
-    var interval = req.query['interval'] ? parseInt(req.query['interval'], 10) : '';
-    var collectionName = req.params.name + (interval ? '_' + interval : '');
-    storage.collectionExists(collectionName, function(err, results) {
-      if (!results) {
-        sendError();
-        return;
-      }
-      storage.getMapReduceResults(collectionName, function(err, results) {
-        if (err) {
-          res.send({__error: err}, 500);
-        } else {
-          if (results) {
-            res.send(results);
-          } else {
-            sendError();
-          }
-        }
-      });
-    });
-  } else {
+
+  if (!req.params.name.match(/^[a-z_]+$/)) {
     sendError();
+    return;
   }
+
+  if (req.query.parser && -1 == _.indexOf(parserNames, req.query.parser)) {
+    sendError();
+    return;
+  }
+
+  var parser = req.query.parser ? '_' + req.query.parser : '',
+      interval = req.query.interval ? '_' + parseInt(req.query.interval, 10) : '',
+      collectionName = req.params.name + parser + interval;
+
+  storage.collectionExists(collectionName, function(err, results) {
+    if (!results) {
+      sendError();
+      return;
+    }
+    storage.getMapReduceResults(collectionName, function(err, results) {
+      if (err) {
+        res.send({__error: err}, 500);
+      } else {
+        if (results) {
+          res.send(results);
+        } else {
+          sendError();
+        }
+      }
+    });
+  });
 });
 
 // Serve automatic timeline updates.
