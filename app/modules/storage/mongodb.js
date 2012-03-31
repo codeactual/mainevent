@@ -21,8 +21,9 @@ diana.shared.Lang.inheritPrototype(MongoDbStorage, Storage);
 // Db instance.
 MongoDbStorage.prototype.link = null;
 
-// Collection name.
-MongoDbStorage.prototype.collection = null;
+// Names read from app/config.js.
+MongoDbStorage.prototype.eventCollection = null;
+MongoDbStorage.prototype.mapReduceCollection = null;
 
 /**
  * Post-process events found via findOne(), find(), etc.
@@ -128,7 +129,8 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
   if (this.link) {
     success(null, this.link);
   } else {
-    this.collection = config.collection;
+    this.eventCollection = config.eventCollection;
+    this.mapReduceCollection = config.mapReduceCollection;
     this.link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
@@ -190,7 +192,7 @@ MongoDbStorage.prototype.dbClose = function(err, callback) {
 MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
       var docs = [];
       logs = _.isArray(logs) ? logs : [logs];
       _.each(logs, function(log) {
@@ -217,12 +219,16 @@ MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
 MongoDbStorage.prototype.getLog = function(id, callback) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         if (err) { mongo.dbClose(err, callback); return; }
         mongo.dbClose();
-        var post = mongo.eventPostFind(doc);
-        callback(err, post.docs[0]);
+        if (doc) {
+          var post = mongo.eventPostFind(doc);
+          callback(err, post.docs[0]);
+        } else {
+          callback(err, null);
+        }
       });
     });
   });
@@ -246,7 +252,7 @@ MongoDbStorage.prototype.getLog = function(id, callback) {
 MongoDbStorage.prototype.getTimeline = function(params, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
       var options = mongo.extractSortOptions(params);
       mongo.extractFilterOptions(params);
       collection.find(params, options).toArray(function(err, docs) {
@@ -302,7 +308,7 @@ MongoDbStorage.prototype.mapReduce = function(job) {
   job.options.out = job.options.out || {replace: collectionName};
   var mongo = this;
   this.dbConnectAndOpen(job.callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collection, job.callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
       collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
         if (err) { mongo.dbClose(); job.callback(err); return; }
         if (job.return) {
@@ -384,6 +390,89 @@ MongoDbStorage.prototype.collectionExists = function(name, callback) {
         names[collection.collectionName] = true;
       });
       callback(err, _.has(names, name));
+    });
+  });
+};
+
+/**
+ * Generate a hash for a map reduce result set.
+ *
+ * @param jobName {String} For hash key.
+ * @param jobOptions {Object} For hash key.
+ * @return {String}
+ */
+MongoDbStorage.prototype.getMapReduceCacheKey = function(jobName, jobOptions) {
+  return require('crypto')
+    .createHash('sha1')
+    .update(jobName + JSON.stringify(jobOptions))
+    .digest('hex');
+};
+
+/**
+ * Insert a map reduce job result set into the capped/cache collection.
+ *
+ * @param jobName {String} For hash key.
+ * @param jobOptions {Object} For hash key.
+ * @param results {Object}
+ * @param callback {Function} Receives insert() results.
+ * @param bulk {Boolean} If true, DB connection is not auto-closed.
+ */
+MongoDbStorage.prototype.setMapReduceCache = function(jobName, jobOptions, results, callback, bulk) {
+  var mongo = this;
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.mapReduceCollection, callback, function(err, collection) {
+      var query = {hash: mongo.getMapReduceCacheKey(jobName, jobOptions)},
+          doc = {hash: query.hash, results: results},
+          options = {safe: true, upsert: true, new: true},
+          sort = []; // [[_id, -1]] should't be needed.
+
+      collection.findAndModify(query, sort, doc, options, function(err, docs) {
+        // close() required after one-time insert to avoid hang.
+        if (!bulk) {
+          mongo.dbClose();
+        }
+        callback(err, docs);
+      });
+    });
+  });
+};
+
+/**
+ * Retrieve a map reduce result set from the capped/cache collection.
+ *
+ * @param jobName {String} For hash key.
+ * @param jobOptions {Object} For hash key.
+ * @param callback {Function} Receives findOne() results.
+ */
+MongoDbStorage.prototype.getMapReduceCache = function(jobName, jobOptions, callback) {
+  var mongo = this;
+  this.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, mongo.mapReduceCollection, callback, function(err, collection) {
+      collection.findOne({hash: mongo.getMapReduceCacheKey(jobName, jobOptions)}, function(err, doc) {
+        if (err) { mongo.dbClose(err, callback); return; }
+        mongo.dbClose();
+        callback(err, doc ? doc.results : null);
+      });
+    });
+  });
+};
+
+/**
+ * Retrieve a find() cursor.
+ *
+ * @param name {String}
+ * @param params {Object} find() filters.
+ * @param options {Object} find() options.
+ * @param callback {Function} Receives a Cursor object.
+ */
+MongoDbStorage.prototype.getCollectionCursor = function(name, params, options, callback) {
+  var mongo = this;
+  params = params || {};
+  options = options || {};
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, name, callback, function(err, collection) {
+      var cursor = collection.find(params, options);
+      callback(cursor);
     });
   });
 };

@@ -19,7 +19,8 @@ exports.read = function () {
       db: 'mydb',
       host: '127.0.0.1',
       port: 27017,
-      collection: 'mycollection',
+      eventCollection: 'mycollection',
+      mapReduceCollection: 'jobresult',
       maxResultSize: 100
     },
     timelineUpdateDelay: 3000
