@@ -41,7 +41,7 @@ app.set('view options', {layout: false});
 var routes = {
   '/': 'index',
   '/event/:id': 'event',
-  '/job/:name': 'job',
+  '/jobresult/:name': 'jobresult',
   '/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {

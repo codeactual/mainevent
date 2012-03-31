@@ -51,10 +51,9 @@ define([], function() {
 
     fetchData: function(callback) {
       var view = this,
-          url = this.buildUrl('/job/count_all_graph?', {
-            interval: this.options.dashArgs.interval,
-            parser: this.options.dashArgs.parser
-          }, false);
+          url = '/jobresult/count_all_graph'
+            + (this.options.dashArgs.interval ? '_' + this.options.dashArgs.interval : '')
+            + (this.options.dashArgs.parser ? '_' + this.options.dashArgs.parser : '');
       $.ajax(
         url, {
           success: function(data) {
