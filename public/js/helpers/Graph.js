@@ -34,6 +34,12 @@ define(['shared/Date'], function() {
       year: '%Y'
     },
 
+    // Estimates
+    xLabelWidth: 50,
+    xMinTickWidth: 50,
+    yLabelWidth: 50,
+    yMinTickWidth: 25,
+
     /**
      * Adjust graph axis options based on a data set and default options.
      *
@@ -79,24 +85,25 @@ define(['shared/Date'], function() {
         axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
       }
 
-      // Estiamte maxTicks based on current dimensions.
-      var yAxisLabelWidth = 50,
-          graphWidth = container.width() - yAxisLabelWidth,
-          minTickWidth = 50,
-          maxTicks = Math.floor(graphWidth / minTickWidth);
+      // Estiamte x-axis numberTicks based on current dimensions.
+      var graphWidth = container.width() - Graph.yLabelWidth,
+          maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
       axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
 
-      var xAxisLabelWidth = 50,
-          graphHeight = container.parent().height() - xAxisLabelWidth,
+      // Estimate y-axis numberTicks and tickInterval based on current dimensions.
+      var graphHeight = container.parent().height() - Graph.xLabelWidth,
           ymax = 0;
       _.each(data, function(point) {
         ymax = point[1] > ymax ? point[1] : ymax;
       });
-      minTickWidth = 25;
-      axes.yaxis.numberTicks = Math.ceil(graphHeight / minTickWidth);
+      axes.yaxis.numberTicks = Math.ceil(graphHeight / Graph.yMinTickWidth);
       axes.yaxis.tickInterval = Math.max(1, Math.floor(ymax / axes.yaxis.numberTicks));
 
-      axes.yaxis.max = ymax;
+      // Adjust y-axis numberTicks and tickInterval estimates to powers of ten.
+      var floorTensUnit = Math.pow(10, Graph.magnitude(axes.yaxis.tickInterval));
+      var tensRoundedTickInterval = Math.ceil(axes.yaxis.tickInterval / floorTensUnit);
+      axes.yaxis.tickInterval = tensRoundedTickInterval*floorTensUnit;
+      axes.yaxis.max = axes.yaxis.numberTicks * axes.yaxis.tickInterval;
       axes.yaxis.min = 0;
 
       return axes;
@@ -175,6 +182,17 @@ define(['shared/Date'], function() {
          .replace(/ 00:00:00/, '')
          .replace(/:00:00/, ':00')
          .replace(/(:\d{2}):00$/, '$1');
+     },
+
+     /**
+      * Return the magnitude of a given number.
+      *
+      * @param num {Number|String}
+      * @return Number
+      */
+     magnitude: function(num) {
+       num = _.isNumber(num) ? num : parseInt(num, 10);
+       return Math.floor((Math.log(num))/(Math.log(10)));
      }
   };
 });
