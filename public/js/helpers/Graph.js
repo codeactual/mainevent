@@ -102,7 +102,7 @@ define(['shared/Date'], function() {
       // Adjust y-axis numberTicks and tickInterval estimates to powers of ten.
       var floorTensUnit = Math.pow(10, Graph.magnitude(axes.yaxis.tickInterval));
       var tensRoundedTickInterval = Math.ceil(axes.yaxis.tickInterval / floorTensUnit);
-      axes.yaxis.tickInterval = tensRoundedTickInterval*floorTensUnit;
+      axes.yaxis.tickInterval = tensRoundedTickInterval * floorTensUnit;
       axes.yaxis.max = axes.yaxis.numberTicks * axes.yaxis.tickInterval;
 
       axes.yaxis.min = 0;
