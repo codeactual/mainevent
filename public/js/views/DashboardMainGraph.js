@@ -49,7 +49,7 @@ define([], function() {
               graphData.push([time, result.count]);
             });
 
-            var axes = Graph.adjustAxes(graphData, defaultAxes),
+            var axes = Graph.adjustAxes(view.$el, graphData, defaultAxes),
                 title =
                   'Total Events, '
                   + Graph.trimDate(graphData[0][0])

@@ -40,13 +40,14 @@ define(['shared/Date'], function() {
      * Ex. if there is only one data point, then ensure the axis scope is zoomed
      * in on that point.
      *
+     * @param container {Object} Container element's jQuery object.
      * @param data {Array} Array of [x,y] arrays.
      * @param axes {Object} Default options for each axis.
      * - x {Object}
      * - y {Object}
      * @return {Object} Modified 'axes'.
      */
-    adjustAxes: function(data, axes) {
+    adjustAxes: function(container, data, axes) {
       if (!data || !data.length) {
         return axes;
       }
@@ -78,6 +79,13 @@ define(['shared/Date'], function() {
         axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
       }
 
+      // Estiamte maxTicks based on current dimensions.
+      var yAxisLabelWidth = 50,
+          graphWidth = container.width() - yAxisLabelWidth,
+          minTickWidth = 50,
+          maxTicks = Math.floor(graphWidth / minTickWidth);
+
+      axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
       axes.yaxis.min = 0;
 
       return axes;
