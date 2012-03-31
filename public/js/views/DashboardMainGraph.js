@@ -2,6 +2,8 @@ define([], function() {
 
   'use strict';
 
+  var Graph = diana.helpers.Graph;
+
   return Backbone.View.extend({
     jqplotId: null,
 
@@ -47,11 +49,15 @@ define([], function() {
               graphData.push([time, result.count]);
             });
 
-            var axes = diana.helpers.Graph.adjustAxes(graphData, defaultAxes);
+            var axes = Graph.adjustAxes(graphData, defaultAxes),
+                title =
+                  'Total Events, '
+                  + Graph.trimDate(graphData[0][0])
+                  + ' - ' + Graph.trimDate(graphData[graphData.length - 1][0]);
           } else {
-            var axes = defaultAxes;
-            var graphData = [[0,0]];
-            diana.helpers.Widget.alert('No events found.', 'info', 3);
+            var axes = defaultAxes,
+                 graphData = [[0,0]],
+                 title = 'No events found.';
           }
 
           try {
@@ -59,9 +65,9 @@ define([], function() {
               view.jqplotId,
               [graphData],
               {
-                title: 'Events',
+                title: title,
                 axes: axes,
-                series:[{lineWidth:2}]
+                series: [{lineWidth:2}]
               }
             );
           } catch (e) {

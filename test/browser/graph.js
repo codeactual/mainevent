@@ -52,6 +52,13 @@ require(['helpers/Graph'], function() {
           Y.Assert.areEqual('month', Graph.detectDateUnit('2012-03'));
           Y.Assert.areEqual('year', Graph.detectDateUnit('2012'));
           Y.Assert.areEqual(null, Graph.detectDateUnit('03/12/2012 10'));
+        },
+
+        'should trim trailing zeros off dates': function() {
+          Y.Assert.areEqual('03/12/2012 00:05:10', Graph.trimDate('03/12/2012 00:05:10'));
+          Y.Assert.areEqual('03/12/2012 00:05', Graph.trimDate('03/12/2012 00:05:00'));
+          Y.Assert.areEqual('03/12/2012 10:00', Graph.trimDate('03/12/2012 10:00:00'));
+          Y.Assert.areEqual('03/12/2012', Graph.trimDate('03/12/2012 00:00:00'));
         }
       })
     );

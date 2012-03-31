@@ -140,6 +140,19 @@ define(['shared/Date'], function() {
         return false;
       });
       return match;
-    }
+    },
+
+    /**
+     * Trim trailing zeros off 'mm/dd/yyyy hh:mm:ii' strings.
+     *
+     * @param date {String}
+     * @return {String}
+     */
+     trimDate: function(date) {
+       return date
+         .replace(/ 00:00:00/, '')
+         .replace(/:00:00/, ':00')
+         .replace(/([^0]):00$/, '$1');
+     }
   };
 });
