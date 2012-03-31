@@ -26,6 +26,16 @@ define([], function() {
     },
 
     /**
+     * Time units and their partitioning unit.
+     */
+    partitions: {
+      minute: 'second',
+      hour: 'minute',
+      day: 'hour',
+      month: 'day'
+    },
+
+    /**
      * Convert a UNIX timestamp in seconds to string format.
      *
      * @param time {Number}

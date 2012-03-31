@@ -10,36 +10,40 @@ require(__dirname + '/modules/diana.js');
 
 var date = diana.shared.Date,
     now = (new Date()).getTime(),
-    job = '',
-    parsers = diana.requireModule('parsers/parsers').getConfiguredParsers();
-
-parsers.push(''); // Collect all-parser counts.
+    parsers = diana.requireModule('parsers/parsers');
 
 /**
  * Total events grouped by time intervals, ex. per hour.
  */
-job = diana.requireJob('count_all_graph').run;
-diana.shared.Async.runOrdered(
-  parsers,
-  function(parser, onParserDone) {
-    diana.shared.Async.runOrdered(
-      // Use the same intervals as available in the UI drop-downs.
-      _.values(date.presetTimeIntervals),
-      function(interval, onIntervalDone) {
-        var bestFitInterval = date.bestFitInterval(interval),
-            jobNameSuffix = (parser ? parser + '_' : '') + interval,
-            query = {};
+(function() {
+  var job = diana.requireJob('count_all_graph').run,
+      parserNames = parsers.getConfiguredParsers();
 
-        if (parser) {
-          query.parser = parser;
-        }
+  parserNames.push(''); // Collect all-parser counts.
 
-        job(now - interval, now, bestFitInterval, query, function(err, results) {
-          onIntervalDone();
-        }, jobNameSuffix);
-      },
-      null,
-      onParserDone
-    );
-  }
-);
+  diana.shared.Async.runOrdered(
+    parserNames,
+    function(parser, onParserDone) {
+      diana.shared.Async.runOrdered(
+        // Use the same intervals as available in the UI drop-downs.
+        _.values(date.presetTimeIntervals),
+        function(interval, onIntervalDone) {
+          var bestFitInterval = date.bestFitInterval(interval),
+              jobNameSuffix = (parser ? parser + '_' : '') + interval,
+              partition = date.partitions[bestFitInterval],
+              query = {};
+
+          if (parser) {
+            query.parser = parser;
+          }
+
+          job(now - interval, now, partition, query, function(err, results) {
+            onIntervalDone();
+          }, jobNameSuffix);
+        },
+        null,
+        onParserDone
+      );
+    }
+  );
+})();
