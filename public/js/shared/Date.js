@@ -29,6 +29,7 @@ define([], function() {
      * Time units and their partitioning unit.
      */
     partitions: {
+      second: 'second',
       minute: 'second',
       hour: 'minute',
       day: 'hour',

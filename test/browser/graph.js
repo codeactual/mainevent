@@ -16,14 +16,15 @@ require(['helpers/Graph'], function() {
                 min: '03/27/2012',
                 max: '03/29/2012',
                 tickInterval: '1 day',
-                tickOptions: {formatString: '%m/%d'}
+                tickOptions: {formatString: '%m/%d'},
+                numberTicks: 1
               },
               yaxis: {
                 min: 0,
                 max: 52.5
               }
             },
-            Graph.adjustAxes(data, axes)
+            Graph.adjustAxes($('body'), data, axes)
           );
         },
 
@@ -56,6 +57,7 @@ require(['helpers/Graph'], function() {
         },
 
         'should trim trailing zeros off dates': function() {
+          Y.Assert.areEqual('03/12/2012 05:00', Graph.trimDate('03/12/2012 05:00'));
           Y.Assert.areEqual('03/12/2012 00:05:10', Graph.trimDate('03/12/2012 00:05:10'));
           Y.Assert.areEqual('03/12/2012 00:05', Graph.trimDate('03/12/2012 00:05:00'));
           Y.Assert.areEqual('03/12/2012 10:00', Graph.trimDate('03/12/2012 10:00:00'));

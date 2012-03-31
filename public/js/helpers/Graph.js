@@ -163,7 +163,7 @@ define(['shared/Date'], function() {
        return date
          .replace(/ 00:00:00/, '')
          .replace(/:00:00/, ':00')
-         .replace(/([^0]):00$/, '$1');
+         .replace(/(:\d{2}):00$/, '$1');
      }
   };
 });
