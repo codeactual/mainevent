@@ -62,6 +62,6 @@ select.time-interval {
 .header-grid form > * {
   margin-right: 8px;
 }
-#dashboard-main-graph .jqplot-target {
+#dashboard-main-graph {
   height: 400px;
 }

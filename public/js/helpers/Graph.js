@@ -84,8 +84,19 @@ define(['shared/Date'], function() {
           graphWidth = container.width() - yAxisLabelWidth,
           minTickWidth = 50,
           maxTicks = Math.floor(graphWidth / minTickWidth);
-
       axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
+
+      var xAxisLabelWidth = 50,
+          graphHeight = container.parent().height() - xAxisLabelWidth,
+          ymax = 0;
+      _.each(data, function(point) {
+        ymax = point[1] > ymax ? point[1] : ymax;
+      });
+      minTickWidth = 25;
+      axes.yaxis.numberTicks = Math.ceil(graphHeight / minTickWidth);
+      axes.yaxis.tickInterval = Math.max(1, Math.floor(ymax / axes.yaxis.numberTicks));
+
+      axes.yaxis.max = ymax;
       axes.yaxis.min = 0;
 
       return axes;
