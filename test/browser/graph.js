@@ -8,23 +8,30 @@ require(['helpers/Graph'], function() {
         'name': 'Utils',
 
         'should zoom in on single-point data set': function() {
-          var data = [["03/28/2012", 35]],
-              axes = {xaxis: {}, yaxis: {}};
+          var axes = {xaxis: {}, yaxis: {}},
+              data = [["03/28/2012", 35]],
+              container = $('<div id="jqplot">'),
+              parent = $('<div>').css('height', 400);
+
+          parent.append(container);
+          $('body').append(parent);
+
           areDeepEqual(
             {
               xaxis: {
                 min: '03/27/2012',
                 max: '03/29/2012',
                 tickInterval: '1 day',
-                tickOptions: {formatString: '%m/%d'},
-                numberTicks: 1
+                tickOptions: {formatString: '%m/%d'}
               },
               yaxis: {
-                min: 0,
-                max: 52.5
+                max: 42,
+                numberTicks: 14,
+                tickInterval: 3,
+                min: 0
               }
             },
-            Graph.adjustAxes($('body'), data, axes)
+            Graph.adjustAxes($('#jqplot'), data, axes)
           );
         },
 
