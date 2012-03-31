@@ -26,10 +26,10 @@ define(['shared/Date'], function() {
     },
 
     jqplotFormat: {
-      second: '%m/%d/%Y %H:%M:%S',
-      minute: '%m/%d/%Y %H:%M:%S',
-      hour: '%m/%d/%Y %H:%M',
-      day: '%m/%d/%Y',
+      second: '%S',
+      minute: '%H:%M',
+      hour: '%H',
+      day: '%m/%d',
       month: '%Y-%m',
       year: '%Y'
     },
@@ -60,7 +60,10 @@ define(['shared/Date'], function() {
         // Zoom in, one unit padding on both sides.
         axes.xaxis.min = Graph.subtractDateUnit(data[0][0], 1);
         axes.xaxis.max = Graph.addDateUnit(data[0][0], 1);
-        axes.xaxis.tickInterval = '1 ' + Graph.detectDateUnit(data[0][0]);
+
+        var xunit = Graph.detectDateUnit(data[0][0]);
+        axes.xaxis.tickInterval = '1 ' + xunit;
+        axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
 
         // Add proportional top-padding.
         axes.yaxis.max = data[0][1] * 1.5;

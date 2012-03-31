@@ -15,7 +15,8 @@ require(['helpers/Graph'], function() {
               xaxis: {
                 min: '03/27/2012',
                 max: '03/29/2012',
-                tickInterval: '1 day'
+                tickInterval: '1 day',
+                tickOptions: {formatString: '%m/%d'}
               },
               yaxis: {
                 min: 0,
