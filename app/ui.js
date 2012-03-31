@@ -42,6 +42,7 @@ var routes = {
   '/': 'index',
   '/event/:id': 'event',
   '/jobresult/:name': 'jobresult',
+  '/jobrun/:name': 'jobrun',
   '/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {

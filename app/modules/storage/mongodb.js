@@ -330,8 +330,8 @@ MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) 
   job.options = job.options || {};
   job.options.query = job.options.query || {};
   job.options.query.time = {
-    $gte: new Date(startTime),
-    $lte: new Date(endTime)
+    $gte: new Date(parseInt(startTime, 10)),
+    $lte: new Date(parseInt(endTime, 10))
   };
   this.mapReduce(job);
 };
