@@ -7,14 +7,18 @@ require(['helpers/Graph'], function() {
       new Y.Test.Case({
         'name': 'Utils',
 
-        'should zoom in on single-point data set': function() {
-          var axes = {xaxis: {}, yaxis: {}},
-              data = [["03/28/2012", 35]],
-              container = $('<div id="jqplot">'),
+        addGraphContainer: function() {
+          var container = $('<div id="jqplot">'),
               parent = $('<div>').css('height', 400);
-
           parent.append(container);
           $('body').append(parent);
+        },
+
+        'should adjust single-point data set': function() {
+          var axes = {xaxis: {}, yaxis: {}},
+              data = [["03/28/2012", 35]];
+
+          this.addGraphContainer();
 
           areDeepEqual(
             {
@@ -28,6 +32,37 @@ require(['helpers/Graph'], function() {
                 max: 42,
                 numberTicks: 14,
                 tickInterval: 3,
+                min: 0
+              }
+            },
+            Graph.adjustAxes($('#jqplot'), data, axes)
+          );
+        },
+
+        'should adjust multi-point data set': function() {
+          var axes = {xaxis: {}, yaxis: {}},
+              data = [
+                ["03/21/2012", 575],
+                ["03/25/2012", 1002],
+                ["03/26/2012", 2311],
+                ["03/28/2012", 4320]
+              ];
+
+          this.addGraphContainer();
+
+          areDeepEqual(
+            {
+              xaxis: {
+                min: '03/21/2012',
+                max: '03/28/2012',
+                numberTicks: 4,
+                tickInterval: '1 day',
+                tickOptions: {formatString: '%m/%d'}
+              },
+              yaxis: {
+                numberTicks: 14,
+                tickInterval: 400,
+                max: 5600,
                 min: 0
               }
             },

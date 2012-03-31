@@ -80,13 +80,22 @@ define(['shared/Date'], function() {
         axes.xaxis.max = data[data.length - 1][0];
 
         var span = date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0]);
-        var xunit = date.partitions[date.bestFitInterval(span)];
+        var bestFitInterval = date.bestFitInterval(span);
+
+        // For spans <= than the best-fit interval, parition data into ticks
+        // using the next-smaller interval.
+        if (span <= Graph.unitToMilli(1, bestFitInterval)) {
+          var xunit = date.partitions[bestFitInterval];
+        } else {
+          var xunit = bestFitInterval;
+        }
+
         axes.xaxis.tickInterval = '1 ' + xunit;
         axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
 
         // Estiamte x-axis numberTicks based on current dimensions.
         var graphWidth = container.width() - Graph.yLabelWidth,
-        maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
+            maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
         axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
       }
 
@@ -100,8 +109,8 @@ define(['shared/Date'], function() {
       axes.yaxis.tickInterval = Math.max(1, Math.ceil(ymax / axes.yaxis.numberTicks));
 
       // Adjust y-axis numberTicks and tickInterval estimates to powers of ten.
-      var floorTensUnit = Math.pow(10, Graph.magnitude(axes.yaxis.tickInterval));
-      var tensRoundedTickInterval = Math.ceil(axes.yaxis.tickInterval / floorTensUnit);
+      var floorTensUnit = Math.pow(10, Graph.magnitude(axes.yaxis.tickInterval)),
+          tensRoundedTickInterval = Math.ceil(axes.yaxis.tickInterval / floorTensUnit);
       axes.yaxis.tickInterval = tensRoundedTickInterval * floorTensUnit;
       axes.yaxis.max = axes.yaxis.numberTicks * axes.yaxis.tickInterval;
 
@@ -194,6 +203,18 @@ define(['shared/Date'], function() {
      magnitude: function(num) {
        num = _.isNumber(num) ? num : parseInt(num, 10);
        return Math.floor((Math.log(num))/(Math.log(10)));
+     },
+
+     /**
+      * Return the milliseconds in the given unit amount.
+      *
+      * @param num {Number|String}
+      * @param unit {String}
+      * @return Number
+      */
+     unitToMilli: function(amount, unit) {
+       var now = moment().valueOf();
+       return moment(now).add(unit + 's', amount).valueOf() - now;
      }
   };
 });
