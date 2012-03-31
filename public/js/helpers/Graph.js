@@ -83,12 +83,12 @@ define(['shared/Date'], function() {
         var xunit = date.partitions[date.bestFitInterval(span)];
         axes.xaxis.tickInterval = '1 ' + xunit;
         axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
-      }
 
-      // Estiamte x-axis numberTicks based on current dimensions.
-      var graphWidth = container.width() - Graph.yLabelWidth,
-          maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
-      axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
+        // Estiamte x-axis numberTicks based on current dimensions.
+        var graphWidth = container.width() - Graph.yLabelWidth,
+        maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
+        axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
+      }
 
       // Estimate y-axis numberTicks and tickInterval based on current dimensions.
       var graphHeight = container.parent().height() - Graph.xLabelWidth,
@@ -97,13 +97,14 @@ define(['shared/Date'], function() {
         ymax = point[1] > ymax ? point[1] : ymax;
       });
       axes.yaxis.numberTicks = Math.ceil(graphHeight / Graph.yMinTickWidth);
-      axes.yaxis.tickInterval = Math.max(1, Math.floor(ymax / axes.yaxis.numberTicks));
+      axes.yaxis.tickInterval = Math.max(1, Math.ceil(ymax / axes.yaxis.numberTicks));
 
       // Adjust y-axis numberTicks and tickInterval estimates to powers of ten.
       var floorTensUnit = Math.pow(10, Graph.magnitude(axes.yaxis.tickInterval));
       var tensRoundedTickInterval = Math.ceil(axes.yaxis.tickInterval / floorTensUnit);
       axes.yaxis.tickInterval = tensRoundedTickInterval*floorTensUnit;
       axes.yaxis.max = axes.yaxis.numberTicks * axes.yaxis.tickInterval;
+
       axes.yaxis.min = 0;
 
       return axes;
