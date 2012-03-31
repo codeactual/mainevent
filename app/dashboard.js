@@ -37,9 +37,16 @@ var date = diana.shared.Date,
             query.parser = parser;
           }
 
-          job(now - interval, now, partition, query, function(err, results) {
+          var options = {
+            startTime: now - interval,
+            endTime: now,
+            interval: partition,
+            query: query,
+            suffix: jobNameSuffix
+          };
+          job(options, function(err, results) {
             onIntervalDone();
-          }, jobNameSuffix);
+          });
         },
         null,
         onParserDone

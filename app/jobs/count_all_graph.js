@@ -71,11 +71,14 @@ var reduce = function(key, values) {
 };
 
 /**
- * @param startTime {Number} UNIX timestamp in seconds.
- * @param endTime {Number} UNIX timestamp in seconds.
- * @param interval {String} Size of grouped totals.
- * - hour, minute
- * @param query {Object} Additional query arguments.
+ * @param options {Object}
+ * - startTime {Number} UNIX timestamp in seconds.
+ * - endTime {Number} UNIX timestamp in seconds.
+ * - interval {String} Size of grouped totals.
+ *   - hour, minute
+ * - query {Object} Additional query arguments.
+ * - suffix {String} Appended to the default results collection name.
+ *   - suffix 'hourly' -> collection name 'count_all_graph_hourly'
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
  * - Results format:
@@ -89,20 +92,18 @@ var reduce = function(key, values) {
  *   day: MM-DD-YYYY 00:00:00
  *   month: YYYY-MM
  *   year; YYYY
- * @param suffix {String} Appended to the default results collection name.
- * - suffix 'hourly' -> collection name 'count_all_graph_hourly'
  */
-exports.run = function(startTime, endTime, interval, query, callback, suffix) {
-  storage.mapReduceTimeRange(startTime, endTime, {
+exports.run = function(options, callback) {
+  storage.mapReduceTimeRange(options.startTime, options.endTime, {
     name: __filename,
     map: map,
     reduce: reduce,
     options: {
-      query: query,
-      scope: {interval: interval}
+      query: options.query,
+      scope: {interval: options.interval}
     },
     return: 'array',
     callback: callback,
-    suffix: suffix
+    suffix: options.suffix
   });
 };
