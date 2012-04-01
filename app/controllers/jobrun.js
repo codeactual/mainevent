@@ -20,6 +20,8 @@ define([], function() {
       return;
     }
 
+    req.query.persist = false;
+
     job(req.query, function(err, results) {
       if (err) {
         res.send({__error: err}, 500);

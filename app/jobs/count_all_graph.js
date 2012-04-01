@@ -103,7 +103,15 @@ exports.run = function(options, callback) {
       scope: {interval: options.interval}
     },
     return: 'array',
-    callback: callback,
-    suffix: options.suffix
+    suffix: options.suffix,
+    callback: function(err, results, stats) {
+      if (options.persist) {
+        callback(err, results, stats);
+        return;
+      }
+      storage.dropCollection(stats.collectionName, function() {
+        callback(err, results, stats);
+      });
+    }
   });
 };

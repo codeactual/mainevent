@@ -411,3 +411,21 @@ MongoDbStorage.prototype.getCollectionCursor = function(name, params, options, c
     });
   });
 };
+
+/**
+ * Drop a collection.
+ *
+ * @param name {String}
+ * @param callback {Function} Fires on drop completion.
+ */
+MongoDbStorage.prototype.dropCollection = function(name, callback) {
+  var mongo = this;
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    mongo.dbCollection(db, name, callback, function(err, collection) {
+      collection.drop(function() {
+        mongo.dbClose();
+        callback();
+      });
+    });
+  });
+};
