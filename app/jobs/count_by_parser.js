@@ -5,7 +5,7 @@
 'use strict';
 
 require(__dirname + '/../modules/diana.js');
-var storage = diana.requireModule('storage/storage').createInstance();
+var mongodb = diana.requireModule('mongodb').createInstance();
 
 var map = function() {
   emit(this.parser, {count: 1});
@@ -20,9 +20,10 @@ var reduce = function(key, values) {
 };
 
 /**
- * @param startTime {Number} UNIX timestamp in seconds.
- * @param endTime {Number} UNIX timestamp in seconds.
- * @param query {Object} Additional query arguments.
+ * @param options {Object}
+ * - startTime {Number} UNIX timestamp in seconds.
+ * - endTime {Number} UNIX timestamp in seconds.
+ * - query {Object} Additional query arguments.
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
  * - Results example:
@@ -31,12 +32,12 @@ var reduce = function(key, values) {
  *     ...
  *   }
  */
-exports.run = function(startTime, endTime, query, callback) {
-  storage.mapReduceTimeRange(startTime, endTime, {
+exports.run = function(options, callback) {
+  mongodb.mapReduceTimeRange(options.startTime, options.endTime, {
     name: __filename,
     map: map,
     reduce: reduce,
-    options: {query: query},
+    options: {query: options.query},
     return: 'array',
     callback: callback
   });

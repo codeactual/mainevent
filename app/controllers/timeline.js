@@ -3,7 +3,7 @@ define([], function() {
   'use strict';
 
   return function(req, res) {
-    var storage = diana.requireModule('storage/storage').createInstance();
+    var mongodb = diana.requireModule('mongodb').createInstance();
 
     if ('time' == req.query['sort-attr'] && 'desc' == req.query['sort-dir']) {
       res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
@@ -13,7 +13,7 @@ define([], function() {
       req.query[key] = decodeURIComponent(value);
     });
 
-    storage.getTimeline(req.query, function(err, docs, info) {
+    mongodb.getTimeline(req.query, function(err, docs, info) {
       if (err) {
         res.send({__error: err}, 500);
       } else if (docs.length) {

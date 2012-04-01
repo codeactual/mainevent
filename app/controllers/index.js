@@ -11,7 +11,7 @@ define([], function() {
     res.render('index.html', {
       // Injected into global client-side 'diana' object.
       parsers: JSON.stringify(parserNames),
-      maxResultSize: config.storage.maxResultSize
+      maxResultSize: config.mongodb.maxResultSize
     });
   };
 });

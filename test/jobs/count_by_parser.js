@@ -1,9 +1,8 @@
 'use strict';
 
-var testutil = require(__dirname + '/../modules/testutil.js');
-var job = require(__dirname + '/../modules/job.js');
-
-var strtotime = diana.shared.Date.strtotime;
+var testutil = require(__dirname + '/../modules/testutil.js'),
+    job = require(__dirname + '/../modules/job.js'),
+    strtotime = diana.shared.Date.strtotime;
 
 exports.testCountByParser = function(test) {
   test.expect(1);
@@ -27,8 +26,10 @@ exports.testCountByParser = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('3/12/2012 09:00:00'),
-    strtotime('3/12/2012 12:00:00'),
-    {message: run}
+    {
+      startTime: strtotime('3/12/2012 09:00:00'),
+      endTime: strtotime('3/12/2012 12:00:00'),
+      query: {message: run}
+    }
   );
 };

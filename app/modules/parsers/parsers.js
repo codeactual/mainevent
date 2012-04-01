@@ -3,7 +3,7 @@
 // Load GLOBAL.Parser.
 require(__dirname + '/prototype.js');
 
-var storage = diana.requireModule('storage/storage').createInstance();
+var mongodb = diana.requireModule('mongodb').createInstance();
 
 /**
  * Return a named parser.
@@ -32,9 +32,9 @@ exports.parseAndInsert = function(sourceLines, callback, bulk) {
     lines = lines.concat(parser.parseLines(sl.source, sl.lines));
   });
 
-  storage.insertLog(lines, function() {
+  mongodb.insertLog(lines, function() {
     if (!bulk) {
-      storage.dbClose();
+      mongodb.dbClose();
     }
     (callback || function() {})();
   }, bulk);

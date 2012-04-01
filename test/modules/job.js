@@ -4,7 +4,6 @@
 
 'use strict';
 
-var storage = diana.requireModule('storage/storage').createInstance();
 var parsers = diana.requireModule('parsers/parsers');
 
 /**
@@ -14,17 +13,17 @@ var parsers = diana.requireModule('parsers/parsers');
  * @param jobName {String}
  * @param logs {Array} Event objects.
  * @param expected {Object} Reduce results indexed by their _id values.
+ * @param options {Object} Job-specific options.
  *
  * Additional arguments are passed to the job's run() function.
  */
-exports.verifyJob = function(test, jobName, logs, expected) {
-  var job = diana.requireJob(jobName).run,
-      args = Array.prototype.slice.call(arguments, 4);
-  args.push(function(err, results) {
-    test.deepEqual(results, expected);
-    test.done();
-  });
+exports.verifyJob = function(test, jobName, logs, expected, options) {
+  var job = diana.requireJob(jobName).run;
+  test.expect(1);
   parsers.parseAndInsert(logs, function() {
-    job.apply(null, args);
+    job(options, function(err, results) {
+      test.deepEqual(results, expected);
+      test.done();
+    });
   });
 };

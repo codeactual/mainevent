@@ -6,7 +6,6 @@ var job = require(__dirname + '/../modules/job.js');
 var strtotime = diana.shared.Date.strtotime;
 
 exports.testCountAllByYear = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -28,15 +27,16 @@ exports.testCountAllByYear = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:00:00'),
-    strtotime('05/15/2011 12:00:00'),
-    'year',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:00:00'),
+      endTime: strtotime('05/15/2011 12:00:00'),
+      interval: 'year',
+      query: {message: run}
+    }
   );
 };
 
 exports.testCountAllByMonth = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -58,15 +58,16 @@ exports.testCountAllByMonth = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:00:00'),
-    strtotime('05/15/2009 12:00:00'),
-    'month',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:00:00'),
+      endTime: strtotime('05/15/2009 12:00:00'),
+      interval: 'month',
+      query: {message: run}
+    }
   );
 };
 
 exports.testCountAllByDay = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -88,15 +89,16 @@ exports.testCountAllByDay = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:00:00'),
-    strtotime('03/15/2009 12:00:00'),
-    'day',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:00:00'),
+      endTime: strtotime('03/15/2009 12:00:00'),
+      interval: 'day',
+      query: {message: run}
+    }
   );
 };
 
 exports.testCountAllByHour = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -118,15 +120,16 @@ exports.testCountAllByHour = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:00:00'),
-    strtotime('03/12/2009 12:00:00'),
-    'hour',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:00:00'),
+      endTime: strtotime('03/12/2009 12:00:00'),
+      interval: 'hour',
+      query: {message: run}
+    }
   );
 };
 
 exports.testCountAllByMinute = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -148,15 +151,16 @@ exports.testCountAllByMinute = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:00:00'),
-    strtotime('03/12/2009 10:00:00'),
-    'minute',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:00:00'),
+      endTime: strtotime('03/12/2009 10:00:00'),
+      interval: 'minute',
+      query: {message: run}
+    }
   );
 };
 
 exports.testCountAllBySecond = function(test) {
-  test.expect(1);
   var run = testutil.getRandHash();
   var logs = [
     {
@@ -178,9 +182,11 @@ exports.testCountAllBySecond = function(test) {
     __filename,
     logs,
     expected,
-    strtotime('03/12/2009 09:05:00'),
-    strtotime('03/12/2009 09:06:00'),
-    'second',
-    {message: run}
+    {
+      startTime: strtotime('03/12/2009 09:05:00'),
+      endTime: strtotime('03/12/2009 09:06:00'),
+      interval: 'second',
+      query: {message: run}
+    }
   );
 };

@@ -7,7 +7,7 @@ define([], function() {
 
   var intervalDelay = diana.getConfig().timelineUpdateDelay,
       parsers = diana.requireModule('parsers/parsers'),
-      storage = diana.requireModule('storage/storage').createInstance(),
+      mongodb = diana.requireModule('mongodb').createInstance(),
       updateInterval = null;
 
   return function(socket) {
@@ -43,7 +43,7 @@ define([], function() {
           // Client never sent the ID for some reason -- don't stop the updates.
           return;
         }
-        storage.getTimelineUpdates(
+        mongodb.getTimelineUpdates(
           options.newestEventId,
           options.newestEventTime,
           options.searchArgs,

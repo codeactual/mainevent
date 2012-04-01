@@ -6,19 +6,19 @@ define([], function() {
     var send404 = function() {
           res.send({__error: 'Job not found.'}, 404);
         },
-        storage = diana.requireModule('storage/storage').createInstance();
+        mongodb = diana.requireModule('mongodb').createInstance();
 
     if (!req.params.name.match(/^[a-z0-9_]+$/)) {
       send404();
       return;
     }
 
-    storage.collectionExists(req.params.name, function(err, results) {
+    mongodb.collectionExists(req.params.name, function(err, results) {
       if (!results) {
         send404();
         return;
       }
-      storage.getMapReduceResults(req.params.name, function(err, results) {
+      mongodb.getMapReduceResults(req.params.name, function(err, results) {
         if (err) {
           res.send({__error: err}, 500);
         } else {

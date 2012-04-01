@@ -5,8 +5,7 @@ define([], function() {
   return function(req, res) {
     var send404 = function() {
           res.send({__error: 'Job not found.'}, 404);
-        },
-        storage = diana.requireModule('storage/storage').createInstance();
+        };
 
     if (!req.params.name.match(/^[a-z_]+$/)) {
       send404();

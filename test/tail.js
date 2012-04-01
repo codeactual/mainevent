@@ -4,20 +4,19 @@
 
 'use strict';
 
-var fs = require('fs');
-var testutil = require(__dirname + '/modules/testutil.js');
-var fork = require('child_process').fork;
-var exec = require('child_process').exec;
-var storage = diana.requireModule('storage/storage').createInstance();
-
-var testConfigFile = __dirname + '/fixtures/tail-config.js';
-var testConfig = diana.getConfig(testConfigFile);
-var path = testConfig.sources[0].path;
+var fs = require('fs'),
+    testutil = require(__dirname + '/modules/testutil.js'),
+    fork = require('child_process').fork,
+    exec = require('child_process').exec,
+    mongodb = diana.requireModule('mongodb').createInstance(),
+    testConfigFile = __dirname + '/fixtures/tail-config.js',
+    testConfig = diana.getConfig(testConfigFile),
+    path = testConfig.sources[0].path;
 
 exports.testMonitoring = function(test) {
-  var run = testutil.getRandHash();
-  var log = JSON.stringify({path: path, run: run});
-  var fd = fs.openSync(path, 'a');
+  var run = testutil.getRandHash(),
+      log = JSON.stringify({path: path, run: run}),
+      fd = fs.openSync(path, 'a');
 
   // -t will enable test mode and force exit after 1 line.
   var tailJs = fork(__dirname + '/../app/tail.js', [
@@ -26,7 +25,7 @@ exports.testMonitoring = function(test) {
   ], {env: process.env});
 
   tailJs.on('exit', function(code) {
-    storage.getTimeline({run: run}, function(err, docs) {
+    mongodb.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].run, run);
       test.done();
     });
@@ -45,9 +44,9 @@ exports.testMonitoring = function(test) {
 };
 
 exports.testAutoRestart = function(test) {
-  var run = testutil.getRandHash();
-  var log = JSON.stringify({path: path, run: run});
-  var pgrepCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
+  var run = testutil.getRandHash(),
+      log = JSON.stringify({path: path, run: run}),
+      pgrepCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
 
   test.expect(2);
 

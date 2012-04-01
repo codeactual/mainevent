@@ -4,8 +4,6 @@ GLOBAL.Parser = function(name) {
   this.name = name;
 };
 
-var storage = diana.requireModule('storage/storage').createInstance();
-
 /**
  * Parse each line according to its source parser.
  *

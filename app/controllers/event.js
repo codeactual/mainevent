@@ -7,13 +7,13 @@ define([], function() {
         send404 = function() {
           res.send({__error: 'Event not found.'}, 404);
         },
-        storage = diana.requireModule('storage/storage').createInstance();
+        mongodb = diana.requireModule('mongodb').createInstance();
 
     if (!req.params.id.match(/^[a-z0-9]{24}$/)) {
       send404();
     }
 
-    storage.getLog(req.params.id, function(err, doc) {
+    mongodb.getLog(req.params.id, function(err, doc) {
       if (err) {
         res.send({__error: err}, 500);
         return;

@@ -5,7 +5,7 @@
 'use strict';
 
 var redis = diana.requireModule('redis').createInstance(),
-    storage = diana.requireModule('storage/storage').createInstance();
+    mongodb = diana.requireModule('mongodb').createInstance();
 
 var map = function() {
   var month = (this.time.getMonth() + 1) + '',
@@ -84,7 +84,7 @@ var reduce = function(key, values) {
  *   collection will persist after the callback.
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
- * - Results format:
+ * - Results argument format:
  *   {
  *     <Date.parse() compatible string>: {count: 5},
  *     ...
@@ -108,7 +108,7 @@ exports.run = function(options, callback) {
 
   options.persist = _.isUndefined(options.persist) ? false : true;
 
-  storage.mapReduceTimeRange(options.startTime, options.endTime, {
+  mongodb.mapReduceTimeRange(options.startTime, options.endTime, {
     name: __filename,
     map: map,
     reduce: reduce,
@@ -127,9 +127,13 @@ exports.run = function(options, callback) {
       }
 
       // mapReduce() has already cached the results by now. Evict the durable copy.
-      storage.dropCollection(stats.collectionName, function() {
-        callback(err, results, stats);
-      });
+      if (stats && stats.collectionName) {
+        mongodb.dropCollection(stats.collectionName, function() {
+          callback(err, results, stats);
+        });
+      } else {
+        callback(err, results);
+      }
     }
   });
 };

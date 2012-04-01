@@ -11,8 +11,25 @@ exports.createInstance = function() {
   return new Redis();
 };
 
-var Redis = function() {
-  this.client = redis.createClient(config.port, config.host, config.options);
+var Redis = function() {};
+
+/**
+ * Create the client connection if needed.
+ */
+Redis.prototype.connect = function() {
+  if (!this.client) {
+    this.client = redis.createClient(config.port, config.host, config.options);
+  }
+}
+
+/**
+ * End the client connection.
+ */
+Redis.prototype.end = function() {
+  if (this.client) {
+    this.client.end();
+    this.client = null;
+  }
 };
 
 /**
@@ -26,12 +43,12 @@ var Redis = function() {
  * - replies {Array} [<set reply>, <expire reply>]
  */
 Redis.prototype.set = function(key, value, expire, callback) {
+  this.connect();
   var multi = this.client.multi().set(key, JSON.stringify(value));
   if (expire) {
     multi.expire(key, expire);
   }
   multi.exec(function(err, replies) {
-    console.log(err, 'replies', replies);
     callback(err, replies);
   });
 };
@@ -45,6 +62,7 @@ Redis.prototype.set = function(key, value, expire, callback) {
  * - value {mixed} Unserialized JSON.
  */
 Redis.prototype.get = function(key, callback) {
+  this.connect();
   this.client
     .get(key, function(err, value) {
       if (!err && !_.isNull(value)) {

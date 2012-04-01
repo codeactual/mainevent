@@ -4,19 +4,18 @@
 
 'use strict';
 
-var fs = require('fs');
-var testutil = require(__dirname + '/modules/testutil.js');
-var spawn = require('child_process').spawn;
-var storage = diana.requireModule('storage/storage').createInstance();
-
-var testConfigFile = __dirname + '/fixtures/tail-config.js';
-var testConfig = diana.getConfig(testConfigFile);
-var source = testConfig.sources[0];
+var fs = require('fs'),
+    testutil = require(__dirname + '/modules/testutil.js'),
+    spawn = require('child_process').spawn,
+    mongodb = diana.requireModule('mongodb').createInstance(),
+    testConfigFile = __dirname + '/fixtures/tail-config.js',
+    testConfig = diana.getConfig(testConfigFile),
+    source = testConfig.sources[0];
 
 exports.testImport = function(test) {
-  var run = testutil.getRandHash();
-  var parsed = {message: source.path, t: 1331543011000, run: run};
-  var log = JSON.stringify(parsed) + "\n"; // lazy.lines requires trailing newline
+  var run = testutil.getRandHash(),
+      parsed = {message: source.path, t: 1331543011000, run: run},
+      log = JSON.stringify(parsed) + "\n"; // lazy.lines requires trailing newline
 
   test.expect(4);
 
@@ -36,7 +35,7 @@ exports.testImport = function(test) {
 
   // Verify fields.
   tailJs.on('exit', function(code) {
-    storage.getTimeline({run: run}, function(err, docs) {
+    mongodb.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].time, parsed.t);
       test.equal(docs[0].message, source.path);
       test.deepEqual(docs[0].previewAttr, source.previewAttr);

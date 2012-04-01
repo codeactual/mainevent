@@ -1,12 +1,12 @@
 /**
- * Test storage API.
+ * Test MongoDB API.
  */
 
 'use strict';
 
-var testutil = require(__dirname + '/modules/testutil.js');
-var parsers = diana.requireModule('parsers/parsers');
-var storage = diana.requireModule('storage/storage').createInstance();
+var testutil = require(__dirname + '/modules/testutil.js'),
+    parsers = diana.requireModule('parsers/parsers'),
+    mongodb = diana.requireModule('mongodb').createInstance();
 
 var strtotime = diana.shared.Date.strtotime;
 
@@ -29,7 +29,7 @@ var verifyTimelineResults = function(test, logs, params, expected) {
 
   test.expect(1);
   parsers.parseAndInsert({source: source, lines: lines}, function() {
-    storage.getTimeline(params, function(err, docs) {
+    mongodb.getTimeline(params, function(err, docs) {
       var actual = [];
       _.each(expected, function(time, index) {
         actual.push(docs[index].time);
@@ -169,13 +169,13 @@ exports.testPrevPageDetection = function(test) {
 
     // Expect no next page.
     var params = {run: run};
-    storage.getTimeline(params, function(err, docs, info) {
+    mongodb.getTimeline(params, function(err, docs, info) {
       test.equal(docs.length, 3);
       test.ok(false === info.prevPage);
 
       // Expect a previous page.
       params.skip = 1;
-      storage.getTimeline(params, function(err, docs, info) {
+      mongodb.getTimeline(params, function(err, docs, info) {
         test.equal(docs.length, 2);
         test.ok(info.prevPage);
         test.done();
@@ -204,13 +204,13 @@ exports.testNextPageDetection = function(test) {
 
     // Expect no next page.
     var params = {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')};
-    storage.getTimeline(params, function(err, docs, info) {
+    mongodb.getTimeline(params, function(err, docs, info) {
       test.equal(docs.length, 2);
       test.ok(false === info.nextPage);
 
       // Expect another page.
       params.limit = 1;
-      storage.getTimeline(params, function(err, docs, info) {
+      mongodb.getTimeline(params, function(err, docs, info) {
         test.equal(docs.length, 1);
         test.ok(info.nextPage);
         test.done();
