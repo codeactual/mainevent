@@ -200,7 +200,6 @@ MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
         docs.push(log);
       });
       collection.insert(docs, {safe: true}, function(err, docs) {
-        // close() required after one-time insert to avoid hang.
         if (!bulk) {
           mongo.dbClose();
         }
@@ -395,69 +394,6 @@ MongoDbStorage.prototype.collectionExists = function(name, callback) {
 };
 
 /**
- * Generate a hash for a map reduce result set.
- *
- * @param jobName {String} For hash key.
- * @param jobOptions {Object} For hash key.
- * @return {String}
- */
-MongoDbStorage.prototype.getMapReduceCacheKey = function(jobName, jobOptions) {
-  return require('crypto')
-    .createHash('sha1')
-    .update(jobName + JSON.stringify(jobOptions))
-    .digest('hex');
-};
-
-/**
- * Insert a map reduce job result set into the capped/cache collection.
- *
- * @param jobName {String} For hash key.
- * @param jobOptions {Object} For hash key.
- * @param results {Object}
- * @param callback {Function} Receives insert() results.
- * @param bulk {Boolean} If true, DB connection is not auto-closed.
- */
-MongoDbStorage.prototype.setMapReduceCache = function(jobName, jobOptions, results, callback, bulk) {
-  var mongo = this;
-  this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.mapReduceCollection, callback, function(err, collection) {
-      var query = {hash: mongo.getMapReduceCacheKey(jobName, jobOptions)},
-          doc = {hash: query.hash, results: results},
-          options = {safe: true, upsert: true, new: true},
-          sort = []; // [[_id, -1]] should't be needed.
-
-      collection.findAndModify(query, sort, doc, options, function(err, docs) {
-        // close() required after one-time insert to avoid hang.
-        if (!bulk) {
-          mongo.dbClose();
-        }
-        callback(err, docs);
-      });
-    });
-  });
-};
-
-/**
- * Retrieve a map reduce result set from the capped/cache collection.
- *
- * @param jobName {String} For hash key.
- * @param jobOptions {Object} For hash key.
- * @param callback {Function} Receives findOne() results.
- */
-MongoDbStorage.prototype.getMapReduceCache = function(jobName, jobOptions, callback) {
-  var mongo = this;
-  this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.mapReduceCollection, callback, function(err, collection) {
-      collection.findOne({hash: mongo.getMapReduceCacheKey(jobName, jobOptions)}, function(err, doc) {
-        if (err) { mongo.dbClose(err, callback); return; }
-        mongo.dbClose();
-        callback(err, doc ? doc.results : null);
-      });
-    });
-  });
-};
-
-/**
  * Retrieve a find() cursor.
  *
  * @param name {String}
@@ -471,8 +407,7 @@ MongoDbStorage.prototype.getCollectionCursor = function(name, params, options, c
   options = options || {};
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {
-      var cursor = collection.find(params, options);
-      callback(cursor);
+      callback(collection.find(params, options));
     });
   });
 };

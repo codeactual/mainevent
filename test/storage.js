@@ -218,38 +218,3 @@ exports.testNextPageDetection = function(test) {
     });
   });
 };
-
-exports.testGetMapReduceCacheKey = function(test) {
-  test.equal(
-    storage.getMapReduceCacheKey('myjob', {a:'b'}),
-    'eab82498123a1081da8b3e445a2b7fa5af9e8635'
-  );
-  test.done();
-};
-
-exports.testMapReduceCache = function(test) {
-  var jobName = 'myjob',
-      jobOptions = {a:'b'},
-      expectedResults = {k1: 'd1', k2: 'd2'},
-      cacheKey = storage.getMapReduceCacheKey(jobName, jobOptions);
-
-  test.expect(2);
-
-  storage.setMapReduceCache(jobName, jobOptions, expectedResults, function(err, results) {
-    storage.getMapReduceCache(jobName, jobOptions, function(err, actualResults) {
-      storage.dbClose();
-
-      // Verify serialization.
-      test.deepEqual(actualResults, expectedResults);
-
-      // Verify findAndRemove() is maintaining a `hash` as a unique key.
-      storage.getCollectionCursor(storage.mapReduceCollection, {hash: cacheKey}, {}, function(cursor) {
-        cursor.count(function(err, count) {
-          storage.dbClose();
-          test.equal(count, 1);
-          test.done();
-        });
-      });
-    });
-  });
-};
