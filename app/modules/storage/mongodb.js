@@ -4,9 +4,10 @@
 
 'use strict';
 
-var mongodb = require('mongodb');
-var BSON = mongodb.BSONPure;
-var config = diana.getConfig().storage;
+var mongodb = require('mongodb'),
+    BSON = mongodb.BSONPure,
+    config = diana.getConfig().storage,
+    redis = diana.requireModule('redis').createInstance();
 
 exports.createInstance = function() {
   return new MongoDbStorage();
@@ -291,6 +292,7 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callbac
  * - options {Object} (Optional) Collection.mapReduce() options.
  *   out {Object} (Default: {replace: <name>}) Output directive.
  * - return {String} (Optional, Default: none) Callback receives 'cursor' or 'array'.
+ * - expire {Number} (Optional, Default: none) Seconds to live in cache.
  * - callback {Function} Fires after success/error.
  *   - If 'return' not set:
  *     err {String}
@@ -303,24 +305,44 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callbac
 MongoDbStorage.prototype.mapReduce = function(job) {
   job.name = diana.extractJobName(job.name);
   var collectionName = job.suffix ? job.name + '_' + job.suffix : job.name;
-  job.options = job.options || {};
-  job.options.out = job.options.out || {replace: collectionName};
+  var returnAsArray = job.return != 'cursor';
+
   var mongo = this;
-  this.dbConnectAndOpen(job.callback, function(err, db) {
-    mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
-      collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
-        if (err) { mongo.dbClose(); job.callback(err); return; }
-        if (job.return) {
-          mongo.getMapReduceResults(collectionName, function(err, results) {
+  var readThrough = function() {
+    job.options = job.options || {};
+    job.options.out = job.options.out || {replace: collectionName};
+    mongo.dbConnectAndOpen(job.callback, function(err, db) {
+      mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
+        collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
+          if (err) { mongo.dbClose(); job.callback(err); return; }
+          if (job.return) {
+            mongo.getMapReduceResults(collectionName, function(err, results) {
+              mongo.dbClose();
+              if (returnAsArray) { // Update cache.
+                job.expire = _.isUndefined(job.expire) ? null : job.expire;
+                redis.set(collectionName, results, job.expire, function() {
+                  console.log('set', collectionName);
+                  job.callback(err, results, stats);
+                });
+              } else {
+                job.callback(err, results, stats);
+              }
+            }, returnAsArray);
+          } else {
             mongo.dbClose();
-            job.callback(err, results, stats);
-          }, job.return != 'cursor');
-        } else {
-          mongo.dbClose();
-          job.callback(err, stats);
-        }
+            job.callback(err, stats);
+          }
+        });
       });
     });
+  };
+
+  redis.get(collectionName, function(err, value) {
+    if (!err && value) {
+      job.callback(null, value);
+      return;
+    }
+    readThrough();
   });
 };
 

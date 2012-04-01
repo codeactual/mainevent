@@ -4,7 +4,8 @@
 
 'use strict';
 
-var storage = diana.requireModule('storage/storage').createInstance();
+var redis = diana.requireModule('redis').createInstance(),
+    storage = diana.requireModule('storage/storage').createInstance();
 
 var map = function() {
   var month = (this.time.getMonth() + 1) + '',
@@ -79,6 +80,8 @@ var reduce = function(key, values) {
  * - query {Object} Additional query arguments.
  * - suffix {String} Appended to the default results collection name.
  *   - suffix 'hourly' -> collection name 'count_all_graph_hourly'
+ * - persist {Boolean} (Optional, Default: false) If true, the result
+ *   collection will persist after the callback.
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
  * - Results format:
@@ -94,6 +97,17 @@ var reduce = function(key, values) {
  *   year; YYYY
  */
 exports.run = function(options, callback) {
+  // If the time range ends within the last 60 seconds, cache the result
+  // for a minute. Otherwise store it without an expiration.
+  var now = (new Date()).getTime();
+  if (options.endTime && Math.abs(now - options.endTime) <= 60000) {
+    var expire = 60;
+  } else {
+    var expire = null;
+  }
+
+  options.persist = _.isUndefined(options.persist) ? false : true;
+
   storage.mapReduceTimeRange(options.startTime, options.endTime, {
     name: __filename,
     map: map,
@@ -104,11 +118,15 @@ exports.run = function(options, callback) {
     },
     return: 'array',
     suffix: options.suffix,
+    expire: expire,
     callback: function(err, results, stats) {
+      // Avoid the dropCollection() below.
       if (options.persist) {
         callback(err, results, stats);
         return;
       }
+
+      // mapReduce() has already cached the results by now. Evict the durable copy.
       storage.dropCollection(stats.collectionName, function() {
         callback(err, results, stats);
       });
