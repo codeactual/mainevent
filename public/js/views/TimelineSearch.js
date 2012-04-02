@@ -15,7 +15,7 @@ define([], function() {
     render: function() {
       var view = this;
       var body = this.$('.modal-body');
-      var parser = this.$('#parser');
+      var parser = this.$('.parser');
 
       this.$('.modal-header > h4').text(this.options.title);
 
