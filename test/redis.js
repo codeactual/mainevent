@@ -61,7 +61,7 @@ exports.strings = {
     var run = this,
         expires = null,
         reader = function(key, callback) {
-          callback(run.expected);
+          callback(null, run.expected);
         };
     redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
       test.deepEqual(actual, run.expected);
@@ -74,7 +74,7 @@ exports.strings = {
     var run = this,
         expires = 1,
         reader = function(key, callback) {
-          callback(run.expected);
+          callback(null, run.expected);
         };
     redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
       // Callback receives reader output.
@@ -91,5 +91,20 @@ exports.strings = {
         });
       }, expires * 2000);
     });
-  }
+  },
+
+  testGetWithWriteThroughWithReaderError: function(test) {
+    test.expect(2);
+    var run = this,
+        expires = null,
+        readerError = 'read errror',
+        reader = function(key, callback) {
+          callback(readerError);
+        };
+    redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
+      test.equal(err, readerError);
+      test.equal(actual, undefined);
+      test.done();
+    });
+  },
 };

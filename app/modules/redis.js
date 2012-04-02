@@ -20,7 +20,7 @@ Redis.prototype.connect = function() {
   if (!this.client) {
     this.client = redis.createClient(config.port, config.host, config.options);
   }
-}
+};
 
 /**
  * End the client connection.
@@ -113,7 +113,11 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback) {
       callback(err, value);
       return;
     }
-    reader(key, function(value) {
+    reader(key, function(err, value) {
+      if (err) {
+        callback(err, undefined);
+        return;
+      }
       redis.set(key, value, expires, function(err) {
         callback(err, value);
       });
