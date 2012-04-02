@@ -106,7 +106,7 @@ exports.run = function(options, callback) {
       scope: {interval: options.interval}
     },
     return: 'array',
-    suffix: options.suffix,
+    suffix: options.suffix || _.sha1(options),
     callback: function(err, results, stats) {
       // Avoid the dropCollection() below.
       if (options.persist) {

@@ -10,13 +10,15 @@ require(__dirname + '/modules/diana.js');
 
 var date = diana.shared.Date,
     now = (new Date()).getTime(),
-    parsers = diana.requireModule('parsers/parsers');
+    parsers = diana.requireModule('parsers/parsers'),
+    redis = diana.requireModule('redis').createInstance();
 
 /**
  * Total events grouped by time intervals, ex. per hour.
  */
 (function() {
-  var job = diana.requireJob('count_all_graph').run,
+  var jobName = 'count_all_graph',
+      job = diana.requireJob(jobName),
       parserNames = parsers.getConfiguredParsers();
 
   parserNames.push(''); // Collect all-parser counts.
@@ -44,13 +46,20 @@ var date = diana.shared.Date,
             query: query,
             suffix: jobNameSuffix
           };
-          job(options, function(err, results) {
-            onIntervalDone();
+          job.run(options, function(err, results) {
+            var expires = job.getCacheExpires(options);
+            redis.set(jobName + '_' + jobNameSuffix, results, expires, function(err) {
+              onIntervalDone();
+            });
           });
         },
         null,
         onParserDone
       );
+    },
+    null,
+    function() {
+      redis.end();
     }
   );
 })();
