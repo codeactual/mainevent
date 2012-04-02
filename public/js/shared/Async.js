@@ -2,10 +2,6 @@ define([], function() {
 
   'use strict';
 
-  if ('undefined' === typeof define) {
-    var define = function(deps, callback) { callback(); };
-  }
-
   var root = 'undefined' == typeof window ? GLOBAL : window;
   root.diana = root.diana || {};
   root.diana.shared = root.diana.shared || {};
