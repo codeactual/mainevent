@@ -53,8 +53,8 @@ define([
         this.searchModal = $('#timeline-search-modal');
         this.searchTimeInterval = this.searchModal.find('.time-interval');
         this.searchParser = this.searchModal.find('.parser');
-        this.dashTimeInterval = this.$el.find('.time-interval');
-        this.dashParser = this.$el.find('.parser');
+        this.dashTimeInterval = this.$('.time-interval');
+        this.dashParser = this.$('.parser');
       }
 
       // Synchronize the search modal's time-interval with the dashboard's.

@@ -135,20 +135,26 @@ define([], function() {
     getSearchArgs: function() {
       var args = {};
 
-      args['parser'] = $('#parser').val();
+      args['parser'] = this.$('.parser').val();
       args['time-gte'] = (new Date($('#time-gte').val())).getTime();
       args['time-lte'] = (new Date($('#time-lte').val())).getTime();
 
       // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
-        var input = $('input', pair);
+        var input = $('input', pair),
+            key = $(input[0]).val();
+
+        if (!key.length) {
+          return;
+        }
+
         var conditional = $('select', pair).val();  // Ex. 'gte'
         if (conditional) {
           // Ex. args['code-gte'] = 302
-          args[$(input[0]).val() + '-' + conditional] = $(input[1]).val();
+          args[key + '-' + conditional] = $(input[1]).val();
         } else {
           // Ex. args['code'] = 302
-          args[$(input[0]).val()] = $(input[1]).val();
+          args[key] = $(input[1]).val();
         }
       });
 
