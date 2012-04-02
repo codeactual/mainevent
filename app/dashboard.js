@@ -48,10 +48,11 @@ var date = diana.shared.Date,
             // Cache miss, run the job.
             function(key, callback) {
               var options = {
-                  startTime: now - interval,
-                  endTime: now,
                   interval: partition,
-                  query: {},
+                  query: {
+                    'time-gte': now - interval,
+                    'time-lte': now
+                  },
                   suffix: jobNameSuffix
                 };
 
