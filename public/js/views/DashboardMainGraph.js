@@ -51,9 +51,11 @@ define([], function() {
 
     fetchData: function(callback) {
       var view = this,
-          url = '/jobresult/count_all_graph'
-            + (this.options.dashArgs.parser ? '_' + this.options.dashArgs.parser : '')
-            + (this.options.dashArgs.interval ? '_' + this.options.dashArgs.interval : '');
+          url = _.filterTruthy([
+            '/jobresult/count_all_graph',
+            this.options.dashArgs.parser,
+            this.options.dashArgs.interval
+          ]).join('_');
       $.ajax(
         url, {
           success: function(data) {

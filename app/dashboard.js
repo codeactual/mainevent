@@ -21,7 +21,8 @@ var date = diana.shared.Date,
       job = diana.requireJob(jobName),
       parserNames = parsers.getConfiguredParsers();
 
-  parserNames.push(''); // Collect all-parser counts.
+  // 'Any Parser' permutations.
+  parserNames.push('');
 
   // Walk through parserNames sequentially.
   diana.shared.Async.runOrdered(
@@ -35,8 +36,8 @@ var date = diana.shared.Date,
         // entry has expired.
         function(interval, onIntervalDone) {
           var bestFitInterval = date.bestFitInterval(interval),
-              jobNameSuffix = (parser ? parser + '_' : '') + interval,
-              cacheKey = jobName + '_' + jobNameSuffix,
+              jobNameSuffix = _.filterTruthy([parser, interval]).join('_'),
+              cacheKey = _.filterTruthy([jobName, jobNameSuffix]).join('_'),
               partition = date.partitions[bestFitInterval],
               // Expire a 1 hour interval in 1 minute,
               // expire a 1 day interval in 1 hour, etc.
