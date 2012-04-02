@@ -28,10 +28,12 @@ exports.testCountAllByYear = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:00:00'),
-      endTime: strtotime('05/15/2011 12:00:00'),
-      interval: 'year',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:00:00'),
+        'time-lte': strtotime('05/15/2011 12:00:00'),
+        message: run
+      },
+      interval: 'year'
     }
   );
 };
@@ -59,10 +61,12 @@ exports.testCountAllByMonth = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:00:00'),
-      endTime: strtotime('05/15/2009 12:00:00'),
-      interval: 'month',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:00:00'),
+        'time-lte': strtotime('05/15/2009 12:00:00'),
+        message: run
+      },
+      interval: 'month'
     }
   );
 };
@@ -90,10 +94,12 @@ exports.testCountAllByDay = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:00:00'),
-      endTime: strtotime('03/15/2009 12:00:00'),
-      interval: 'day',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:00:00'),
+        'time-lte': strtotime('03/15/2009 12:00:00'),
+        message: run
+      },
+      interval: 'day'
     }
   );
 };
@@ -121,10 +127,12 @@ exports.testCountAllByHour = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:00:00'),
-      endTime: strtotime('03/12/2009 12:00:00'),
-      interval: 'hour',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:00:00'),
+        'time-lte': strtotime('03/12/2009 12:00:00'),
+        message: run
+      },
+      interval: 'hour'
     }
   );
 };
@@ -152,10 +160,12 @@ exports.testCountAllByMinute = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:00:00'),
-      endTime: strtotime('03/12/2009 10:00:00'),
-      interval: 'minute',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:00:00'),
+        'time-lte': strtotime('03/12/2009 10:00:00'),
+        message: run
+      },
+      interval: 'minute'
     }
   );
 };
@@ -183,10 +193,12 @@ exports.testCountAllBySecond = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('03/12/2009 09:05:00'),
-      endTime: strtotime('03/12/2009 09:06:00'),
-      interval: 'second',
-      query: {message: run}
+      query: {
+        'time-gte': strtotime('03/12/2009 09:05:00'),
+        'time-lte': strtotime('03/12/2009 09:06:00'),
+        message: run
+      },
+      interval: 'second'
     }
   );
 };
@@ -197,12 +209,12 @@ exports.testGetCacheExpires = function(test) {
 
   test.equal(60, job.getCacheExpires({}, now));
 
-  test.equal(60, job.getCacheExpires({endTime: now - 59999}, now));
-  test.equal(60, job.getCacheExpires({endTime: now - 60000}, now));
-  test.equal(null, job.getCacheExpires({endTime: now - 60001}, now));
+  test.equal(60, job.getCacheExpires({query: {'time-lte': now - 59999}}, now));
+  test.equal(60, job.getCacheExpires({query: {'time-lte': now - 60000}}, now));
+  test.equal(null, job.getCacheExpires({query: {'time-lte': now - 60001}}, now));
 
-  test.equal(60, job.getCacheExpires({endTime: now + 59999}, now));
-  test.equal(60, job.getCacheExpires({endTime: now + 60000}, now));
-  test.equal(null, job.getCacheExpires({endTime: now + 60001}, now));
+  test.equal(60, job.getCacheExpires({query: {'time-lte': now + 59999}}, now));
+  test.equal(60, job.getCacheExpires({query: {'time-lte': now + 60000}}, now));
+  test.equal(null, job.getCacheExpires({query: {'time-lte': now + 60001}}, now));
   test.done();
 };

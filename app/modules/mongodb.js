@@ -101,7 +101,7 @@ MongoDb.prototype.extractFilterOptions = function(params) {
     var matches = null;
     if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
       if ('time' == matches[1]) {
-        value = new Date(value);
+        value = new Date(parseInt(value, 10));
       }
       if (!params[matches[1]]) {
         params[matches[1]] = {};
@@ -303,6 +303,9 @@ MongoDb.prototype.mapReduce = function(job) {
     job.options = job.options || {};
     job.options.out = job.options.out || {replace: collectionName};
     mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
+      if (job.options.query) {
+        mongo.extractFilterOptions(job.options.query);
+      }
       collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
         if (err) { mongo.dbClose(); job.callback(err); return; }
         if (job.return) {
@@ -317,23 +320,6 @@ MongoDb.prototype.mapReduce = function(job) {
       });
     });
   });
-};
-
-/**
- * Time-ranged wrapped for mapReduce().
- *
- * @param startTime {Number} UNIX timestamp in milliseconds.
- * @param endTime {Number} UNIX timestamp in milliseconds.
- * @param job {Object} MongoDb.mapReduce() 'job' argument.
- */
-MongoDb.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
-  job.options = job.options || {};
-  job.options.query = job.options.query || {};
-  job.options.query.time = {
-    $gte: new Date(parseInt(startTime, 10)),
-    $lte: new Date(parseInt(endTime, 10))
-  };
-  this.mapReduce(job);
 };
 
 /**

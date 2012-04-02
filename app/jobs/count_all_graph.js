@@ -73,8 +73,6 @@ var reduce = function(key, values) {
 
 /**
  * @param options {Object}
- * - startTime {Number} UNIX timestamp in seconds.
- * - endTime {Number} UNIX timestamp in seconds.
  * - interval {String} Size of grouped totals.
  *   - hour, minute
  * - query {Object} Additional query arguments.
@@ -97,7 +95,7 @@ var reduce = function(key, values) {
  *   year; YYYY
  */
 exports.run = function(options, callback) {
-  mongodb.mapReduceTimeRange(options.startTime, options.endTime, {
+  mongodb.mapReduce({
     name: __filename,
     map: map,
     reduce: reduce,
@@ -134,12 +132,14 @@ exports.run = function(options, callback) {
  * @return {Number} Seconds.
  */
 exports.getCacheExpires = function(options, now) {
+  var defaultExpires = 60;
+
+  if (!options.query || !options.query['time-lte']) {
+    return defaultExpires;
+  }
+
   // If the time range ends within the last 60 seconds, cache the result
   // for a minute. Otherwise store it without an expiration.
   now = now || (new Date()).getTime();
-  if (!options.endTime || (options.endTime && Math.abs(now - options.endTime) <= 60000)) {
-    return 60;
-  } else {
-    return null;
-  }
+  return Math.abs(now - options.query['time-lte']) <= defaultExpires * 1000 ? defaultExpires : null;
 };

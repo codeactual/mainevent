@@ -20,10 +20,7 @@ var reduce = function(key, values) {
 };
 
 /**
- * @param options {Object}
- * - startTime {Number} UNIX timestamp in seconds.
- * - endTime {Number} UNIX timestamp in seconds.
- * - query {Object} Additional query arguments.
+ * @param query {Object}
  * @param callback {Function} Fires after success/error.
  * - See MongoDbStorage.mapReduce for payload arguments.
  * - Results example:
@@ -32,12 +29,12 @@ var reduce = function(key, values) {
  *     ...
  *   }
  */
-exports.run = function(options, callback) {
-  mongodb.mapReduceTimeRange(options.startTime, options.endTime, {
+exports.run = function(query, callback) {
+  mongodb.mapReduce({
     name: __filename,
     map: map,
     reduce: reduce,
-    options: {query: options.query},
+    options: {query: query},
     return: 'array',
     callback: callback
   });

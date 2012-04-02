@@ -27,9 +27,9 @@ exports.testCountByParser = function(test) {
     logs,
     expected,
     {
-      startTime: strtotime('3/12/2012 09:00:00'),
-      endTime: strtotime('3/12/2012 12:00:00'),
-      query: {message: run}
+      'time-gte': strtotime('3/12/2012 09:00:00'),
+      'time-lte': strtotime('3/12/2012 12:00:00'),
+      message: run
     }
   );
 };
