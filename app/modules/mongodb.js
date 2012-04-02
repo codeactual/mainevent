@@ -180,7 +180,7 @@ MongoDbStorage.prototype.dbClose = function(err, callback) {
  *
  * @param logs {Array|Object} Output from a parser module's parse() function.
  * @param callback {Function} Receives insert() results.
- * @param bulk {Boolean} If true, DB connection is not auto-closed.
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;

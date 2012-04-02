@@ -67,7 +67,8 @@ var date = diana.shared.Date,
             // Cache hit or job completed, process next interval.
             function(err, results) {
               onIntervalDone();
-            }
+            },
+            true // Don't auto-close connection.
           );
         },
         null,
@@ -79,8 +80,4 @@ var date = diana.shared.Date,
       redis.end();
     }
   );
-
-
-  var writeThrough = function(key, callback) {
-  };
 })();

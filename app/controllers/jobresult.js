@@ -14,7 +14,6 @@ define([], function() {
 
     var redis = diana.requireModule('redis').createInstance();
     redis.get(req.params.name, function(err, results) {
-      redis.end();
       if (err) {
         res.send({__error: err}, 500);
         return;

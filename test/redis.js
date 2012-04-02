@@ -22,7 +22,6 @@ exports.strings = {
   },
 
   tearDown: function(callback) {
-    redis.end();
     callback();
   },
 

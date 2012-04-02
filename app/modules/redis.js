@@ -41,14 +41,17 @@ Redis.prototype.end = function() {
  * @param callback {Function} Fires on completion
  * - err {String}
  * - replies {Array} [<set reply>, <expire reply>]
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.set = function(key, value, expire, callback) {
+Redis.prototype.set = function(key, value, expire, callback, bulk) {
   this.connect();
   var multi = this.client.multi().set(key, JSON.stringify(value));
   if (expire) {
     multi.expire(key, expire);
   }
+  var redis = this;
   multi.exec(function(err, replies) {
+    if (!bulk) { redis.end(); }
     callback(err, replies);
   });
 };
@@ -60,15 +63,18 @@ Redis.prototype.set = function(key, value, expire, callback) {
  * @param callback {Function} Fires on completion
  * - err {String}
  * - replies {Array} [<del reply>, ...]
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.del = function(key, callback) {
+Redis.prototype.del = function(key, callback, bulk) {
   this.connect();
   var multi = this.client.multi();
   key = _.isArray(key) ? key : [key];
   _.each(key, function(name) {
     multi.del(name);
   });
+  var redis = this;
   multi.exec(function(err, replies) {
+    if (!bulk) { redis.end(); }
     callback(err, replies);
   });
 };
@@ -80,9 +86,11 @@ Redis.prototype.del = function(key, callback) {
  * @param callback {Function} Fires on completion.
  * - err {String}
  * - value {mixed} Unserialized JSON.
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.get = function(key, callback) {
+Redis.prototype.get = function(key, callback, bulk) {
   this.connect();
+  var redis = this;
   this.client
     .get(key, function(err, value) {
       // Redis (nil) or not-exists value is retturned as null.
@@ -91,6 +99,7 @@ Redis.prototype.get = function(key, callback) {
       } else {
         value = JSON.parse(value);
       }
+      if (!bulk) { redis.end(); }
       callback(err, value);
     });
 };
@@ -105,8 +114,9 @@ Redis.prototype.get = function(key, callback) {
  * @param callback {Function} Fires on completion.
  * - err {String}
  * - value {mixed} Unserialized JSON.
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback) {
+Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, bulk) {
   var redis = this;
   this.get(key, function(err, value) {
     if (!_.isUndefined(value)) {
@@ -115,10 +125,12 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback) {
     }
     reader(key, function(err, value) {
       if (err) {
+        if (!bulk) { redis.end(); }
         callback(err, undefined);
         return;
       }
       redis.set(key, value, expires, function(err) {
+        if (!bulk) { redis.end(); }
         callback(err, value);
       });
     });

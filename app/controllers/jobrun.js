@@ -39,6 +39,5 @@ define([], function() {
         res.send(results);
       }
     );
-
   };
 });
