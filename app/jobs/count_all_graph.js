@@ -137,7 +137,7 @@ exports.getCacheExpires = function(options, now) {
   // If the time range ends within the last 60 seconds, cache the result
   // for a minute. Otherwise store it without an expiration.
   now = now || (new Date()).getTime();
-  if (options.endTime && Math.abs(now - options.endTime) <= 60000) {
+  if (!options.endTime || (options.endTime && Math.abs(now - options.endTime) <= 60000)) {
     return 60;
   } else {
     return null;
