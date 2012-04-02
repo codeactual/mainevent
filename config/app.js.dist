@@ -19,7 +19,6 @@ exports.read = function () {
       host: '127.0.0.1',
       port: 27017,
       eventCollection: 'mycollection',
-      mapReduceCollection: 'jobresults',
       maxResultSize: 100
     },
     redis: {

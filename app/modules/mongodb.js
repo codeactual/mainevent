@@ -17,9 +17,8 @@ var MongoDbStorage = function() {};
 // Db instance.
 MongoDbStorage.prototype.link = null;
 
-// Names read from app/config.js.
+// Read from app/config.js.
 MongoDbStorage.prototype.eventCollection = null;
-MongoDbStorage.prototype.mapReduceCollection = null;
 
 /**
  * Post-process events found via findOne(), find(), etc.
@@ -126,7 +125,6 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
     success(null, this.link);
   } else {
     this.eventCollection = config.eventCollection;
-    this.mapReduceCollection = config.mapReduceCollection;
     this.link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
