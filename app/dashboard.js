@@ -51,13 +51,12 @@ var date = diana.shared.Date,
                   startTime: now - interval,
                   endTime: now,
                   interval: partition,
-                  query: query,
+                  query: {},
                   suffix: jobNameSuffix
-                },
-                query = {};
+                };
 
               if (parser) {
-                query.parser = parser;
+                options.query.parser = parser;
               }
 
               job.run(options, function(err, results) {
