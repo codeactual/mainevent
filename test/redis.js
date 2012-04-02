@@ -22,7 +22,12 @@ exports.strings = {
   },
 
   tearDown: function(callback) {
-    callback();
+    redis.del(this.key, function(err) {
+      if (err) {
+        process.exit('tearDown could not delete test key: ' + err);
+      }
+      callback();
+    });
   },
 
   testGetWithoutExpires: function(test) {
