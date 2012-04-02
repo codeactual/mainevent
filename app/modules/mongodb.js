@@ -9,16 +9,16 @@ var mongodb = require('mongodb'),
     config = diana.getConfig().mongodb;
 
 exports.createInstance = function() {
-  return new MongoDbStorage();
+  return new MongoDb();
 };
 
-var MongoDbStorage = function() {};
+var MongoDb = function() {};
 
 // Db instance.
-MongoDbStorage.prototype.link = null;
+MongoDb.prototype.link = null;
 
 // Read from app/config.js.
-MongoDbStorage.prototype.eventCollection = null;
+MongoDb.prototype.eventCollection = null;
 
 /**
  * Post-process events found via findOne(), find(), etc.
@@ -31,7 +31,7 @@ MongoDbStorage.prototype.eventCollection = null;
  *   nextPage {Boolean}
  * - docs {Array}
  */
-MongoDbStorage.prototype.eventPostFind = function(docs, options) {
+MongoDb.prototype.eventPostFind = function(docs, options) {
   docs = _.isArray(docs) ? docs : [docs];
   options = options || {};
   var post = {
@@ -60,7 +60,7 @@ MongoDbStorage.prototype.eventPostFind = function(docs, options) {
  * @param params {Object}
  * @return {Object}
  */
-MongoDbStorage.prototype.extractSortOptions = function(params) {
+MongoDb.prototype.extractSortOptions = function(params) {
   var options = {};
   if (params['sort-attr']) {
     if ('desc' == params['sort-dir']) {
@@ -96,7 +96,7 @@ MongoDbStorage.prototype.extractSortOptions = function(params) {
  *
  * @param params {Object} Modified in-place with extracted options.
  */
-MongoDbStorage.prototype.extractFilterOptions = function(params) {
+MongoDb.prototype.extractFilterOptions = function(params) {
   _.each(params, function(value, key) {
     var matches = null;
     if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
@@ -120,7 +120,7 @@ MongoDbStorage.prototype.extractFilterOptions = function(params) {
  * @param error {Function} Fired after error.
  * @param success {Function} Fired after success.
  */
-MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
+MongoDb.prototype.dbConnectAndOpen = function(error, success) {
   if (this.link) {
     success(null, this.link);
   } else {
@@ -147,7 +147,7 @@ MongoDbStorage.prototype.dbConnectAndOpen = function(error, success) {
  * @param error {Function} Fired on error.
  * @param success {Function} Fired on success.
  */
-MongoDbStorage.prototype.dbCollection = function(db, collection, error, success) {
+MongoDb.prototype.dbCollection = function(db, collection, error, success) {
   var mongo = this;
   db.collection(collection, function(err, collection) {
     if (err) {
@@ -165,7 +165,7 @@ MongoDbStorage.prototype.dbCollection = function(db, collection, error, success)
  * @param callback {Function} Optional function called after link is closed.
  * - Receives two arguments, 'err' and null.
  */
-MongoDbStorage.prototype.dbClose = function(err, callback) {
+MongoDb.prototype.dbClose = function(err, callback) {
   if (this.link) {
     this.link.close();
     this.link = null;
@@ -182,7 +182,7 @@ MongoDbStorage.prototype.dbClose = function(err, callback) {
  * @param callback {Function} Receives insert() results.
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
+MongoDb.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
@@ -208,7 +208,7 @@ MongoDbStorage.prototype.insertLog = function(logs, callback, bulk) {
  * @param id {String} Document ID.
  * @param callback {Function} Receives findOne() results.
  */
-MongoDbStorage.prototype.getLog = function(id, callback) {
+MongoDb.prototype.getLog = function(id, callback) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
@@ -241,7 +241,7 @@ MongoDbStorage.prototype.getLog = function(id, callback) {
  * - {Object} Additional result details.
  *   'nextPage' {Boolean} True if additional documents exist.
  */
-MongoDbStorage.prototype.getTimeline = function(params, callback) {
+MongoDb.prototype.getTimeline = function(params, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
@@ -265,7 +265,7 @@ MongoDbStorage.prototype.getTimeline = function(params, callback) {
  * @param params {Object} getTimeline() compatible parameters.
  * @param callback {Function} Receives find() results.
  */
-MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callback) {
+MongoDb.prototype.getTimelineUpdates = function(id, time, params, callback) {
   params._id = {$gt: new BSON.ObjectID(id)};
   params['time-gte'] = time;
   params['sort-attr'] = 'time';
@@ -293,7 +293,7 @@ MongoDbStorage.prototype.getTimelineUpdates = function(id, time, params, callbac
  *     return {Object|Array}
  *     stats {Object}
  */
-MongoDbStorage.prototype.mapReduce = function(job) {
+MongoDb.prototype.mapReduce = function(job) {
   job.name = diana.extractJobName(job.name);
   var collectionName = job.suffix ? job.name + '_' + job.suffix : job.name;
   var returnAsArray = job.return != 'cursor';
@@ -324,9 +324,9 @@ MongoDbStorage.prototype.mapReduce = function(job) {
  *
  * @param startTime {Number} UNIX timestamp in milliseconds.
  * @param endTime {Number} UNIX timestamp in milliseconds.
- * @param job {Object} MongoDbStorage.mapReduce() 'job' argument.
+ * @param job {Object} MongoDb.mapReduce() 'job' argument.
  */
-MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
+MongoDb.prototype.mapReduceTimeRange = function(startTime, endTime, job) {
   job.options = job.options || {};
   job.options.query = job.options.query || {};
   job.options.query.time = {
@@ -346,7 +346,7 @@ MongoDbStorage.prototype.mapReduceTimeRange = function(startTime, endTime, job) 
  * - asArray = false: Receives a Cursor object.
  * @param asArray {Boolean} (Optional, Default: true)
  */
-MongoDbStorage.prototype.getMapReduceResults = function(name, callback, asArray) {
+MongoDb.prototype.getMapReduceResults = function(name, callback, asArray) {
   asArray = _.isUndefined(asArray) ? true : asArray;
   name = diana.extractJobName(name);
   var mongo = this;
@@ -375,7 +375,7 @@ MongoDbStorage.prototype.getMapReduceResults = function(name, callback, asArray)
  * @param callback {Function} Fires after success/error.
  * - {Boolean}
  */
-MongoDbStorage.prototype.collectionExists = function(name, callback) {
+MongoDb.prototype.collectionExists = function(name, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     db.collections(function(err, results) {
@@ -396,7 +396,7 @@ MongoDbStorage.prototype.collectionExists = function(name, callback) {
  * @param options {Object} find() options.
  * @param callback {Function} Receives a Cursor object.
  */
-MongoDbStorage.prototype.getCollectionCursor = function(name, params, options, callback) {
+MongoDb.prototype.getCollectionCursor = function(name, params, options, callback) {
   var mongo = this;
   params = params || {};
   options = options || {};
@@ -413,7 +413,7 @@ MongoDbStorage.prototype.getCollectionCursor = function(name, params, options, c
  * @param name {String}
  * @param callback {Function} Fires on drop completion.
  */
-MongoDbStorage.prototype.dropCollection = function(name, callback) {
+MongoDb.prototype.dropCollection = function(name, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {
