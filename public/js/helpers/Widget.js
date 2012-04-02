@@ -74,10 +74,13 @@ define([], function() {
      * Add <option> list based on configured interval list.
      *
      * @param select {Object} jQuery object or selector.
+     * @param includeAny {Boolean} If true, "Any Time" option is first.
      */
-    fillPresetTimeSelect: function(select) {
+    fillPresetTimeSelect: function(select, includeAny) {
       select = $(select);
-      select.append('<option value="">Any Time</option>');
+      if (_.isUndefined(includeAny) || includeAny) {
+        select.append('<option value="">Any Time</option>');
+      }
       _.each(diana.shared.Date.presetTimeIntervals, function(interval, name) {
         select.append('<option value="' + interval + '">' + name + '</option>');
       });

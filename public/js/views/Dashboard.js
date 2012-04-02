@@ -45,7 +45,7 @@ define([], function() {
           diana.helpers.Widget.fillParserSelect(parser);
           parser.val(view.options.dashArgs.parser);
 
-          diana.helpers.Widget.fillPresetTimeSelect(timeInterval);
+          diana.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
           timeInterval.val(view.options.dashArgs.interval);
         }
       );
