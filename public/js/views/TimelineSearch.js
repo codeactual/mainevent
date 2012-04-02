@@ -110,6 +110,10 @@ define([], function() {
     applyPresetTime: function(event) {
       $('#time-gte').val(moment().subtract('milliseconds', this.$('.time-interval').val()).format(this.datetimePickerFormat));
       $('#time-lte').val(moment().format(this.datetimePickerFormat));
+
+      // Ex. search modal may be a sub-view of the dashboard, which also
+      // has a time interval drop-down that reuses the same class.
+      event.stopImmediatePropagation();
     },
 
     /**
