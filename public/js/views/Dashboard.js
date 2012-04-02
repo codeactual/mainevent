@@ -1,19 +1,35 @@
-define([], function() {
+define([
+    'views/TimelineSearch'
+  ], function(TimelineSearch) {
 
   'use strict';
 
   // View the dashboard container.
   return Backbone.View.extend({
-    interval: '',
+    // Modal sub-views.
+    searchView: null,
+
+    // Reused selectors.
+    searchModal: null,
+    searchTimeInterval: null,
+    searchParser: null,
+    dashTimeInterval: null,
+    dashParser: null,
 
     initialize: function(options) {
-      this.initKeyEvents({});
+      this.initKeyEvents({
+        'Create From Search': {
+          keyChar: 's',
+          callback: this.onCreateFromSearch
+        }
+      });
       this.render();
     },
 
     events: {
       'change .time-interval': 'onTimeIntervalChange',
-      'change .parser': 'onParserChange'
+      'change .parser': 'onParserChange',
+      'click #create-from-search': 'onCreateFromSearch'
     },
 
     onTimeIntervalChange: function() {
@@ -28,6 +44,47 @@ define([], function() {
         'DashboardArgsChange',
         {parser: this.$('.parser').val()}
       );
+    },
+
+    onCreateFromSearch: function(event) {
+      event.preventDefault();
+
+      if (!this.searchModal) {
+        this.searchModal = $('#timeline-search-modal');
+        this.searchTimeInterval = this.searchModal.find('.time-interval');
+        this.searchParser = this.searchModal.find('.parser');
+        this.dashTimeInterval = this.$el.find('.time-interval');
+        this.dashParser = this.$el.find('.parser');
+      }
+
+      // Synchronize the search modal's time-interval with the dashboard's.
+      // Trigger a change so that the start/end dates adjusted relative to now.
+      var view = this;
+      var syncDropDowns = function() {
+        view.searchTimeInterval
+          .val(view.dashTimeInterval.val())
+          .trigger('change');
+        view.searchParser
+          .val(view.dashParser.val())
+          .trigger('change');
+      };
+
+      if (this.searchModal.is(':visible')) {
+        return;
+      }
+
+      if (this.searchView) {
+        syncDropDowns();
+        this.searchModal.modal('show');
+      } else {
+        var searchArgs = {};
+        this.searchView = new TimelineSearch({
+          el: this.searchModal,
+          searchArgs: searchArgs,
+          title: 'Create From Search'
+        });
+        syncDropDowns();
+      }
     },
 
     render: function() {

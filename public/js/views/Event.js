@@ -14,7 +14,7 @@ define([
       this.initKeyEvents({
         'Find similar events': {
           keyChar: 's',
-          callback: this.findSimilar
+          callback: this.onFindSimilar
         }
       });
 
@@ -30,7 +30,7 @@ define([
     },
 
     events: {
-      'click #event-find-similar': 'findSimilar'
+      'click #event-find-similar': 'onFindSimilar'
     },
 
     onClose: function() {
@@ -42,7 +42,7 @@ define([
      *
      * @param event {Object} jQuery event object.
      */
-    findSimilar: function(event) {
+    onFindSimilar: function(event) {
       event.preventDefault();
 
       var modal = $('#timeline-search-modal');
