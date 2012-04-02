@@ -86,6 +86,18 @@ define([], function() {
        } else {
          return 'year';
        }
+     },
+
+     /**
+      * Return the milliseconds in the given unit amount.
+      *
+      * @param num {Number|String}
+      * @param unit {String}
+      * @return Number
+      */
+     unitToMilli: function(amount, unit) {
+       var now = moment().valueOf();
+       return moment(now).add(unit + 's', amount).valueOf() - now;
      }
   };
 });

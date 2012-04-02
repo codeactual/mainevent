@@ -84,7 +84,7 @@ define(['shared/Date'], function() {
 
         // For spans <= than the best-fit interval, parition data into ticks
         // using the next-smaller interval.
-        if (span <= Graph.unitToMilli(1, bestFitInterval)) {
+        if (span <= date.unitToMilli(1, bestFitInterval)) {
           var xunit = date.partitions[bestFitInterval];
         } else {
           var xunit = bestFitInterval;
@@ -203,18 +203,6 @@ define(['shared/Date'], function() {
      magnitude: function(num) {
        num = _.isNumber(num) ? num : parseInt(num, 10);
        return Math.floor((Math.log(num))/(Math.log(10)));
-     },
-
-     /**
-      * Return the milliseconds in the given unit amount.
-      *
-      * @param num {Number|String}
-      * @param unit {String}
-      * @return Number
-      */
-     unitToMilli: function(amount, unit) {
-       var now = moment().valueOf();
-       return moment(now).add(unit + 's', amount).valueOf() - now;
      }
   };
 });
