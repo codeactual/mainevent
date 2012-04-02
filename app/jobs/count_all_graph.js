@@ -97,17 +97,6 @@ var reduce = function(key, values) {
  *   year; YYYY
  */
 exports.run = function(options, callback) {
-  // If the time range ends within the last 60 seconds, cache the result
-  // for a minute. Otherwise store it without an expiration.
-  var now = (new Date()).getTime();
-  if (options.endTime && Math.abs(now - options.endTime) <= 60000) {
-    var expire = 60;
-  } else {
-    var expire = null;
-  }
-
-  options.persist = _.isUndefined(options.persist) ? false : true;
-
   mongodb.mapReduceTimeRange(options.startTime, options.endTime, {
     name: __filename,
     map: map,
@@ -118,10 +107,9 @@ exports.run = function(options, callback) {
     },
     return: 'array',
     suffix: options.suffix,
-    expire: expire,
     callback: function(err, results, stats) {
       // Avoid the dropCollection() below.
-      if (options.persist) {
+      if (!options.persist) {
         callback(err, results, stats);
         return;
       }
@@ -136,4 +124,22 @@ exports.run = function(options, callback) {
       }
     }
   });
+};
+
+/**
+ * Decide the expiration for results from this job.
+ *
+ * @param options {Object} The same options supplied to run().
+ * @param now {Number} (Optional) Allow unit tests to avoid Date.getTime() use.
+ * @return {Number} Seconds.
+ */
+exports.getCacheExpires = function(options, now) {
+  // If the time range ends within the last 60 seconds, cache the result
+  // for a minute. Otherwise store it without an expiration.
+  now = now || (new Date()).getTime();
+  if (options.endTime && Math.abs(now - options.endTime) <= 60000) {
+    return 60;
+  } else {
+    return null;
+  }
 };

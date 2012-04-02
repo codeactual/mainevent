@@ -190,3 +190,17 @@ exports.testCountAllBySecond = function(test) {
     }
   );
 };
+
+exports.testGetCacheExpires = function(test) {
+  var job = diana.requireJob(__filename),
+      now = (new Date()).getTime();
+
+  test.equal(60, job.getCacheExpires({endTime: now - 59999}, now));
+  test.equal(60, job.getCacheExpires({endTime: now - 60000}, now));
+  test.equal(null, job.getCacheExpires({endTime: now - 60001}, now));
+
+  test.equal(60, job.getCacheExpires({endTime: now + 59999}, now));
+  test.equal(60, job.getCacheExpires({endTime: now + 60000}, now));
+  test.equal(null, job.getCacheExpires({endTime: now + 60001}, now));
+  test.done();
+};
