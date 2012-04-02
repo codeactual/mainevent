@@ -13,21 +13,32 @@ define([], function() {
     }
 
     try {
-      var job = diana.requireJob(req.params.name).run;
+      var job = diana.requireJob(req.params.name);
     } catch (e) {
       send404();
       return;
     }
 
-    req.query.persist = false;
+    var redis = diana.requireModule('redis').createInstance(),
+        expires = job.getCacheExpires(req.query),
+        cacheKey = req.params.name + '_' + _.sha1(req.query);
 
-    job(req.query, function(err, results) {
-      if (err) {
-        res.send({__error: err}, 500);
-        return;
+    redis.getWithWriteThrough(
+      cacheKey,
+      function(key, callback) {
+        job.run(req.query, function(err, results) {
+          callback(err, results);
+        });
+      },
+      expires,
+      function(err, results) {
+        if (err) {
+          res.send({__error: err}, 500);
+          return;
+        }
+        res.send(results);
       }
+    );
 
-      res.send(results);
-    });
   };
 });

@@ -65,6 +65,19 @@ GLOBAL.diana = {
   }
 };
 
+/**
+ * Derive a SHA1 hash of the given value's JSON.
+ *
+ * @param value {mixed}
+ * @return {String}
+ */
+_.sha1 = function(value) {
+  var crypto = require('crypto'),
+      sha1 = crypto.createHash('sha1');
+  sha1.update(JSON.stringify(value));
+  return sha1.digest('hex');
+};
+
 requirejs('shared/Async');
 requirejs('shared/Date');
 requirejs('shared/Lang');
