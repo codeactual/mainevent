@@ -109,7 +109,7 @@ exports.run = function(options, callback) {
     suffix: options.suffix,
     callback: function(err, results, stats) {
       // Avoid the dropCollection() below.
-      if (!options.persist) {
+      if (options.persist) {
         callback(err, results, stats);
         return;
       }
