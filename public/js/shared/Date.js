@@ -71,7 +71,7 @@ define([], function() {
       *
       * @param duration {Number} Milliseconds
       * @param asString {Boolean} (Optional, Default: true)
-      * - If true, interval is returned in milliseconds.
+      * - If false, interval is returned in milliseconds.
       * @return {mixed}
       * - asNumber = true: Unit in milliseconds.
       * - asNumber = false: year, month, day, hour, minute
