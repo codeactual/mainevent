@@ -43,7 +43,9 @@ var date = diana.shared.Date,
                 partition = date.partitions[bestFitInterval],
                 // Expire a 1 hour interval in 1 minute,
                 // expire a 1 day interval in 1 hour, etc.
-                expires = Math.max(60, date.unitToMilli(1, partition) / 1000);
+                expires = Math.max(60, date.unitToMilli(1, partition) / 1000),
+                // Prevent gaps where 60s-volatile data expires before its job finishes.
+                expiresGrace = (jobWait / 1000) * 0.5;
 
             redis.getWithWriteThrough(
               cacheKey,
@@ -64,7 +66,7 @@ var date = diana.shared.Date,
                   callback(err, results);
                 });
               },
-              expires,
+              expires + expiresGrace,
               // Cache hit or job completed, process next interval.
               function(err, results) {
                 onIntervalDone();
