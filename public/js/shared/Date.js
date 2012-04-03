@@ -70,22 +70,31 @@ define([], function() {
       * Find the best-fit time interval for a given duration.
       *
       * @param duration {Number} Milliseconds
-      * @param {String} year, month, day, hour, minute
+      * @param asString {Boolean} (Optional, Default: true)
+      * - If true, interval is returned in milliseconds.
+      * @return {mixed}
+      * - asNumber = true: Unit in milliseconds.
+      * - asNumber = false: year, month, day, hour, minute
       */
-     bestFitInterval: function(duration) {
+     bestFitInterval: function(duration, asString) {
+       var interval = '';
        if (duration < 60000) {
-         return 'second';
+         interval = 'second';
        } else if (duration < 3600000) {
-         return 'minute';
+         interval = 'minute';
        } else if (duration < 86400000) {
-         return 'hour';
+         interval = 'hour';
        } else if (duration < 2419200000) { // 28 days
-         return 'day';
+         interval = 'day';
        } else if (duration < 31536000000) { // 365 days
-         return 'month';
+         interval = 'month';
        } else {
-         return 'year';
+         interval = 'year';
        }
+       if (_.isUndefined(asString) || asString) {
+         return interval;
+       }
+       return diana.shared.Date.unitToMilli(1, interval);
      },
 
      /**

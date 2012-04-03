@@ -52,8 +52,7 @@ define([
       this.dashTimeInterval.val(this.searchTimeInterval.val());
 
       // Trigger the data fetch and graph refresh.
-      var date = diana.shared.Date;
-      searchArgs.interval = date.partitions[date.bestFitInterval(searchArgs.interval)];
+      searchArgs.interval = diana.shared.Date.bestFitInterval(searchArgs.interval, false);
       diana.helpers.Event.trigger('DashboardArgsChange', {query: searchArgs});
     },
 
