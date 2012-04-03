@@ -74,6 +74,11 @@ define([
       this.closeSocket();
     },
 
+    onSearchSubmit: function(searchArgs) {
+      delete searchArgs.interval;
+      this.navigate('timeline', searchArgs);
+    },
+
     /**
      * Open search modal.
      *
@@ -91,6 +96,7 @@ define([
       if (this.searchView) {
         modal.modal('show');
       } else {
+        diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
         this.searchView = new TimelineSearch({
           el: modal,
           searchArgs: this.options.searchArgs,

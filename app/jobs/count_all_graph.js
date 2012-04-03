@@ -95,19 +95,29 @@ var reduce = function(key, values) {
  *   year; YYYY
  */
 exports.run = function(options, callback) {
+  var interval = options.interval;
+  delete options.interval;
+  var suffix = options.suffix;
+  delete options.suffix;
+  var persist = options.persist;
+  delete options.persist;
+  var query = options.query || {};
+  delete options.query;
+  query = _.extend(query, options);
+
   mongodb.mapReduce({
     name: __filename,
     map: map,
     reduce: reduce,
     options: {
-      query: options.query,
-      scope: {interval: options.interval}
+      query: query,
+      scope: {interval: interval}
     },
     return: 'array',
-    suffix: options.suffix || _.sha1(options),
+    suffix: suffix || _.sha1(options),
     callback: function(err, results, stats) {
       // Avoid the dropCollection() below.
-      if (options.persist) {
+      if (persist) {
         callback(err, results, stats);
         return;
       }

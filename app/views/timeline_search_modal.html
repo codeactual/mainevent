@@ -10,8 +10,8 @@
       </div>
       <div class="form-row">
         {>select_time_interval/}
-        <input id="time-gte" type="text" class="input-medium" placeholder="Earliest Time" /><input id="time-lte" type="text" class="input-medium" placeholder="Latest Time" />
-        <a id="time-interval-clear" class="btn btn-danger" href="#"><i class="icon-trash icon-white" /></a>
+        <input id="time-gte" type="text" class="input-medium any-time" placeholder="Earliest Time" /><input id="time-lte" type="text" class="input-medium any-time" placeholder="Latest Time" />
+        <a id="time-interval-clear" class="btn btn-danger any-time" href="#"><i class="icon-trash icon-white any-time" /></a>
       </div>
       <div class="form-row condition-pair">
         <input type="text" class="input-small" placeholder="Name">
@@ -28,11 +28,11 @@
       </div>
     </div>
     <div class="modal-footer">
-      <span class="input-prepend">
+      <span class="input-prepend sort-option">
         <span class="add-on">Sort By</span>
         <input id="sort-attr" type="text" class="input-small" placeholder="Name" />
       </span>
-      <select id="sort-dir">
+      <select id="sort-dir" class="sort-option">
         <option value="asc">Low to High</option>
         <option value="desc">High to Low</option>
       </select>

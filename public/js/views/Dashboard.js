@@ -46,6 +46,11 @@ define([
       );
     },
 
+    onSearchSubmit: function(searchArgs) {
+      searchArgs.interval = diana.shared.Date.bestFitInterval(searchArgs.interval);
+      diana.helpers.Event.trigger('DashboardArgsChange', {query: searchArgs});
+    },
+
     onCreateFromSearch: function(event) {
       event.preventDefault();
 
@@ -77,11 +82,13 @@ define([
         syncDropDowns();
         this.searchModal.modal('show');
       } else {
-        var searchArgs = {};
+        diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit);
         this.searchView = new TimelineSearch({
           el: this.searchModal,
-          searchArgs: searchArgs,
-          title: 'Create From Search'
+          searchArgs: {},
+          title: 'Create From Search',
+          acceptAnyTime: false,
+          acceptSortOptions: false
         });
         syncDropDowns();
       }

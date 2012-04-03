@@ -9,13 +9,18 @@ define([], function() {
     datetimePickerFormat: 'MM/DD/YYYY HH:mm:ss',
 
     initialize: function(options) {
+      this.options = _.defaults(options, {
+        acceptAnyTime: true,
+        acceptSortOptions: true
+      });
       this.render();
     },
 
     render: function() {
-      var view = this;
-      var body = this.$('.modal-body');
-      var parser = this.$('.parser');
+      var view = this,
+          body = this.$('.modal-body'),
+          parser = this.$('.parser'),
+          coreArgNames = ['parser'];
 
       this.$('.modal-header > h4').text(this.options.title);
 
@@ -26,17 +31,34 @@ define([], function() {
         }
       });
 
-      $('#time-gte,#time-lte').each(function() {
-        var input = $(this);
-        // Invalidate the preset time range after a custom one is selected.
-        input.change(function() { view.$('.time-interval').val(''); });
-        // Activate date/time widgets when inputs gain focus.
-        input.datetimepicker({});
-      });
+      if (this.options.acceptAnyTime) {
+        $('#time-gte,#time-lte').each(function() {
+          var input = $(this);
+          // Invalidate the preset time range after a custom one is selected.
+          input.change(function() { view.$('.time-interval').val(''); });
+          // Activate date/time widgets when inputs gain focus.
+          input.datetimepicker({});
+        });
+
+        $('#time-interval-clear').on('click', function(event) {
+          event.preventDefault();
+          $('#time-interval,#time-gte,#time-lte').val('');
+        });
+
+        coreArgNames.push('time-gte', 'time-lte');
+      } else {
+        $('.any-time').remove();
+      }
+
+      if (this.options.acceptSortOptions) {
+        coreArgNames.push('sort-attr', 'sort-dir');
+      } else {
+        $('.sort-option').remove();
+      }
 
       // Each trash can button will remove the adjacent condition row,
       // or clear the last remaining row's values.
-      $(this.el).delegate('.btn-danger', 'click', function(event) {
+      $(this.el).delegate('.condition-pair .btn-danger', 'click', function(event) {
         event.preventDefault();
         if (view.$('.condition-pair').length > 1) {
           view.$(this).parent().remove();
@@ -45,16 +67,17 @@ define([], function() {
         }
       });
 
-      $('#time-interval-clear').on('click', function(event) {
-        event.preventDefault();
-        $('#time-interval,#time-gte,#time-lte').val('');
-      });
-
+      // Populate drop-downs.
       diana.helpers.Widget.fillParserSelect(parser);
-      diana.helpers.Widget.fillPresetTimeSelect(this.$('.time-interval'));
+      diana.helpers.Widget.fillPresetTimeSelect(
+        this.$('.time-interval'),
+        this.options.acceptAnyTime
+      );
 
-      var basicArgNames = ['time-gte', 'time-lte', 'sort-attr', 'sort-dir', 'parser'];
-      _.each(basicArgNames, function(name) {
+      // Apply core attributes (e.g. 'parser') that are already represented
+      // by drop-downs or other widgets. Remove them from view.options.searchArgs
+      // so they are not redundantly represented as 'x = y' conditions below.
+      _.each(coreArgNames, function(name) {
         if (_.has(view.options.searchArgs, name)) {
           var value = view.options.searchArgs[name];
           if (('time-gte' == name || 'time-lte' == name)) {
@@ -99,7 +122,7 @@ define([], function() {
      */
     submit: function(event) {
       diana.helpers.Widget.closeModal(event);
-      this.navigate('timeline', this.getSearchArgs());
+      diana.helpers.Event.trigger('TimelineSearchSubmit', this.getSearchArgs());
     },
 
     /**
@@ -136,8 +159,15 @@ define([], function() {
       var args = {};
 
       args['parser'] = this.$('.parser').val();
-      args['time-gte'] = (new Date($('#time-gte').val())).getTime();
-      args['time-lte'] = (new Date($('#time-lte').val())).getTime();
+      args['interval'] = this.$('.time-interval').val();
+
+      if (this.options.acceptAnyTime) {
+        args['time-gte'] = (new Date($('#time-gte').val())).getTime();
+        args['time-lte'] = (new Date($('#time-lte').val())).getTime();
+      } else {
+        args['time-lte'] = (new Date()).getTime();
+        args['time-gte'] = args['time-lte'] - args['interval'];
+      }
 
       // Collect 'x = y', 'x >= y', etc. condition pairs.
       var condPairs = this.$('.condition-pair').each(function(index, pair) {
@@ -158,9 +188,11 @@ define([], function() {
         }
       });
 
-      args['sort-attr'] = $('#sort-attr').val();
-      if (args['sort-attr']) {
-        args['sort-dir'] = $('#sort-dir').val();
+      if (this.options.acceptSortOptions) {
+        args['sort-attr'] = $('#sort-attr').val();
+        if (args['sort-attr']) {
+          args['sort-dir'] = $('#sort-dir').val();
+        }
       }
 
       return args;

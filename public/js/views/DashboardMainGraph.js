@@ -6,7 +6,7 @@ define([], function() {
 
   return Backbone.View.extend({
     /**
-     * Object retrieved by fetchData().
+     * Object retrieved by fetchJobResult().
      */
     data: null,
 
@@ -23,19 +23,31 @@ define([], function() {
     initialize: function(options) {
       var view = this;
 
-      this.fetchData(function() {
+      this.fetchJobResult(function() {
         view.render.call(view);
       });
 
       diana.helpers.Event.on('DashboardArgsChange', function(changed) {
-        // Merge changed args with current.
-        view.options.dashArgs = _.extend(view.options.dashArgs, changed);
+        // Change triggerd by search modal submit.
+        if (changed.query) {
+          // Replace dashboard settings with submitted args.
+          view.options.dashArgs = changed.query;
+
+          view.runJobAndFetchResult(function() {
+            view.render.call(view);
+          });
+
+        } else {
+          // Merge changed args with current.
+          view.options.dashArgs = _.extend(view.options.dashArgs, changed);
+
+          view.fetchJobResult(function() {
+            view.render.call(view);
+          });
+        }
+
         // Save a history point but don't trigger the router.
         view.navigate('dashboard', view.options.dashArgs, {trigger: false});
-        // Apply updated args.
-        view.fetchData(function() {
-          view.render.call(view);
-        });
       });
 
       this.resizeGraph = _.debounce(function() {
@@ -49,7 +61,26 @@ define([], function() {
       $(window).off('resize'. this.resizeGraph);
     },
 
-    fetchData: function(callback) {
+    runJobAndFetchResult: function(callback) {
+      var view = this,
+          url = this.buildUrl(
+            '/jobrun/count_all_graph?',
+            this.options.dashArgs,
+            false
+          );
+
+      $.ajax(
+        url, {
+          success: function(data) {
+            view.data = data;
+            data = null;
+            callback();
+          }
+        }
+      );
+    },
+
+    fetchJobResult: function(callback) {
       var view = this,
           url = _.filterTruthy([
             '/jobresult/count_all_graph',

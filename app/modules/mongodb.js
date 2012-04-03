@@ -305,6 +305,9 @@ MongoDb.prototype.mapReduce = function(job) {
     mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
       if (job.options.query) {
         mongo.extractFilterOptions(job.options.query);
+
+        // Hack to remove any sort options from repurposed search forms.
+        mongo.extractSortOptions(job.options.query);
       }
       collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
         if (err) { mongo.dbClose(); job.callback(err); return; }
