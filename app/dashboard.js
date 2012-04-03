@@ -18,67 +18,73 @@ var date = diana.shared.Date,
  */
 (function() {
   var jobName = 'count_all_graph',
+      jobWait = 60000,
       job = diana.requireJob(jobName),
       parserNames = parsers.getConfiguredParsers();
 
   // 'Any Parser' permutations.
   parserNames.push('');
 
-  // Walk through parserNames sequentially.
-  diana.shared.Async.runOrdered(
-    parserNames,
-    function(parser, onParserDone) {
-      // For each parser, walk through the same intervals as available in
-      // the UI drop-downs.
-      diana.shared.Async.runOrdered(
-        _.values(date.presetTimeIntervals),
-        // For each interval, run the map/reduce job if the related cache
-        // entry has expired.
-        function(interval, onIntervalDone) {
-          var bestFitInterval = date.bestFitInterval(interval),
-              jobNameSuffix = _.filterTruthy([parser, interval]).join('_'),
-              cacheKey = _.filterTruthy([jobName, jobNameSuffix]).join('_'),
-              partition = date.partitions[bestFitInterval],
-              // Expire a 1 hour interval in 1 minute,
-              // expire a 1 day interval in 1 hour, etc.
-              expires = Math.max(60, date.unitToMilli(1, partition) / 1000);
+  var runJob = function() {
+    // Walk through parserNames sequentially.
+   diana.shared.Async.runOrdered(
+      parserNames,
+      function(parser, onParserDone) {
+        // For each parser, walk through the same intervals as available in
+        // the UI drop-downs.
+        diana.shared.Async.runOrdered(
+          _.values(date.presetTimeIntervals),
+          // For each interval, run the map/reduce job if the related cache
+          // entry has expired.
+          function(interval, onIntervalDone) {
+            var bestFitInterval = date.bestFitInterval(interval),
+                jobNameSuffix = _.filterTruthy([parser, interval]).join('_'),
+                cacheKey = _.filterTruthy([jobName, jobNameSuffix]).join('_'),
+                partition = date.partitions[bestFitInterval],
+                // Expire a 1 hour interval in 1 minute,
+                // expire a 1 day interval in 1 hour, etc.
+                expires = Math.max(60, date.unitToMilli(1, partition) / 1000);
 
-          redis.getWithWriteThrough(
-            cacheKey,
-            // Cache miss, run the job.
-            function(key, callback) {
-              var options = {
-                  interval: partition,
-                  query: {
-                    'time-gte': now - interval,
-                    'time-lte': now
-                  },
-                  suffix: jobNameSuffix
-                };
+            redis.getWithWriteThrough(
+              cacheKey,
+              // Cache miss, run the job.
+              function(key, callback) {
+                var options = {
+                    interval: partition,
+                    query: {
+                      'time-gte': now - interval,
+                      'time-lte': now
+                    },
+                    suffix: jobNameSuffix
+                  };
 
-              if (parser) {
-                options.query.parser = parser;
-              }
+                if (parser) {
+                  options.query.parser = parser;
+                }
 
-              job.run(options, function(err, results) {
-                callback(err, results);
-              });
-            },
-            expires,
-            // Cache hit or job completed, process next interval.
-            function(err, results) {
-              onIntervalDone();
-            },
-            true // Don't auto-close connection.
-          );
-        },
-        null,
-        onParserDone
-      );
-    },
-    null,
-    function() {
-      redis.end();
-    }
-  );
+                job.run(options, function(err, results) {
+                  callback(err, results);
+                });
+              },
+              expires,
+              // Cache hit or job completed, process next interval.
+              function(err, results) {
+                onIntervalDone();
+              },
+              true // Don't auto-close connection.
+            );
+          },
+          null,
+          onParserDone
+        );
+      },
+      null,
+      function() {
+        redis.end();
+        setTimeout(runJob, jobWait);
+      }
+    );
+  };
+
+  runJob();
 })();
