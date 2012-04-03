@@ -55,12 +55,13 @@ var date = diana.shared.Date,
                   interval: partition,
                   'time-gte': now - interval,
                   'time-lte': now,
-                  suffix: jobNameSuffix
                 };
 
                 if (parser) {
                   query.parser = parser;
                 }
+
+                job.updateOptions({suffix: jobNameSuffix});
 
                 job.run(query, function(err, results) {
                   callback(err, results);
