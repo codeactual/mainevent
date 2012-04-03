@@ -52,7 +52,6 @@ var date = diana.shared.Date,
               // Cache miss, run the job.
               function(key, callback) {
                 var query = {
-                  interval: partition,
                   'time-gte': now - interval,
                   'time-lte': now,
                 };
