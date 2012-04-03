@@ -47,7 +47,8 @@ define([
     },
 
     onSearchSubmit: function(searchArgs) {
-      searchArgs.interval = diana.shared.Date.bestFitInterval(searchArgs.interval);
+      var date = diana.shared.Date;
+      searchArgs.interval = date.partitions[date.bestFitInterval(searchArgs.interval)];
       diana.helpers.Event.trigger('DashboardArgsChange', {query: searchArgs});
     },
 
