@@ -47,7 +47,9 @@ define([], function() {
         }
 
         // Save a history point but don't trigger the router.
-        view.navigate('dashboard', view.options.dashArgs, {trigger: false});
+        var dashArgs = _.clone(view.options.dashArgs);
+        delete dashArgs.interval;
+        view.navigate('dashboard', dashArgs, {trigger: false});
       });
 
       this.resizeGraph = _.debounce(function() {
@@ -62,10 +64,13 @@ define([], function() {
     },
 
     runJobAndFetchResult: function(callback) {
+      var dashArgs = _.clone(this.options.dashArgs);
+      delete dashArgs.interval;
+
       var view = this,
           url = this.buildUrl(
             '/jobrun/count_all_graph?',
-            this.options.dashArgs,
+            dashArgs,
             false
           );
 

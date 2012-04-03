@@ -23,6 +23,7 @@ define([
           callback: this.onCreateFromSearch
         }
       });
+      this.wasCreatedFromSearch();
       this.render();
     },
 
@@ -33,26 +34,34 @@ define([
     },
 
     onTimeIntervalChange: function() {
-      diana.helpers.Event.trigger(
-        'DashboardArgsChange',
-        {interval: this.$('.time-interval').val()}
-      );
+      var interval = this.$('.time-interval').val(),
+          now = (new Date()).getTime(),
+          changed = {'time-gte': now - interval, 'time-lte': now};
+
+      if (this.wasCreatedFromSearch()) {
+        changed = {query: _.extend(_.clone(this.options.dashArgs), changed)};
+      }
+      diana.helpers.Event.trigger('DashboardArgsChange', changed);
+
+      this.options.dashArgs['time-gte'] = changed['time-gte'];
+      this.options.dashArgs['time-lte'] = changed['time-lte'];
     },
 
     onParserChange: function() {
-      diana.helpers.Event.trigger(
-        'DashboardArgsChange',
-        {parser: this.$('.parser').val()}
-      );
+      var changed = {parser: this.$('.parser').val()};
+      if (this.wasCreatedFromSearch()) {
+        changed = {query: _.extend(_.clone(this.options.dashArgs), changed)};
+      }
+      diana.helpers.Event.trigger('DashboardArgsChange', changed);
     },
 
     onSearchSubmit: function(searchArgs) {
-      // Sync the drop-downs.
+      // Sync the drop-downs and state.
       this.dashParser.val(this.searchParser.val());
       this.dashTimeInterval.val(this.searchTimeInterval.val());
+      this.options.dashArgs = searchArgs;
 
       // Trigger the data fetch and graph refresh.
-      searchArgs.interval = diana.shared.Date.bestFitInterval(searchArgs.interval, false);
       diana.helpers.Event.trigger('DashboardArgsChange', {query: searchArgs});
     },
 
@@ -72,11 +81,9 @@ define([
       var view = this;
       var syncDropDowns = function() {
         view.searchTimeInterval
-          .val(view.dashTimeInterval.val())
-          .trigger('change');
+          .val(view.dashTimeInterval.val());
         view.searchParser
-          .val(view.dashParser.val())
-          .trigger('change');
+          .val(view.dashParser.val());
       };
 
       if (this.searchModal.is(':visible')) {
@@ -97,6 +104,15 @@ define([
         });
         syncDropDowns();
       }
+    },
+
+    /**
+     * Check if the current dashboard arguments were created from a submitted search.
+     *
+     * @return {Boolean}
+     */
+    wasCreatedFromSearch: function() {
+      return _.without(Object.keys(this.options.dashArgs), ['time-gte', 'time-lte', 'parser']).length > 0;
     },
 
     render: function() {
