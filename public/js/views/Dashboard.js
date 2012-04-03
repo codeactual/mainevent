@@ -27,8 +27,8 @@ define([
     },
 
     events: {
-      'change .time-interval': 'onTimeIntervalChange',
-      'change .parser': 'onParserChange',
+      'change #dashboard-header-grid .time-interval': 'onTimeIntervalChange',
+      'change #dashboard-header-grid .parser': 'onParserChange',
       'click #create-from-search': 'onCreateFromSearch'
     },
 
