@@ -1,5 +1,5 @@
 /**
- * Collect total event count at configrable intervals.
+ * Collect total event count at configrable partitions.
  */
 
 var Job = require(__dirname + '/prototype');
@@ -25,7 +25,7 @@ Job.extend(CountAllGraph, {
         seconds = this.time.getSeconds() + '',
         group = '';
 
-    switch (interval) {
+    switch (partition) {
       case 'year':
         group = this.time.getFullYear();
         break;
@@ -81,8 +81,6 @@ Job.extend(CountAllGraph, {
     return result;
   },
 
-  customOptionKeys: ['interval'],
-
   /**
    * See prototype in prototype.js for full notes.
    *
@@ -91,7 +89,7 @@ Job.extend(CountAllGraph, {
    *     <Date.parse() compatible string>: {count: 5},
    *     ...
    *   }
-   * - Key formats based on 'interval':
+   * - Key formats based on 'partition':
    *   minute: MM-DD-YYYY HH:MM:00
    *   hour: MM-DD-YYYY HH:00:00
    *   day: MM-DD-YYYY 00:00:00
@@ -100,16 +98,13 @@ Job.extend(CountAllGraph, {
    */
   run: function(query, callback) {
     var options = this.extractOptionsFromQuery(query),
-        date = diana.shared.Date;
+        date = diana.shared.Date,
+        bestFitInterval = date.bestFitInterval(
+          parseInt(query['time-lte'], 10) - parseInt(query['time-gte'], 10)
+        ),
+        partition = date.partitions[bestFitInterval];
 
-    // Accept milliseconds or 'hour' intervals. Convert milliseconds to a
-    // proportional partition interval.
-    if (options.interval.match(/[0-9]/)) {
-      var bestFitInterval = date.bestFitInterval(parseInt(options.interval, 10));
-      options.interval = date.partitions[bestFitInterval];
-    }
-
-    this.mapReduce(query, {scope: {interval: options.interval}}, callback);
+    this.mapReduce(query, {scope: {partition: partition}}, callback);
   },
 
   /**

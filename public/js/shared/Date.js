@@ -33,7 +33,8 @@ define([], function() {
       minute: 'second',
       hour: 'minute',
       day: 'hour',
-      month: 'day'
+      month: 'day',
+      year: 'month'
     },
 
     /**

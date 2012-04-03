@@ -19,9 +19,9 @@ exports.testCountAllByYear = function(test) {
     }
   ];
   var expected = {};
-  expected['2009'] = {count: 1};
-  expected['2010'] = {count: 2};
-  expected['2011'] = {count: 1};
+  expected['2009-03'] = {count: 1};
+  expected['2010-04'] = {count: 2};
+  expected['2011-05'] = {count: 1};
   job.verifyJob(
     test,
     __filename,
@@ -30,8 +30,7 @@ exports.testCountAllByYear = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:00:00'),
       'time-lte': strtotime('05/15/2011 12:00:00'),
-      message: run,
-      interval: 'year'
+      message: run
     }
   );
 };
@@ -50,9 +49,10 @@ exports.testCountAllByMonth = function(test) {
     }
   ];
   var expected = {};
-  expected['2009-03'] = {count: 1};
-  expected['2009-04'] = {count: 2};
-  expected['2009-05'] = {count: 1};
+  expected['03/12/2009 00:00:00'] = {count: 1};
+  expected['04/13/2009 00:00:00'] = {count: 1};
+  expected['04/23/2009 00:00:00'] = {count: 1};
+  expected['05/14/2009 00:00:00'] = {count: 1};
   job.verifyJob(
     test,
     __filename,
@@ -61,8 +61,7 @@ exports.testCountAllByMonth = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:00:00'),
       'time-lte': strtotime('05/15/2009 12:00:00'),
-      message: run,
-      interval: 'month'
+      message: run
     }
   );
 };
@@ -81,9 +80,9 @@ exports.testCountAllByDay = function(test) {
     }
   ];
   var expected = {};
-  expected['03/12/2009 00:00:00'] = {count: 1};
-  expected['03/13/2009 00:00:00'] = {count: 2};
-  expected['03/14/2009 00:00:00'] = {count: 1};
+  expected['03/12/2009 09:00'] = {count: 1};
+  expected['03/13/2009 10:00'] = {count: 2};
+  expected['03/14/2009 11:00'] = {count: 1};
   job.verifyJob(
     test,
     __filename,
@@ -92,8 +91,7 @@ exports.testCountAllByDay = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:00:00'),
       'time-lte': strtotime('03/15/2009 12:00:00'),
-      message: run,
-      interval: 'day'
+      message: run
     }
   );
 };
@@ -112,9 +110,9 @@ exports.testCountAllByHour = function(test) {
     }
   ];
   var expected = {};
-  expected['03/12/2009 09:00'] = {count: 1};
-  expected['03/12/2009 10:00'] = {count: 2};
-  expected['03/12/2009 11:00'] = {count: 1};
+  expected['03/12/2009 09:00:00'] = {count: 1};
+  expected['03/12/2009 10:00:00'] = {count: 2};
+  expected['03/12/2009 11:00:00'] = {count: 1};
   job.verifyJob(
     test,
     __filename,
@@ -123,8 +121,7 @@ exports.testCountAllByHour = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:00:00'),
       'time-lte': strtotime('03/12/2009 12:00:00'),
-      message: run,
-      interval: 'hour'
+      message: run
     }
   );
 };
@@ -154,8 +151,7 @@ exports.testCountAllByMinute = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:00:00'),
       'time-lte': strtotime('03/12/2009 10:00:00'),
-      message: run,
-      interval: 'minute'
+      message: run
     }
   );
 };
@@ -185,8 +181,7 @@ exports.testCountAllBySecond = function(test) {
     {
       'time-gte': strtotime('03/12/2009 09:05:00'),
       'time-lte': strtotime('03/12/2009 09:06:00'),
-      message: run,
-      interval: 'second'
+      message: run
     }
   );
 };
