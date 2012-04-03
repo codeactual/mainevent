@@ -26,9 +26,9 @@ define(['shared/Date'], function() {
     },
 
     jqplotFormat: {
-      second: '%S',
+      second: ':%S',
       minute: '%H:%M',
-      hour: '%H',
+      hour: '%H:00',
       day: '%m/%d',
       month: '%Y-%m',
       year: '%Y'
