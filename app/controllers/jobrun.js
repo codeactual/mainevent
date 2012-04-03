@@ -13,14 +13,14 @@ define([], function() {
     }
 
     try {
-      var job = diana.requireJob(req.params.name);
+      var job = new (diana.requireJob(req.params.name).getClass());
     } catch (e) {
       send404();
       return;
     }
 
     var redis = diana.requireModule('redis').createInstance(),
-        expires = job.getCacheExpires(req.query),
+        expires = job.getExpires(req.query),
         cacheKey = req.params.name + '_' + _.sha1(req.query);
 
     redis.getWithWriteThrough(

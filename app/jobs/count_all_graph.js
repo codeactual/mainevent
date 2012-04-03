@@ -99,7 +99,16 @@ Job.extend(CountAllGraph, {
    *   year; YYYY
    */
   run: function(query, callback) {
-    var options = this.extractOptionsFromQuery(query);
+    var options = this.extractOptionsFromQuery(query),
+        date = diana.shared.Date;
+
+    // Accept milliseconds or 'hour' intervals. Convert milliseconds to a
+    // proportional partition interval.
+    if (options.interval.match(/[0-9]/)) {
+      var bestFitInterval = date.bestFitInterval(parseInt(options.interval, 10));
+      options.interval = date.partitions[bestFitInterval];
+    }
+
     this.mapReduce(query, {scope: {interval: options.interval}}, callback);
   },
 
