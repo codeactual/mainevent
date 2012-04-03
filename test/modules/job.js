@@ -18,7 +18,7 @@ var parsers = diana.requireModule('parsers/parsers');
  * Additional arguments are passed to the job's run() function.
  */
 exports.verifyJob = function(test, jobName, logs, expected, options) {
-  var job = diana.requireJob(jobName);
+  var job = new (diana.requireJob(jobName).getClass());
   test.expect(1);
   parsers.parseAndInsert(logs, function() {
     job.run(options, function(err, results) {

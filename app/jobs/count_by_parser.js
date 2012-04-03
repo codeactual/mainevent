@@ -4,38 +4,43 @@
 
 'use strict';
 
-require(__dirname + '/../modules/diana.js');
-var mongodb = diana.requireModule('mongodb').createInstance();
+var Job = require(__dirname + '/prototype');
 
-var map = function() {
-  emit(this.parser, {count: 1});
+'use strict';
+
+exports.getClass = function() {
+  return CountByParser;
 };
 
-var reduce = function(key, values) {
-  var result = {count: 0};
-  values.forEach(function(value) {
-    result.count += value.count;
-  });
-  return result;
+var CountByParser = function() {
+  this.name = __filename;
+  this.__super__.call(this);
 };
 
-/**
- * @param query {Object}
- * @param callback {Function} Fires after success/error.
- * - See MongoDbStorage.mapReduce for payload arguments.
- * - Results example:
- *   {
- *     <parser_name>: {count: 1},
- *     ...
- *   }
- */
-exports.run = function(query, callback) {
-  mongodb.mapReduce({
-    name: __filename,
-    map: map,
-    reduce: reduce,
-    options: {query: query},
-    return: 'array',
-    callback: callback
-  });
-};
+Job.extend(CountByParser, {
+
+  map: function() {
+    emit(this.parser, {count: 1});
+  },
+
+  reduce: function(key, values) {
+    var result = {count: 0};
+    values.forEach(function(value) {
+      result.count += value.count;
+    });
+    return result;
+  },
+
+  /**
+   * See prototype in prototype.js for full notes.
+   *
+   * Results format:
+   *   {
+   *     <parser_name>: {count: 1},
+   *     ...
+   *   }
+   */
+  run: function(query, callback) {
+    this.mapReduce(query, {}, callback);
+  }
+});

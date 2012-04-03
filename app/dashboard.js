@@ -19,7 +19,7 @@ var date = diana.shared.Date,
 (function() {
   var jobName = 'count_all_graph',
       jobWait = 60000,
-      job = diana.requireJob(jobName),
+      job = new (diana.requireJob(jobName).getClass()),
       parserNames = parsers.getConfiguredParsers();
 
   // 'Any Parser' permutations.
@@ -49,20 +49,18 @@ var date = diana.shared.Date,
               cacheKey,
               // Cache miss, run the job.
               function(key, callback) {
-                var options = {
-                    interval: partition,
-                    query: {
-                      'time-gte': now - interval,
-                      'time-lte': now
-                    },
-                    suffix: jobNameSuffix
-                  };
+                var query = {
+                  interval: partition,
+                  'time-gte': now - interval,
+                  'time-lte': now,
+                  suffix: jobNameSuffix
+                };
 
                 if (parser) {
-                  options.query.parser = parser;
+                  query.parser = parser;
                 }
 
-                job.run(options, function(err, results) {
+                job.run(query, function(err, results) {
                   callback(err, results);
                 });
               },
