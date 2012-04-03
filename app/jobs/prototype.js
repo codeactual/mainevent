@@ -44,8 +44,7 @@ var Job = function() {
    * @return {Object} Shallow copy of merged options.
    */
   this.extractOptionsFromQuery = function(query) {
-    var optionKeys = _.union(this.customOptionKeys, Object.keys(options));
-    _.each(optionKeys, function(key) {
+    _.each(this.customOptionKeys, function(key) {
       if (_.has(query, key)) {
         options[key] = query[key];
         delete query[key];
