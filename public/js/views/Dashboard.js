@@ -96,8 +96,8 @@ define([
           view.$el.html(out);
           view.renderMainGraph();
 
-          var parser = view.$('.parser'),
-              timeInterval = view.$('.time-interval');
+          var parser = $('#dashboard-header-grid .parser'),
+              timeInterval = $('#dashboard-header-grid .time-interval');
 
           diana.helpers.Widget.fillParserSelect(parser);
           parser.val(view.options.dashArgs.parser);
