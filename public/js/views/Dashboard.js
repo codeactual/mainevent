@@ -16,6 +16,10 @@ define([
     dashTimeInterval: null,
     dashParser: null,
 
+    // Toggled TRUE by search modal submission,
+    // toggled FALSE by clicks to 'Cancel Search' button.
+    searchMode: false,
+
     initialize: function(options) {
       this.initKeyEvents({
         'Create From Search': {
@@ -23,14 +27,15 @@ define([
           callback: this.onCreateFromSearch
         }
       });
-      this.wasCreatedFromSearch();
+      diana.helpers.Event.on('DashboardArgsChange', this.toggleDropDowns, this);
       this.render();
     },
 
     events: {
       'change #dashboard-header-grid .time-interval': 'onTimeIntervalChange',
       'change #dashboard-header-grid .parser': 'onParserChange',
-      'click #create-from-search': 'onCreateFromSearch'
+      'click #dashboard-create-from-search': 'onCreateFromSearch',
+      'click #dashboard-cancel-search': 'onCancelSearch'
     },
 
     onTimeIntervalChange: function() {
@@ -38,9 +43,6 @@ define([
           now = (new Date()).getTime(),
           changed = {'time-gte': now - interval, 'time-lte': now};
 
-      if (this.wasCreatedFromSearch()) {
-        changed = {query: _.extend(_.clone(this.options.dashArgs), changed)};
-      }
       diana.helpers.Event.trigger('DashboardArgsChange', changed);
 
       this.options.dashArgs['time-gte'] = changed['time-gte'];
@@ -49,20 +51,7 @@ define([
 
     onParserChange: function() {
       var changed = {parser: this.$('.parser').val()};
-      if (this.wasCreatedFromSearch()) {
-        changed = {query: _.extend(_.clone(this.options.dashArgs), changed)};
-      }
       diana.helpers.Event.trigger('DashboardArgsChange', changed);
-    },
-
-    onSearchSubmit: function(searchArgs) {
-      // Sync the drop-downs and state.
-      this.dashParser.val(this.searchParser.val());
-      this.dashTimeInterval.val(this.searchTimeInterval.val());
-      this.options.dashArgs = searchArgs;
-
-      // Trigger the data fetch and graph refresh.
-      diana.helpers.Event.trigger('DashboardArgsChange', {query: searchArgs});
     },
 
     onCreateFromSearch: function(event) {
@@ -77,7 +66,7 @@ define([
       }
 
       // Synchronize the search modal's time-interval with the dashboard's.
-      // Trigger a change so that the start/end dates adjusted relative to now.
+      // Trigger a change so that the start/end dates toggled relative to now.
       var view = this;
       var syncDropDowns = function() {
         view.searchTimeInterval
@@ -106,13 +95,35 @@ define([
       }
     },
 
-    /**
-     * Check if the current dashboard arguments were created from a submitted search.
-     *
-     * @return {Boolean}
-     */
-    wasCreatedFromSearch: function() {
-      return _.without(Object.keys(this.options.dashArgs), ['time-gte', 'time-lte', 'parser']).length > 0;
+    onSearchSubmit: function(searchArgs) {
+      // Sync the drop-downs and state.
+      this.dashParser.val(this.searchParser.val());
+      this.dashTimeInterval.val(this.searchTimeInterval.val());
+      this.options.dashArgs = _.clone(searchArgs);
+      delete this.options.dashArgs.interval;
+
+      // Trigger the data fetch and graph refrashArgs
+      diana.helpers.Event.trigger('DashboardArgsChange', {query: this.options.dashArgs});
+
+      this.searchMode = true;
+      this.toggleDropDowns();
+    },
+
+    onCancelSearch: function(event) {
+      event.preventDefault();
+      this.searchMode = false;
+      this.toggleDropDowns();
+      this.navigate('dashboard');
+    },
+
+    toggleDropDowns: function() {
+      if (this.searchMode) {
+        this.$('#dashboard-search-mode-controls').show();
+        this.$('#dashboard-dropdowns').hide();
+      } else {
+        this.$('#dashboard-search-mode-controls').hide();
+        this.$('#dashboard-dropdowns').show();
+      }
     },
 
     render: function() {
@@ -131,7 +142,7 @@ define([
           parser.val(view.options.dashArgs.parser);
 
           diana.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
-          timeInterval.val(view.options.dashArgs.interval);
+          timeInterval.val(view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']);
         }
       );
     },

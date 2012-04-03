@@ -48,7 +48,6 @@ define([], function() {
 
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
-        delete dashArgs.interval;
         view.navigate('dashboard', dashArgs, {trigger: false});
       });
 
@@ -65,7 +64,6 @@ define([], function() {
 
     runJobAndFetchResult: function(callback) {
       var dashArgs = _.clone(this.options.dashArgs);
-      delete dashArgs.interval;
 
       var view = this,
           url = this.buildUrl(
@@ -90,7 +88,7 @@ define([], function() {
           url = _.filterTruthy([
             '/jobresult/count_all_graph',
             this.options.dashArgs.parser,
-            this.options.dashArgs.interval
+            this.options.dashArgs['time-lte'] - this.options.dashArgs['time-gte']
           ]).join('_');
       $.ajax(
         url, {

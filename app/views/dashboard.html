@@ -2,17 +2,21 @@
   <div class="span4">
     <div class="btn-group-center">
       <div class="btn-group">
-        <a id="create-from-search" class="btn" href="">Create From Search</a>
+        <a id="dashboard-create-from-search" class="btn" href="">Create From Search</a>
         <a class="btn" href="">Related Timeline</a>
       </div>
     </div>
   </div>
   <div class="span4">
-    <form class="form-inline">
-      <select class="parser"></select>
-      {>select_time_interval/}
-      </span>
+    <form id="dashboard-dropdowns" class="form-inline">
+      <div>
+        <select class="parser"></select>
+        {>select_time_interval/}
+      </div>
     </form>
+    <div id="dashboard-search-mode-controls" class="hide">
+      <a id="dashboard-cancel-search" class="btn btn-danger" href=""><i class="icon-trash icon-white"></i> Cancel Search</a>
+    </div>
   </div>
   <div class="span4">
     {>keyboard_shortcuts/}
