@@ -72,6 +72,9 @@ define([
     onClose: function() {
       $(document).off('keyup', this.onKey);
       this.closeSocket();
+      if (this.searchView) {
+        this.searchView.close();
+      }
     },
 
     onSearchSubmit: function(searchArgs) {

@@ -1,6 +1,7 @@
 define([
-    'views/TimelineSearch'
-  ], function(TimelineSearch) {
+    'views/TimelineSearch',
+    'views/DashboardMainGraph'
+  ], function(TimelineSearch, DashboardMainGraph) {
 
   'use strict';
 
@@ -27,7 +28,6 @@ define([
           callback: this.onCreateFromSearch
         }
       });
-      diana.helpers.Event.on('DashboardArgsChange', this.toggleDropDowns, this);
       this.render();
     },
 
@@ -38,22 +38,42 @@ define([
       'click #dashboard-cancel-search': 'onCancelSearch'
     },
 
+    onClose: function() {
+      this.mainGraph.close();
+    },
+
+    /**
+     * "Last 1 min"-type drop-down changes.
+     */
     onTimeIntervalChange: function() {
       var interval = this.$('.time-interval').val(),
           now = (new Date()).getTime(),
           changed = {'time-gte': now - interval, 'time-lte': now};
 
+      // Apply state change to listening dashboards.
       diana.helpers.Event.trigger('DashboardArgsChange', changed);
 
+      // Save the new state.
       this.options.dashArgs['time-gte'] = changed['time-gte'];
       this.options.dashArgs['time-lte'] = changed['time-lte'];
     },
 
+    /**
+     * "Any Event Type"-type drop-down changes.
+     */
     onParserChange: function() {
       var changed = {parser: this.$('.parser').val()};
+
+      // Apply state change to listening dashboards.
       diana.helpers.Event.trigger('DashboardArgsChange', changed);
+
+      // Save the new state.
+      this.options.dashArgs.parser = changed.parser;
     },
 
+    /**
+     * Clicked 'Create From Search' button.
+     */
     onCreateFromSearch: function(event) {
       event.preventDefault();
 
@@ -95,20 +115,25 @@ define([
       }
     },
 
+    /**
+     * Submitted search modal form.
+     */
     onSearchSubmit: function(searchArgs) {
       // Sync the drop-downs and state.
-      this.dashParser.val(this.searchParser.val());
-      this.dashTimeInterval.val(this.searchTimeInterval.val());
       this.options.dashArgs = _.clone(searchArgs);
       delete this.options.dashArgs.interval;
 
-      // Trigger the data fetch and graph refrashArgs
+      // Trigger the data fetch and graph refresh.
       diana.helpers.Event.trigger('DashboardArgsChange', {query: this.options.dashArgs});
 
       this.searchMode = true;
       this.toggleDropDowns();
     },
 
+    /**
+     * Clicked 'Cancel Search' button that replaced the dashboard's drop-down
+     * controls after the search modal form was submitted.
+     */
     onCancelSearch: function(event) {
       event.preventDefault();
       this.searchMode = false;
@@ -116,6 +141,12 @@ define([
       this.navigate('dashboard');
     },
 
+    /**
+     * Show/hide dashboard drop-downs (and show/hide the 'Cancel Search' button)
+     * based on the current 'searchMode' value. 'searchMode' is set to TRUE
+     * after search modal forms are submitted; set to FALSE after 'Cancel Search'
+     * is clicked.
+     */
     toggleDropDowns: function() {
       if (this.searchMode) {
         this.$('#dashboard-search-mode-controls').show();
@@ -126,6 +157,10 @@ define([
       }
     },
 
+    /**
+     * Render basic template and sub-view containers. Then create all necessary
+     * sub-views and let them render their graph independently.
+     */
     render: function() {
       var view = this;
       dust.render(
@@ -147,14 +182,27 @@ define([
       );
     },
 
+    /**
+     * Create the sub-view for the "main" (largest/most prominent) graph.
+     */
     renderMainGraph: function() {
-      var view = this;
-      require(['views/DashboardMainGraph'], function(DashboardMainGraph) {
-        view.mainGraph = new DashboardMainGraph({
-          el: $('#dashboard-main-graph'),
-          dashArgs: view.options.dashArgs
-        });
-      });
+      // Apply any route-based search arguments, e.g. a dashboard created from
+      // a search was refreshed by the user.
+      if (_.isEqual(this.options.defaultDashArgs, this.options.dashArgs)) {
+        var initialDashArgs = this.options.dashArgs;
+      } else {
+        // Search arguments detected -- wrap in a query object.
+        var initialDashArgs = {query: this.options.dashArgs};
+
+        this.searchMode = true;
+        this.toggleDropDowns();
+      }
+
+      this.mainGraph = new DashboardMainGraph({el: $('#dashboard-main-graph')});
+
+      // Reuse the change event so the arguments pass through the same logic
+      // as do changes originating from drop-downs or search modal.
+      diana.helpers.Event.trigger('DashboardArgsChange', initialDashArgs);
     }
   });
 });

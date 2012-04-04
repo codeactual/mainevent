@@ -21,47 +21,64 @@ define([], function() {
     resizeGraph: null,
 
     initialize: function(options) {
+      this.options.dashArgs = options.dashArgs || {};
+
+      diana.helpers.Event.on('DashboardArgsChange', this.onArgsChange, this);
+
+      /**
+       * Re-render the graph, in response to resize events, every 300ms at the most.
+       */
       var view = this;
-
-      this.fetchJobResult(function() {
-        view.render.call(view);
-      });
-
-      diana.helpers.Event.on('DashboardArgsChange', function(changed) {
-        // Change triggerd by search modal submit.
-        if (changed.query) {
-          // Replace dashboard settings with submitted args.
-          view.options.dashArgs = changed.query;
-
-          view.runJobAndFetchResult(function() {
-            view.render.call(view);
-          });
-
-        } else {
-          // Merge changed args with current.
-          view.options.dashArgs = _.extend(view.options.dashArgs, changed);
-
-          view.fetchJobResult(function() {
-            view.render.call(view);
-          });
-        }
-
-        // Save a history point but don't trigger the router.
-        var dashArgs = _.clone(view.options.dashArgs);
-        view.navigate('dashboard', dashArgs, {trigger: false});
-      });
-
       this.resizeGraph = _.debounce(function() {
         view.render();
       }, 300),
-
-      $(window).resize(view.resizeGraph);
+      $(window).on('resize', view.resizeGraph);
     },
 
     onClose: function() {
-      $(window).off('resize'. this.resizeGraph);
+      $(window).off('resize', this.resizeGraph);
+      diana.helpers.Event.off('DashboardArgsChange', this.onArgsChange);
     },
 
+    /**
+     * Triggered by search/drop-down events in the parent Dashboard view.
+     *
+     * @param changed {Object} Pairs that have changed since the last event.
+     * - Search events must be wrapped: {query: {k: v, ...}}.
+     * - Non-search events: {k: v, ...}
+     */
+    onArgsChange: function(changed) {
+      var view = this;
+
+      // Change triggerd by search modal submit.
+      if (changed.query) {
+        // Replace dashboard settings with submitted args.
+        view.options.dashArgs = changed.query;
+
+        view.runJobAndFetchResult(function() {
+          view.render.call(view);
+        });
+
+      } else {
+        // Merge changed args with current.
+        view.options.dashArgs = _.extend(view.options.dashArgs, changed);
+
+        view.fetchJobResult(function() {
+          view.render.call(view);
+        });
+      }
+
+      // Save a history point but don't trigger the router.
+      var dashArgs = _.clone(view.options.dashArgs);
+      view.navigate('dashboard', dashArgs, {trigger: false});
+
+      this.changed++;
+    },
+
+    /**
+     * Run the graph data job with an ad-hoc query, ex. total JSON events
+     * between timestamp X and Y with the condition 'code > 200'.
+     */
     runJobAndFetchResult: function(callback) {
       var dashArgs = _.clone(this.options.dashArgs);
 
@@ -83,6 +100,9 @@ define([], function() {
       );
     },
 
+    /**
+     * Fetch a pre-cached result set, ex. total JSON events from the last 1 day.
+     */
     fetchJobResult: function(callback) {
       var view = this,
           url = _.filterTruthy([

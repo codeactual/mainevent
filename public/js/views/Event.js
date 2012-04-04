@@ -35,6 +35,9 @@ define([
 
     onClose: function() {
       this.model.unbind('change', this.render);
+      if (this.searchView) {
+        this.searchView.close();
+      }
     },
 
     /**

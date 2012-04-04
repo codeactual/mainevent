@@ -1,9 +1,9 @@
 define([
-  'order!views/Dashboard',
   'order!helpers/Graph',
+  'order!views/Dashboard',
   'order!jquery.jqplot',
   'order!jqplot.dateAxisRenderer'
-  ], function(view) {
+  ], function(Graph, view) {
 
   'use strict';
 
@@ -14,11 +14,12 @@ define([
    */
   return function(options) {
     var now = (new Date()).getTime(),
-        dashArgs = {
+        defaultDashArgs = {
         'time-gte': now - 60000,
         'time-lte': now,
         parser: ''
-      };
+      },
+      dashArgs = _.clone(defaultDashArgs);
 
     if (undefined !== options) {
       // Ex. '/#dashboard/time-gte=1333494849798&time-lte=1333495749798'.
@@ -34,7 +35,8 @@ define([
 
     return new view({
       el: $('#backbone-view'),
-      dashArgs: dashArgs
+      dashArgs: _.clone(dashArgs),
+      defaultDashArgs: _.clone(defaultDashArgs)
     });
   };
 });
