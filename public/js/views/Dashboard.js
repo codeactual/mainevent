@@ -155,9 +155,11 @@ define([
       if (this.searchMode) {
         this.$('#dashboard-search-mode-controls').show();
         this.$('#dashboard-dropdowns').hide();
+        this.$('#dashboard-create-from-search').addClass('btn-primary');
       } else {
         this.$('#dashboard-search-mode-controls').hide();
         this.$('#dashboard-dropdowns').show();
+        this.$('#dashboard-create-from-search').removeClass('btn-primary');
       }
     },
 
