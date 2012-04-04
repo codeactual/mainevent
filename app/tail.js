@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * `tail -F` one or more log files.
+ * `tail` source files listed in app/config.js.
  *
- * - Use config/config.js sources: app/tail.js
- * - Use external config.js sources: app/tail.js path/to/config.js
- * - process.send() is used to coordinate flow with test scripts.
+ * Usage:
+ * - To use config/config.js source list: app/tail.js
+ * - To use external source list: app/tail.js path/to/config.js
+ *
+ * process.send() is occasionally used to coordinate flow with test scripts.
  */
 
 'use strict';
@@ -15,50 +17,44 @@
   program
     .option('-c, --config <file>', '/path/to/config.js', null)
     .option('-t, --test <#>', 'Exit after # expected lines for unit tests', Number, 0)
+    .option('-q, --quiet', false)
     .parse(process.argv);
 
   require(__dirname + '/modules/diana.js');
-  var parsers = diana.requireModule('parsers/parsers');
-  var config = diana.getConfig(program.config);
-  var monitors = {};
-  var spawn = require('child_process').spawn;
+  var spawn = require('child_process').spawn,
+      config = diana.getConfig(program.config),
+      parsers = diana.requireModule('parsers/parsers');
 
   // To support maximum line count for --test.
   var lineCount = 0;
 
   /**
-   * Kill all `tail` processes.
+   * Configure the monitor.
    */
-  var cleanupMonitors = function() {
-    if (monitors) {
-      _.each(monitors, function(monitor) {
-        monitor.kill('SIGKILL');
-      });
-      monitors = null;
-    }
+  var Monitor = function(source) {
+    // Log source attribute object from config/app.js 'sources' list.
+    this.source = _.clone(source);
+
+    // ChildProcess object.
+    this.tail = null;
   };
-  process.on('exit', cleanupMonitors);
-  process.on('uncaughtException', cleanupMonitors);
 
   /**
    * Start a new `tail` instance and attach event handlers.
-   *
-   * @param source {Object} Source properties from config.js.
    */
-  var createMonitor = function(source) {
-    // --bytes=0 to skip preexisting lines
-    monitors[source.path] = spawn('tail', ['--bytes=0', '-F', source.path]);
+  Monitor.prototype.start = function() {
+    this.log('spawning tail');
 
-    /**
-     * Parse and insert each output line.
-     *
-     * @param data {Object} Buffer instance.
-     */
-    monitors[source.path].stdout.on('data', function(data) {
+    this.tail = spawn('tail', ['--bytes=0', '-F', this.source.path]);
+
+    var monitor = this;
+
+    this.tail.stdout.on('data', function(data) {
       var lines = data.toString().replace(/\n$/, '').split("\n");
       lineCount += lines.length;
+      monitor.log('got lines', lines);
 
-      parsers.parseAndInsert({source: source, lines: lines}, function() {
+      parsers.parseAndInsert({source: monitor.source, lines: lines}, function() {
         // Support maximum line count for --test.
         if (program.test > 0 && lineCount >= program.test) {
           process.exit();
@@ -66,41 +62,66 @@
       }, true);
     });
 
-    /**
-     * Restart any `tail` that closes prematurely.
-     *
-     * - It's not clear why this happens (sometimes immediately on launch,
-     *   other times much later).
-     *
-     * @param code {Number} Status code.
-     */
-    monitors[source.path].on('exit', function(code) {
-      // Make sure any lingering structures/events are cleaned up.
-      monitors[source.path].kill();
-      monitors[source.path] = null;
+    this.tail.on('exit', function(code, signal) {
+      monitor.log("tail exited with code %d, signal %s", code, signal);
 
-      createMonitor(source);
+      // Auto-restart.
+      monitor.start();
 
       if (program.test) {
         process.send('MONITOR_RESTART');
       }
     });
+
+    // Clean up all `tail` processes before tail.js exits.
+    var killTail = function() {
+      if (monitor.tail) {
+        monitor.log('killing ...');
+        monitor.tail.kill('SIGKILL');
+        monitor.log('killed');
+        monitor.tail = null;
+      }
+    };
+    process.on('exit', killTail);
+    process.on('uncaughtException', killTail);
+
+    this.log('pid %d', this.tail.pid);
   };
 
-  var createMonitors = function() {
+  /**
+   * Send a formatted message to stdout. Prepend the timestamp and source path.
+   *
+   * Accepts util.format() arguments.
+   */
+  Monitor.prototype.log = function() {
+    if (program.quiet) {
+      return;
+    }
+    util.log(
+      util.format('%s: ', this.source.path)
+      + util.format.apply(null, arguments)
+    );
+  };
+
+  /**
+   * Seed initial `tail` set based on config/app.js 'sources' list.
+   */
+  var startAllMonitors = function() {
     _.each(config.sources, function(source) {
-      createMonitor(source);
+      (new Monitor(source)).start();
     });
   };
 
+  // Test mode -- wait until instructed by parent process.
   if (program.test) {
     process.on('message', function(message) {
       if ('START_TEST' == message) {
-        createMonitors();
+        startAllMonitors();
         process.send('MONITORS_STARTED');
       }
     });
+  // Normal mode -- start immediately.
   } else {
-    createMonitors();
+    startAllMonitors();
   }
 })();

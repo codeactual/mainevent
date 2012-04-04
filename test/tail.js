@@ -20,8 +20,9 @@ exports.testMonitoring = function(test) {
 
   // -t will enable test mode and force exit after 1 line.
   var tailJs = fork(__dirname + '/../app/tail.js', [
-    '-c', testConfigFile,
-    '-t', 1
+    '--quiet',
+    '--config', testConfigFile,
+    '--test', 1
   ], {env: process.env});
 
   tailJs.on('exit', function(code) {
@@ -52,8 +53,9 @@ exports.testAutoRestart = function(test) {
 
   // -t will enable test mode and force exit after 1 line.
   var tailJs = fork(__dirname + '/../app/tail.js', [
-    '-c', testConfigFile,
-    '-t', 1
+    '--quiet',
+    '--config', testConfigFile,
+    '--test', 1
   ], {env: process.env});
 
   tailJs.on('message', function(message) {
