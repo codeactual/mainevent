@@ -21,6 +21,7 @@ define([], function() {
 
       if (!doc) {
         send404();
+        return;
       }
 
       if ('json' == doc.parser) {
