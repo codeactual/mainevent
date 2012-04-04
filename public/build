@@ -1,37 +1,47 @@
 #!/bin/bash
 APP="$( cd "$( dirname "$0" )" && pwd )/.."
 SOURCE=$APP/public
-BUILD=$APP/public-build
+BUILD=$APP/static
+BUILD_OLD=$APP/static-old
+BUILD_TMP=$APP/static-tmp
 MODE=$1
 
-# Clean last build.
-rm -rf $BUILD
-mkdir $BUILD
+# Clean last build (if still exists due to error).
+rm -rf $BUILD_TMP
+mkdir $BUILD_TMP
 
 # Compress app JS.
-cp -a $SOURCE/js $BUILD/js-compressed
+cp -a $SOURCE/js $BUILD_TMP/js-compressed
 if [ "$MODE" == "prod" ]; then
-  find $BUILD/js-compressed -regex ".*\(index\|\(backbone\|collections\|controllers\|helpers\|models\|observers\|shared\|views\)\/\).*js" -exec java -jar $SOURCE/yuicompressor.jar -o {} {} \;
+  find $BUILD_TMP/js-compressed -regex ".*\(index\|\(backbone\|collections\|controllers\|helpers\|models\|observers\|shared\|views\)\/\).*js" -exec java -jar $SOURCE/yuicompressor.jar -o {} {} \;
 fi
 
 # Combine JS based on configured dependencies.
-r.js -o $BUILD/js-compressed/app.build.js
+r.js -o $BUILD_TMP/js-compressed/app.build.js
+rm -rf $BUILD_TMP/js-compressed
 
 # Combine and compress CSS.
-mkdir $BUILD/css
+mkdir $BUILD_TMP/css
 cat \
   $SOURCE/css/bootstrap.css \
   $SOURCE/css/jquery-ui.css \
   $SOURCE/css/jquery-ui-timepicker-addon.css \
   $SOURCE/css/jquery.jqplot.css \
   $SOURCE/css/index.css \
-  > $BUILD/css/all.css
+  > $BUILD_TMP/css/all.css
 if [ "$MODE" == "prod" ]; then
-  java -jar $SOURCE/yuicompressor.jar -o $BUILD/css/all.css $BUILD/css/all.css
+  java -jar $SOURCE/yuicompressor.jar -o $BUILD_TMP/css/all.css $BUILD_TMP/css/all.css
 fi
 
 # Copy jquery-ui-timepicker-addon images.
-cp -a $SOURCE/css/images $BUILD/css/
+cp -a $SOURCE/css/images $BUILD_TMP/css/
 
 # Copy app/Bootstrap images.
-cp -a $SOURCE/img $BUILD/
+cp -a $SOURCE/img $BUILD_TMP/
+
+# Swap old with new.
+if [ -d "$BUILD" ]; then
+  mv $BUILD $BUILD_OLD
+fi;
+mv $BUILD_TMP $BUILD
+rm -rf $BUILD_OLD

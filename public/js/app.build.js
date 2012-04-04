@@ -1,6 +1,6 @@
 ({
   baseDir: '.',
-  dir: '../../public-build/js',
+  dir: '../../static-tmp/js',
   mainConfigFile: 'index.js',
   modules: [
     {name: 'index'},

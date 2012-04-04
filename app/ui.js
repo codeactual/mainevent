@@ -31,7 +31,7 @@ app.register('.html', {
 });
 
 // Make assets accessible to clients.
-app.use(express.static(__dirname + '/../public-build'));
+app.use(express.static(__dirname + '/../static'));
 
 // Prepended to relative paths given to res.render().
 app.set('views', __dirname + '/views');

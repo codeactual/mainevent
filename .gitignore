@@ -3,4 +3,4 @@ config/*.js
 public/js/bootstrap-modal-full.js
 public/js/backbone-full.js
 public/js/templates.js
-public-build
+static
