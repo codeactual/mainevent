@@ -52,7 +52,6 @@
     this.tail.stdout.on('data', function(data) {
       var lines = data.toString().replace(/\n$/, '').split("\n");
       lineCount += lines.length;
-      monitor.log('got lines', lines);
 
       parsers.parseAndInsert({source: monitor.source, lines: lines}, function() {
         // Support maximum line count for --test.
