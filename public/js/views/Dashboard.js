@@ -37,7 +37,8 @@ define([
       'change #dashboard-header-grid .time-interval': 'onTimeIntervalChange',
       'change #dashboard-header-grid .parser': 'onParserChange',
       'click #dashboard-create-from-search': 'onCreateFromSearch',
-      'click #dashboard-cancel-search': 'onCancelSearch'
+      'click #dashboard-cancel-search': 'onCancelSearch',
+      'click #dashboard-related-timeline': 'onRelatedTimeline'
     },
 
     onClose: function() {
@@ -143,6 +144,14 @@ define([
       this.searchMode = false;
       this.toggleDropDowns();
       this.navigate('dashboard');
+    },
+
+    /**
+     * Clicked 'Related Timeline' button.
+     */
+    onRelatedTimeline: function(event) {
+      event.preventDefault();
+      this.navigate('timeline', this.options.dashArgs);
     },
 
     /**
