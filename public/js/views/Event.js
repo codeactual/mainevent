@@ -7,8 +7,11 @@ define([
 
   // View of an individual event.
   return Backbone.View.extend({
-    // Modal sub-views.
-    searchView: null,
+
+    subViews: {
+      // 'Find Similar' modal.
+      search: null
+    },
 
     initialize: function(options) {
       this.initKeyEvents({
@@ -21,10 +24,8 @@ define([
       this.model = new EventModel({id: options.id});
       this.model.bind('change', this.render, this);
 
-      // Bubble up the model error.
-      diana.helpers.Event.on('EventSyncError', function(response) {
-        diana.helpers.Event.trigger('CritFetchError', response);
-      });
+      // Bubble up the model error, ex. 'Event not found.'
+      diana.helpers.Event.on('EventSyncError', this.onEventSyncError);
 
       this.model.fetch();
     },
@@ -35,9 +36,7 @@ define([
 
     onClose: function() {
       this.model.unbind('change', this.render);
-      if (this.searchView) {
-        this.searchView.close();
-      }
+      diana.helpers.Event.off('EventSyncError', this.onEventSyncError);
     },
 
     /**
@@ -54,7 +53,7 @@ define([
         return;
       }
 
-      if (this.searchView) {
+      if (this.subViews.search) {
         modal.modal('show');
       } else {
         var searchArgs = this.model.toJSON();
@@ -63,12 +62,16 @@ define([
             delete searchArgs[key];
           }
         });
-        this.searchView = new TimelineSearch({
+        this.subViews.search = new TimelineSearch({
           el: modal,
           searchArgs: searchArgs,
           title: 'Find Similar'
         });
       }
+    },
+
+    onEventSyncError: function(response) {
+      diana.helpers.Event.trigger('CritFetchError', response);
     },
 
     render: function() {

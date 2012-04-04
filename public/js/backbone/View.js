@@ -2,6 +2,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
 
   Backbone.View.prototype.prefs = {};
   Backbone.View.prototype.prefsNs = '';
+  Backbone.View.prototype.subViews = {}; // Sub-view collection.
 
   /**
    * Seed a view's preference map.
@@ -64,6 +65,11 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
     if (this.onClose){
       this.onClose();
     }
+    _.each(this.subViews, function(view) {
+      if (view) {
+        view.close();
+      }
+    });
   };
 
   /**
@@ -119,7 +125,9 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
 
     // Display keyboard shortcuts modal with help content based on keyEventConfig.
     this.onKeyboardShortcutsClick = function() {
-      new KeyboardShortcuts({keyEventConfig: view.keyEventConfig});
+      view.subViews.keyboardShortcuts = new KeyboardShortcuts({
+        keyEventConfig: view.keyEventConfig
+      });
     };
     this.enableKeyboardShortcuts();
 

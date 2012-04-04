@@ -7,8 +7,10 @@ define([
 
   // View the dashboard container.
   return Backbone.View.extend({
-    // Modal sub-views.
-    searchView: null,
+    subViews: {
+      // 'Create From Search' modal.
+      search: null
+    },
 
     // Reused selectors.
     searchModal: null,
@@ -39,7 +41,9 @@ define([
     },
 
     onClose: function() {
-      this.mainGraph.close();
+      if (this.subViews.search) {
+        diana.helpers.Event.off('TimelineSearchSubmit', this.onSearchSubmit);
+      }
     },
 
     /**
@@ -99,12 +103,12 @@ define([
         return;
       }
 
-      if (this.searchView) {
+      if (this.subViews.search) {
         syncDropDowns();
         this.searchModal.modal('show');
       } else {
         diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
-        this.searchView = new TimelineSearch({
+        this.subViews.search = new TimelineSearch({
           el: this.searchModal,
           searchArgs: {},
           title: 'Create From Search',
@@ -198,7 +202,7 @@ define([
         this.toggleDropDowns();
       }
 
-      this.mainGraph = new DashboardMainGraph({el: $('#dashboard-main-graph')});
+      this.subViews.mainGraph = new DashboardMainGraph({el: $('#dashboard-main-graph')});
 
       // Reuse the change event so the arguments pass through the same logic
       // as do changes originating from drop-downs or search modal.

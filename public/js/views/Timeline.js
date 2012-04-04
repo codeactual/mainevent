@@ -22,8 +22,10 @@ define([
     // socket.io connection.
     socket: null,
 
-    // Modal sub-views.
-    searchView: null,
+    subViews: {
+      // Modal
+      search: null
+    },
 
     initialize: function(options) {
       var view = this;
@@ -72,9 +74,6 @@ define([
     onClose: function() {
       $(document).off('keyup', this.onKey);
       this.closeSocket();
-      if (this.searchView) {
-        this.searchView.close();
-      }
     },
 
     onSearchSubmit: function(searchArgs) {
@@ -96,11 +95,11 @@ define([
         return;
       }
 
-      if (this.searchView) {
+      if (this.subViews.search) {
         modal.modal('show');
       } else {
         diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
-        this.searchView = new TimelineSearch({
+        this.subViews.search = new TimelineSearch({
           el: modal,
           searchArgs: this.options.searchArgs,
           title: 'Search'
