@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [ "$(pgrep -f public/build | wc -w)" != '2' ]; then
+  echo "Another instance is already running."
+  exit 0;
+fi;
+
 APP="$( cd "$( dirname "$0" )" && pwd )/.."
 SOURCE=$APP/public
 BUILD=$APP/static
