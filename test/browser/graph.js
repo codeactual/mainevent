@@ -25,8 +25,8 @@ require(['helpers/Graph'], function() {
               xaxis: {
                 min: '03/27/2012',
                 max: '03/29/2012',
-                tickInterval: '1 day',
-                tickOptions: {formatString: '%m/%d'}
+                tickInterval: 14400,
+                tickOptions: {formatString: '%m/%d\n%H:00'}
               },
               yaxis: {
                 max: 42,
@@ -55,9 +55,8 @@ require(['helpers/Graph'], function() {
               xaxis: {
                 min: '03/21/2012',
                 max: '03/28/2012',
-                numberTicks: 4,
-                tickInterval: '1 day',
-                tickOptions: {formatString: '%m/%d'}
+                tickInterval: 21600,
+                tickOptions: {formatString: '%m/%d\n%H:00'}
               },
               yaxis: {
                 numberTicks: 14,
