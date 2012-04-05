@@ -117,6 +117,7 @@ Redis.prototype.get = function(key, callback, bulk) {
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, bulk) {
+  this.connect();
   var redis = this;
   this.get(key, function(err, value) {
     if (!_.isUndefined(value)) {
