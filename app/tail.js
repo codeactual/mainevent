@@ -72,17 +72,23 @@
       }
     });
 
-    // Clean up all `tail` processes before tail.js exits.
+    // Kill `tail` before parent process exits.
     var killTail = function() {
+      process.removeListener('END_MONITOR', killTail);
       if (monitor.tail) {
         monitor.log('killing ...');
         monitor.tail.kill('SIGKILL');
         monitor.log('killed');
         monitor.tail = null;
       }
+
+      if (program.test) {
+        if (!process.listeners('END_MONITOR').length) {
+          process.send('MONITORS_ENDED');
+        }
+      }
     };
-    process.on('exit', killTail);
-    process.on('uncaughtException', killTail);
+    process.on('END_MONITOR', killTail);
 
     this.log('pid %d', this.tail.pid);
   };
@@ -110,6 +116,17 @@
       (new Monitor(source)).start();
     });
   };
+
+  /**
+   * Trigger monitors to clean up their `tail` instances.
+   */
+  var endAllMonitors = function() {
+    process.emit('END_MONITOR');
+  };
+  process.on('exit', endAllMonitors);
+  process.on('SIGINT', process.exit);
+  process.on('SIGTERM', process.exit);
+  process.on('uncaughtException', process.exit);
 
   // Test mode -- wait until instructed by parent process.
   if (program.test) {

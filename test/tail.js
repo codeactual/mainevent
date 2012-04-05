@@ -47,7 +47,7 @@ exports.testMonitoring = function(test) {
 exports.testAutoRestart = function(test) {
   var run = testutil.getRandHash(),
       log = JSON.stringify({path: path, run: run}),
-      pgrepCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
+      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
 
   test.expect(2);
 
@@ -61,7 +61,7 @@ exports.testAutoRestart = function(test) {
   tailJs.on('message', function(message) {
     // Wait until we know tail.js has started watching 'path' to add a line.
     if ('MONITORS_STARTED' == message) {
-      exec(pgrepCmd, [], function(code, pid) {
+      exec(pgrepTailCmd, [], function(code, pid) {
         exec('env kill -9 ' + pid.toString(), [], function(code, stdout) {
           test.equal(stdout.toString(), '');
         });
@@ -69,13 +69,49 @@ exports.testAutoRestart = function(test) {
 
     // Wait until we know tail.js should have restarted `tail`.
     } else if ('MONITOR_RESTART' == message) {
-      exec(pgrepCmd, [], function(code, stdout, stderr) {
+      exec(pgrepTailCmd, [], function(code, stdout, stderr) {
         // Force tail.js to exit.
         var fd = fs.openSync(path, 'a');
         fs.writeSync(fd, log);
         fs.closeSync(fd);
 
         test.ok(parseInt(stdout.toString(), 10) > 0);
+        test.done();
+      });
+    }
+  });
+
+  tailJs.send('START_TEST');
+};
+
+exports.testMonitorCleanup = function(test) {
+  var run = testutil.getRandHash(),
+      log = JSON.stringify({path: path, run: run}),
+      tailJsBaseCmd = __dirname + '/../app/tail.js',
+      pgrepTailJs = 'pgrep -f "' + tailJsBaseCmd + ' --quiet --config ' + testutil + ' --test 1"',
+      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
+
+  test.expect(2);
+
+  // -t will enable test mode and force exit after 1 line.
+  var tailJs = fork(__dirname + '/../app/tail.js', [
+    '--quiet',
+    '--config', testConfigFile,
+    '--test', 1
+  ], {env: process.env});
+
+  tailJs.on('message', function(message) {
+    // Wait until we know tail.js has started watching 'path' to add a line.
+    if ('MONITORS_STARTED' == message) {
+      exec(pgrepTailCmd, [], function(code, stdout, stderr) {
+        test.ok(parseInt(stdout.toString(), 10) > 0);
+        tailJs.kill();
+      });
+
+    // Wait until we know tail.js should have restarted `tail`.
+    } else if ('MONITORS_ENDED' == message) {
+      exec(pgrepTailJs, [], function(code, stdout, stderr) {
+        test.equal(stdout.toString(), '');
         test.done();
       });
     }
