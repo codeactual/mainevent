@@ -137,3 +137,23 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
     });
   });
 };
+
+/**
+ * Add multiple sorted set members.
+ *
+ * @param key {String}
+ * @param members {Array} Each element: [score, member name].
+ * @param callback {Function} Fires on completion.
+ * - err {String}
+ * - replies {Array} [<zadd reply>, ...]
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ */
+Redis.prototype.zaddMulti = function (key, members, callback) {
+  this.connect();
+  var args = [key];
+  _.each(members, function(member) {
+    args.push(member[0], member[1]); // (score, member name)
+  });
+  args.push(callback);
+  this.client.zadd.apply(this.client, args);
+};
