@@ -5,8 +5,9 @@ define([
 
   'use strict';
 
-  // View the dashboard container.
+  // Dashboard container.
   return Backbone.View.extend({
+
     subViews: {
       // 'Create From Search' modal.
       search: null
@@ -94,10 +95,17 @@ define([
       // Trigger a change so that the start/end dates toggled relative to now.
       var view = this;
       var syncDropDowns = function() {
-        view.searchTimeInterval
-          .val(view.dashTimeInterval.val());
-        view.searchParser
-          .val(view.dashParser.val());
+        if (view.searchMode) {
+          view.searchTimeInterval.val(view.dashTimeInterval.val());
+          view.searchParser.val(view.dashParser.val());
+        } else {
+          if (view.options.dashParser['time-lte']) {
+            view.searchTimeInterval.val(
+              view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']
+            );
+          }
+          view.searchParser.val(view.options.dashArgs.parser);
+        }
       };
 
       if (this.searchModal.is(':visible')) {
@@ -188,11 +196,14 @@ define([
           var parser = $('#dashboard-header-grid .parser'),
               timeInterval = $('#dashboard-header-grid .time-interval');
 
-          diana.helpers.Widget.fillParserSelect(parser);
-          parser.val(view.options.dashArgs.parser);
-
-          diana.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
-          timeInterval.val(view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']);
+          if (parser) {
+            diana.helpers.Widget.fillParserSelect(parser);
+            parser.val(view.options.dashArgs.parser);
+          }
+          if (timeInterval) {
+            diana.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
+            timeInterval.val(view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']);
+          }
         }
       );
     },
