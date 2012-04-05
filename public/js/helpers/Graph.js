@@ -40,22 +40,22 @@ define(['shared/Date'], function() {
         formatString: '%H:%M'
       },
       3600000: {    // 1 hour
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       7200000: {    // 2 hours
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       14400000: {   // 4 hours
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       21600000: {   // 6 hours
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       28800000: {   // 8 hours
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       43200000: {   // 12 hours
-        formatString: "%m/%d\n%H:00"
+        formatString: "%H:00\n%m/%d"
       },
       86400000: {   // 1 day
         formatString: '%b %d'
