@@ -25,29 +25,48 @@ define(['shared/Date'], function() {
       year: 'YYYY'
     },
 
-    jqplotFormat: {
-      second: ':%S',
-      minute: '%H:%M',
-      hour: '%H:00',
-      day: '%m/%d',
-      month: '%Y-%m',
-      year: '%Y'
-    },
-
     // Sizes considered by findBestPartition().
-    partitionSizes: [
-      900000,    // 15 minutes
-      1800000,    // 30 minutes
-      3600000,    // 1 hour
-      7200000,    // 2 hours
-      14400000,   // 4 hours
-      21600000,   // 6 hours
-      28800000,   // 8 hours
-      43200000,   // 12 hours
-      86400000,   // 1 day
-      604800000,  // 1 week
-      2592000000  // 30 days
-    ],
+    partitionSizes: {
+      1000: {
+        formatString: '%M:%S'
+      },
+      30000: {
+        formatString: '%M:%S'
+      },
+      900000: {     // 15 minutes
+        formatString: '%H:%M'
+      },
+      1800000: {    // 30 minutes
+        formatString: '%H:%M'
+      },
+      3600000: {    // 1 hour
+        formatString: "%m/%d\n%H:00"
+      },
+      7200000: {    // 2 hours
+        formatString: "%m/%d\n%H:00"
+      },
+      14400000: {   // 4 hours
+        formatString: "%m/%d\n%H:00"
+      },
+      21600000: {   // 6 hours
+        formatString: "%m/%d\n%H:00"
+      },
+      28800000: {   // 8 hours
+        formatString: "%m/%d\n%H:00"
+      },
+      43200000: {   // 12 hours
+        formatString: "%m/%d\n%H:00"
+      },
+      86400000: {   // 1 day
+        formatString: '%b %d'
+      },
+      604800000: {  // 1 week
+        formatString: '%b %d\n%Y'
+      },
+      2592000000: { // 30 days
+        month: '%b\n%Y'
+      }
+    },
 
     // Estimates
     xLabelWidth: 50,
@@ -83,9 +102,11 @@ define(['shared/Date'], function() {
         axes.xaxis.min = Graph.subtractDateUnit(data[0][0], 1);
         axes.xaxis.max = Graph.addDateUnit(data[0][0], 1);
 
-        var xunit = Graph.detectDateUnit(data[0][0]);
-        axes.xaxis.tickInterval = '1 ' + xunit;
-        axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
+        var xunit = Graph.detectDateUnit(data[0][0]),
+            idealTicks = 5,
+            partition = Graph.findBestPartition(idealTicks, date.unitToMilli(1, xunit));
+        axes.xaxis.tickInterval = partition.size / 1000;
+        axes.xaxis.tickOptions = {formatString: partition.formatString};
 
         // Add proportional top-padding.
         axes.yaxis.max = data[0][1] * 1.5;
@@ -94,24 +115,13 @@ define(['shared/Date'], function() {
         axes.xaxis.min = data[0][0];
         axes.xaxis.max = data[data.length - 1][0];
 
-        var span = date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0]);
-        var bestFitInterval = date.bestFitInterval(span);
-
-        // For spans <= than the best-fit interval, parition data into ticks
-        // using the next-smaller interval.
-        if (span <= date.unitToMilli(1, bestFitInterval)) {
-          var xunit = date.partitions[bestFitInterval];
-        } else {
-          var xunit = bestFitInterval;
-        }
-
-        axes.xaxis.tickInterval = '1 ' + xunit;
-        axes.xaxis.tickOptions = {formatString: Graph.jqplotFormat[xunit]};
-
-        // Estiamte x-axis numberTicks based on current dimensions.
+        // Estiamte x-axis tickInterval based on current dimensions.
         var graphWidth = container.width() - Graph.yLabelWidth,
-            maxTicks = Math.floor(graphWidth / Graph.xMinTickWidth);
-        axes.xaxis.numberTicks = Math.min(maxTicks, data.length);
+            idealTicks = Math.floor(graphWidth / Graph.xMinTickWidth),
+            span = date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0]),
+            partition = Graph.findBestPartition(idealTicks, span);
+        axes.xaxis.tickInterval = partition.size / 1000;
+        axes.xaxis.tickOptions = {formatString: partition.formatString};
       }
 
       // Estimate y-axis numberTicks and tickInterval based on current dimensions.
@@ -226,15 +236,14 @@ define(['shared/Date'], function() {
       * @param idealTicks {Number} Ideal number of size for the graph.
       * - Ex. caller knows the desirable grid size based on the canvas width.
       * @param span {Number} Time span (in milliseconds) represented in the graph.
-      * @return {Number} Unit size in milliseconds.
+      * @return {Object} Partition attributes, see Graph.partitionSizes.
       * - Provides a tick count closest to 'idealTicks' as possible based on
       *   the function arguments and Graph.partitionSizes.
       */
     findBestPartition: function(idealTicks, span) {
       var priorSize = null, priorTicks = null, bestSize = null;
-      _.any(Graph.partitionSizes, function(size) {
+      _.any(Object.keys(Graph.partitionSizes), function(size) {
         var ticks = Math.ceil(span / size);
-        console.log(size, ticks);
         // Ideal passed.
         if (ticks <= idealTicks) {
           if (priorSize) {
@@ -253,7 +262,10 @@ define(['shared/Date'], function() {
         priorTicks = ticks;
         return false; // Continue _.any() walk.
       });
-      return bestSize;
+
+      var partition = _.clone(Graph.partitionSizes[bestSize]);
+      partition.size = bestSize;
+      return partition;
     }
   };
 });

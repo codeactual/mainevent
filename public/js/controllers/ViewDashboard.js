@@ -2,6 +2,8 @@ define([
   'order!helpers/Graph',
   'order!views/Dashboard',
   'order!jquery.jqplot',
+  'order!jqplot.cursor',
+  'order!jqplot.highlighter',
   'order!jqplot.dateAxisRenderer'
   ], function(Graph, view) {
 

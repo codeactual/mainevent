@@ -159,7 +159,14 @@ define([], function() {
           {
             title: title,
             axes: axes,
-            series: [{lineWidth:2}]
+            series: [{lineWidth: 1}],
+            highlighter: {
+              show: true,
+              sizeAdjust: 7.5,
+            },
+            cursor: {
+              show: false
+            }
           }
         );
       } catch (e) {

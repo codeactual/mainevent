@@ -110,15 +110,15 @@ require(['helpers/Graph'], function() {
           var idealTicks = 25,
               hour = 3600000,
               day = 86400000;
-          Y.Assert.areEqual(hour / 4, Graph.findBestPartition(idealTicks, day / 6));
-          Y.Assert.areEqual(hour / 2, Graph.findBestPartition(idealTicks, day / 2));
-          Y.Assert.areEqual(hour, Graph.findBestPartition(idealTicks, day));
-          Y.Assert.areEqual(2 * hour, Graph.findBestPartition(idealTicks, 2 * day));
-          Y.Assert.areEqual(6 * hour, Graph.findBestPartition(idealTicks, 7 * day));
-          Y.Assert.areEqual(8 * hour, Graph.findBestPartition(idealTicks, 10 * day));
-          Y.Assert.areEqual(12 * hour, Graph.findBestPartition(idealTicks, 14 * day));
-          Y.Assert.areEqual(day, Graph.findBestPartition(idealTicks, 24 * day));
-          Y.Assert.areEqual(7 * day, Graph.findBestPartition(idealTicks, 48 * day));
+          Y.Assert.areEqual(hour / 4, Graph.findBestPartition(idealTicks, day / 6).size);
+          Y.Assert.areEqual(hour / 2, Graph.findBestPartition(idealTicks, day / 2).size);
+          Y.Assert.areEqual(hour, Graph.findBestPartition(idealTicks, day).size);
+          Y.Assert.areEqual(2 * hour, Graph.findBestPartition(idealTicks, 2 * day).size);
+          Y.Assert.areEqual(6 * hour, Graph.findBestPartition(idealTicks, 7 * day).size);
+          Y.Assert.areEqual(8 * hour, Graph.findBestPartition(idealTicks, 10 * day).size);
+          Y.Assert.areEqual(12 * hour, Graph.findBestPartition(idealTicks, 14 * day).size);
+          Y.Assert.areEqual(day, Graph.findBestPartition(idealTicks, 24 * day).size);
+          Y.Assert.areEqual(7 * day, Graph.findBestPartition(idealTicks, 48 * day).size);
         },
       })
     );
