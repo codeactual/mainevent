@@ -34,6 +34,21 @@ define(['shared/Date'], function() {
       year: '%Y'
     },
 
+    // Sizes considered by findBestPartition().
+    partitionSizes: [
+      900000,    // 15 minutes
+      1800000,    // 30 minutes
+      3600000,    // 1 hour
+      7200000,    // 2 hours
+      14400000,   // 4 hours
+      21600000,   // 6 hours
+      28800000,   // 8 hours
+      43200000,   // 12 hours
+      86400000,   // 1 day
+      604800000,  // 1 week
+      2592000000  // 30 days
+    ],
+
     // Estimates
     xLabelWidth: 50,
     xMinTickWidth: 50,
@@ -203,6 +218,42 @@ define(['shared/Date'], function() {
      magnitude: function(num) {
        num = _.isNumber(num) ? num : parseInt(num, 10);
        return Math.floor((Math.log(num))/(Math.log(10)));
-     }
+     },
+
+     /**
+      * Return smallest time (x-axis) unit size for the given conditions.
+      *
+      * @param idealTicks {Number} Ideal number of size for the graph.
+      * - Ex. caller knows the desirable grid size based on the canvas width.
+      * @param span {Number} Time span (in milliseconds) represented in the graph.
+      * @return {Number} Unit size in milliseconds.
+      * - Provides a tick count closest to 'idealTicks' as possible based on
+      *   the function arguments and Graph.partitionSizes.
+      */
+    findBestPartition: function(idealTicks, span) {
+      var priorSize = null, priorTicks = null, bestSize = null;
+      _.any(Graph.partitionSizes, function(size) {
+        var ticks = Math.ceil(span / size);
+        console.log(size, ticks);
+        // Ideal passed.
+        if (ticks <= idealTicks) {
+          if (priorSize) {
+            // Ex. the prior size yielded 48 ticks, the current 24 ticks.
+            // If the ideal is 25, then return the current size.
+            var priorDiffFromIdeal = Math.abs(priorTicks - idealTicks),
+                diffFromIdeal = Math.abs(ticks - idealTicks);
+            bestSize = diffFromIdeal < priorDiffFromIdeal ? size : priorSize;
+            return true; // Stop _.any() walk.
+          } else {
+            bestSize = size;
+            return true; // Stop _.any() walk.
+          }
+        }
+        priorSize = size;
+        priorTicks = ticks;
+        return false; // Continue _.any() walk.
+      });
+      return bestSize;
+    }
   };
 });
