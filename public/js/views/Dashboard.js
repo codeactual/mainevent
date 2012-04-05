@@ -201,10 +201,18 @@ define([
      * Create the sub-view for the "main" (largest/most prominent) graph.
      */
     renderMainGraph: function() {
+      // Graph arguments came from drop-down changes.
+      if (this.options.dashArgs['dd']) {
+        // Avoid having 'dd' used as a query condition.
+        delete this.options.dashArgs['dd'];
+        var initialDashArgs = this.options.dashArgs;
+
+      // Default dashboard.
+      } else if (_.isEqual(this.options.defaultDashArgs, this.options.dashArgs)) {
+        var initialDashArgs = this.options.dashArgs;
+
       // Apply any route-based search arguments, e.g. a dashboard created from
       // a search was refreshed by the user.
-      if (_.isEqual(this.options.defaultDashArgs, this.options.dashArgs)) {
-        var initialDashArgs = this.options.dashArgs;
       } else {
         // Search arguments detected -- wrap in a query object.
         var initialDashArgs = {query: this.options.dashArgs};

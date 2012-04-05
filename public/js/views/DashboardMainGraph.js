@@ -5,6 +5,7 @@ define([], function() {
   var Graph = diana.helpers.Graph;
 
   return Backbone.View.extend({
+
     /**
      * Object retrieved by fetchJobResult().
      */
@@ -59,6 +60,10 @@ define([], function() {
           view.render.call(view);
         });
 
+        // Save a history point but don't trigger the router.
+        var dashArgs = _.clone(view.options.dashArgs);
+        view.navigate('dashboard', dashArgs, {trigger: false});
+
       } else {
         // Merge changed args with current.
         view.options.dashArgs = _.extend(view.options.dashArgs, changed);
@@ -66,11 +71,12 @@ define([], function() {
         view.fetchJobResult(function() {
           view.render.call(view);
         });
-      }
 
-      // Save a history point but don't trigger the router.
-      var dashArgs = _.clone(view.options.dashArgs);
-      view.navigate('dashboard', dashArgs, {trigger: false});
+        // Save a history point but don't trigger the router.
+        var dashArgs = _.clone(view.options.dashArgs);
+        dashArgs['dd'] = 1; // Indicate change came from drop-downs, not search.
+        view.navigate('dashboard', dashArgs, {trigger: false});
+      }
 
       this.changed++;
     },
