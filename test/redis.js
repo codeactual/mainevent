@@ -9,13 +9,14 @@ var testutil = require(__dirname + '/modules/testutil.js'),
 
 exports.strings = {
   setUp: function(callback) {
-    this.key = testutil.getRandHash();
-    this.key2 = testutil.getRandHash();
+    var run = this;
+    this.keys = [];
+    _(5).times(function() { run.keys.push(testutil.getRandHash()); });
 
-    this.expected = {a: {b: this.key}};
+    this.expected = {a: {b: this.keys[0]}};
 
     // Clean slate.
-    redis.del([this.key, this.key2], function(err) {
+    redis.del(this.keys, function(err) {
       if (err) {
         process.exit('setUp could not delete test key: ' + err);
       }
@@ -24,7 +25,7 @@ exports.strings = {
   },
 
   tearDown: function(callback) {
-    redis.del([this.key, this.key2], function(err) {
+    redis.del(this.keys, function(err) {
       if (err) {
         process.exit('tearDown could not delete test key: ' + err);
       }
@@ -35,9 +36,9 @@ exports.strings = {
   testGetWithoutExpires: function(test) {
     test.expect(1);
     var run = this, pairs = {};
-    pairs[run.key] = this.expected;
+    pairs[run.keys[0]] = this.expected;
     redis.set(pairs, null, function(err, replies) {
-      redis.get(run.key, function(err, actual) {
+      redis.get(run.keys[0], function(err, actual) {
         test.deepEqual(actual, run.expected);
         test.done();
       });
@@ -47,9 +48,9 @@ exports.strings = {
   testGetMultiWithoutExpires: function(test) {
     test.expect(1);
     var run = this, pairs = {};
-    pairs[run.key] = this.expected;
+    pairs[run.keys[0]] = this.expected;
     redis.set(pairs, null, function(err, replies) {
-      redis.get([run.key], function(err, actual) {
+      redis.get([run.keys[0]], function(err, actual) {
         test.deepEqual(actual, pairs);
         test.done();
       });
@@ -59,15 +60,15 @@ exports.strings = {
   testGetWithExpires: function(test) {
     test.expect(2);
     var run = this, expires = 1, pairs = {};
-    pairs[run.key] = this.expected;
+    pairs[run.keys[0]] = this.expected;
     redis.set(pairs, expires, function(err, replies) {
       // get() immediately after should succeed.
-      redis.get(run.key, function(err, actual) {
+      redis.get(run.keys[0], function(err, actual) {
         test.deepEqual(actual, run.expected);
       });
       // get() past expiration should fail.
       setTimeout(function() {
-        redis.get(run.key, function(err, actual) {
+        redis.get(run.keys[0], function(err, actual) {
           test.deepEqual(actual, undefined);
           test.done();
         });
@@ -82,7 +83,7 @@ exports.strings = {
         reader = function(key, callback) {
           callback(null, run.expected);
         };
-    redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
+    redis.getWithWriteThrough(run.keys[0], reader, expires, function(err, actual) {
       test.deepEqual(actual, run.expected);
       test.done();
     });
@@ -95,16 +96,16 @@ exports.strings = {
         reader = function(key, callback) {
           callback(null, run.expected);
         };
-    redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
+    redis.getWithWriteThrough(run.keys[0], reader, expires, function(err, actual) {
       // Callback receives reader output.
       test.deepEqual(actual, run.expected);
       // get() immediately after should succeed.
-      redis.get(run.key, function(err, actual) {
+      redis.get(run.keys[0], function(err, actual) {
         test.deepEqual(actual, run.expected);
       });
       // get() past expiration should fail.
       setTimeout(function() {
-        redis.get(run.key, function(err, actual) {
+        redis.get(run.keys[0], function(err, actual) {
           test.equal(actual, undefined);
           test.done();
         });
@@ -120,7 +121,7 @@ exports.strings = {
         reader = function(key, callback) {
           callback(readerError);
         };
-    redis.getWithWriteThrough(run.key, reader, expires, function(err, actual) {
+    redis.getWithWriteThrough(run.keys[0], reader, expires, function(err, actual) {
       test.equal(err, readerError);
       test.equal(actual, undefined);
       test.done();
@@ -133,8 +134,8 @@ exports.strings = {
     var expected = [[3, 'three'], [4, 'four'], [5, 'five']];
 
     var run = this, deferClose = true;
-    redis.zadd(this.key, expected, function(err, replies) {
-      redis.client.zrangebyscore(run.key, 3, 5, function(err, actual) {
+    redis.zadd(this.keys[0], expected, function(err, replies) {
+      redis.client.zrangebyscore(run.keys[0], 3, 5, function(err, actual) {
         test.deepEqual(actual, ['three', 'four', 'five']);
         test.done();
       });
@@ -146,12 +147,11 @@ exports.strings = {
     var run = this;
 
     var updates = {};
-    updates[this.key] = {field1: {obj1: 'value1'}};
+    updates[this.keys[0]] = {field1: {obj1: 'value1'}};
 
-    var run = this;
     redis.hset(updates, function(err, replies) {
-      redis.hget(run.key, function(err, actual) {
-        test.deepEqual(actual, updates[run.key]);
+      redis.hget(run.keys[0], function(err, actual) {
+        test.deepEqual(actual, updates[run.keys[0]]);
         test.done();
       });
     });
