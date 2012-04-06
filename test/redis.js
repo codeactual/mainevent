@@ -8,31 +8,33 @@ var testutil = require(__dirname + '/modules/testutil.js'),
     redis = diana.requireModule('redis').createInstance(),
     SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass();
 
+var setUp = function(suite, callback) {
+  suite.keys = [];
+  _(5).times(function() { suite.keys.push(testutil.getRandHash()); });
+
+  suite.expected = {a: {b: suite.keys[0]}};
+
+  // Clean slate.
+  redis.del(suite.keys, function(err) {
+    if (err) {
+      process.exit('setUp could not delete test key: ' + err);
+    }
+    callback();
+  });
+};
+
+var tearDown = function(suite, callback) {
+  redis.del(suite.keys, function(err) {
+    if (err) {
+      process.exit('tearDown could not delete test key: ' + err);
+    }
+    callback();
+  });
+};
+
 exports.strings = {
-  setUp: function(callback) {
-    var run = this;
-    this.keys = [];
-    _(5).times(function() { run.keys.push(testutil.getRandHash()); });
-
-    this.expected = {a: {b: this.keys[0]}};
-
-    // Clean slate.
-    redis.del(this.keys, function(err) {
-      if (err) {
-        process.exit('setUp could not delete test key: ' + err);
-      }
-      callback();
-    });
-  },
-
-  tearDown: function(callback) {
-    redis.del(this.keys, function(err) {
-      if (err) {
-        process.exit('tearDown could not delete test key: ' + err);
-      }
-      callback();
-    });
-  },
+  setUp: function(callback) { setUp(this, callback); },
+  tearDown: function(callback) { tearDown(this, callback); },
 
   testGetWithoutExpires: function(test) {
     test.expect(1);
@@ -127,7 +129,12 @@ exports.strings = {
       test.equal(actual, undefined);
       test.done();
     });
-  },
+  }
+};
+
+exports.sortedSets = {
+  setUp: function(callback) { setUp(this, callback); },
+  tearDown: function(callback) { tearDown(this, callback); },
 
   testZadd: function(test) {
     test.expect(1);
@@ -141,7 +148,12 @@ exports.strings = {
         test.done();
       });
     }, deferClose);
-  },
+  }
+};
+
+exports.hashes = {
+  setUp: function(callback) { setUp(this, callback); },
+  tearDown: function(callback) { tearDown(this, callback); },
 
   testHset: function(test) {
     test.expect(1);
@@ -198,7 +210,12 @@ exports.strings = {
         });
       });
     });
-  },
+  }
+};
+
+exports.sortedHashSet = {
+  setUp: function(callback) { setUp(this, callback); },
+  tearDown: function(callback) { tearDown(this, callback); },
 
   testUpdateExistingHashes: function(test) {
     test.expect(2);
