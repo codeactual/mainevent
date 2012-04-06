@@ -21,7 +21,10 @@ var SortedHashSet = function(name, redis) {
 };
 
 /**
- * Adds new hash keys to the collection, or updates them if they already exist.
+ * Update field sets of multiple hash keys if they exist.
+ * Delegate update logic to a callback.
+ *
+ * - Intended to support SortedHashSet.upsert().
  *
  * @param hashes {Object} {<hash key>: <field set object>}
  * @param updates {Object} {<hash key>: <field set object>}
