@@ -1,5 +1,8 @@
 /**
- * Redis cache client wrapper.
+ * Wrappers/alternatives for RedisClient primitives.
+ *
+ * - Auto-connect/disconnect.
+ * - Multi-key/pipelined versions of some primitives.
  */
 
 'use strict';
@@ -131,16 +134,27 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
   this.connect();
   var redis = this;
   this.get(key, function(err, value) {
+    // Command failed.
+    if (err) {
+      if (!bulk) { redis.end(); }
+      callback(err, undefined);
+      return;
+    }
+    // Cache hit.
     if (!_.isUndefined(value)) {
+      if (!bulk) { redis.end(); }
       callback(err, value);
       return;
     }
+    // Cache miss -- execute reader.
     reader(key, function(err, value) {
+      // Reader failed.
       if (err) {
         if (!bulk) { redis.end(); }
         callback(err, undefined);
         return;
       }
+      // Reader succeeded -- write to cache.
       var pairs = {};
       pairs[key] = value;
       redis.set(pairs, expires, function(err) {
@@ -186,8 +200,10 @@ Redis.prototype.zadd = function (key, members, callback, bulk) {
 Redis.prototype.hset = function(pairs, callback, bulk) {
   this.connect();
   var client = this.client, multi = this.client.multi();
+  // Build a pipelined sequence of HMSET commands.
   _.each(pairs, function(value, key) {
     var args = [key];
+    // Serialize field values.
     _.each(value, function(fieldValue, fieldName) {
       args.push(fieldName, JSON.stringify(fieldValue));
     });
@@ -217,12 +233,20 @@ Redis.prototype.hget = function(key, callback, bulk) {
      multi.hgetall(k);
   });
   multi.exec(function(err, values) {
+    // Command failed.
+    if (err) {
+      if (!bulk) { redis.end(); }
+      callback(err, values);
+      return;
+    }
+    // Command succeeded -- build results object.
     var indexed = {};
     _.each(values, function(value, index) {
       // Redis (nil) or not-exists value is retturned as null.
       if (err || _.isNull(value)) {
         indexed[key[index]] = undefined;
       } else {
+        // Unserialize field values.
         _.each(value, function(fieldValue, fieldName) {
           value[fieldName] = JSON.parse(fieldValue);
         });
@@ -231,5 +255,37 @@ Redis.prototype.hget = function(key, callback, bulk) {
     });
     if (!bulk) { redis.end(); }
     callback(err, multiKey ? indexed : indexed[key[0]]);
+  });
+};
+
+/**
+ * Increment multiple hash field values.
+ *
+ * @param updates {Object}
+ * {
+ *   <key>: {
+ *     <field>: <increment>,
+ *     <field>: <increment>,
+ *     ...
+ *   },
+ *   ...
+ * }
+ * @param callback {Function} Fires on completion
+ * - err {String}
+ * - replies {Array} [<set reply>, <expire reply>]
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ */
+Redis.prototype.hincrby = function(updates, callback, bulk) {
+  this.connect();
+  var multi = this.client.multi();
+  _.each(updates, function(update, key) {
+    _.each(update, function(increment, field) {
+      multi.hincrby(key, field, increment);
+    });
+  });
+  var redis = this;
+  multi.exec(function(err, replies) {
+    if (!bulk) { redis.end(); }
+    callback(err, replies);
   });
 };
