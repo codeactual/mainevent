@@ -22,6 +22,10 @@ exports.verifyJob = function(test, jobName, logs, expected, options) {
   test.expect(1);
   parsers.parseAndInsert(logs, function() {
     job.run(options, function(err, results) {
+      // Remove non-verified attribute.
+      _.each(results, function(result, key) {
+        delete results[key]._id;
+      });
       test.deepEqual(results, expected);
       test.done();
     });

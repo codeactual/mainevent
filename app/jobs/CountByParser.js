@@ -41,6 +41,6 @@ Job.extend(CountByParser, {
    *   }
    */
   run: function(query, callback) {
-    this.mapReduce(query, {}, callback);
+    this.mapReduce(query, callback);
   }
 });

@@ -14,8 +14,11 @@ var Job = function() {
     dropResultsAfterUse: true,
 
     // Result collection name = "<job name><_suffix>".
-    suffix: '',
+    suffix: ''
   };
+
+  // Collection.mapReduce() options.
+  var mapReduceConfig = {};
 
   /**
    * Return a shallow copy of the job's options.
@@ -51,6 +54,25 @@ var Job = function() {
       }
     });
     return _.clone(options);
+  };
+
+  /**
+   * Return a shallow copy of the job's map reduce configuration.
+   *
+   * @param updates {Object} Key/value pairs to change.
+   * @return {Object} The merge result.
+   */
+  this.updateMapReduceConfig = function(updates) {
+    return _.extend(mapReduceConfig, updates);
+  };
+
+  /**
+   * Return a shallow copy of the job's map reduce configuration.
+   *
+   * @return {Object}
+   */
+  this.getMapReduceConfig = function() {
+    return _.clone(mapReduceConfig);
   };
 
   this.mongodb = diana.requireModule('mongodb').createInstance();
@@ -133,12 +155,12 @@ Job.prototype.wrapCallback = function(callback) {
  * - Default: {query: query}
  * @param callback {Function}
  */
-Job.prototype.mapReduce = function(query, options, callback) {
+Job.prototype.mapReduce = function(query, callback) {
   this.mongodb.mapReduce({
     name: this.name,
     map: this.map,
     reduce: this.reduce,
-    options: _.extend({query: query}, options),
+    options: _.extend({query: query}, this.getMapReduceConfig()),
     return: 'array',
     suffix: this.getSuffix(query),
     callback: this.wrapCallback(callback)

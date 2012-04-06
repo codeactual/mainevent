@@ -180,7 +180,7 @@ Redis.prototype.zadd = function (key, members, callback, bulk) {
  * @param pairs {Object} Values can be strings (HSET) or objects (HMSET).
  * @param callback {Function} Fires on completion
  * - err {String}
- * - replies {Array} [<hset/hmset reply>, ...]
+ * - replies {Array} [<hmset reply>, ...]
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 Redis.prototype.hset = function(pairs, callback, bulk) {
