@@ -79,9 +79,13 @@ GLOBAL.diana = {
    */
   createUtilogger: function(name) {
     return function() {
+      var args = Array.prototype.slice.call(arguments);
+      args = _.map(args, function(arg) {
+        return _.isObject(arg) ? JSON.stringify(arg) : arg;
+      });
       util.log(
         util.format('%s: ', name)
-        + util.format.apply(null, arguments)
+        + util.format.apply(null, args)
       );
     };
   }
