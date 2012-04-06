@@ -139,7 +139,7 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
 };
 
 /**
- * Add multiple sorted set members.
+ * Add an array of sorted set members.
  *
  * @param key {String}
  * @param members {Array} Each element: [score, member name].
@@ -148,7 +148,7 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
  * - replies {Array} [<zadd reply>, ...]
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.zaddMulti = function (key, members, callback, bulk) {
+Redis.prototype.zadd = function (key, members, callback, bulk) {
   this.connect();
   var redis = this, args = [key];
   _.each(members, function(member) {
