@@ -148,12 +148,15 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
  * - replies {Array} [<zadd reply>, ...]
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-Redis.prototype.zaddMulti = function (key, members, callback) {
+Redis.prototype.zaddMulti = function (key, members, callback, bulk) {
   this.connect();
-  var args = [key];
+  var redis = this, args = [key];
   _.each(members, function(member) {
     args.push(member[0], member[1]); // (score, member name)
   });
-  args.push(callback);
+  args.push(function(err, replies) {
+    if (!bulk) { redis.end(); }
+    callback(err, replies);
+  });
   this.client.zadd.apply(this.client, args);
 };

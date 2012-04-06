@@ -117,12 +117,12 @@ exports.strings = {
 
     var expected = [[3, 'three'], [4, 'four'], [5, 'five']];
 
-    var run = this;
+    var run = this, deferClose = true;
     redis.zaddMulti(this.key, expected, function(err, replies) {
       redis.client.zrangebyscore(run.key, 3, 5, function(err, actual) {
         test.deepEqual(actual, ['three', 'four', 'five']);
         test.done();
       });
-    });
+    }, deferClose);
   }
 };
