@@ -37,6 +37,10 @@
 
     // ChildProcess object.
     this.tail = null;
+
+    if (!program.quiet) {
+      this.log = diana.createUtilogger(this.source.path);
+    }
   };
 
   /**
@@ -102,10 +106,7 @@
     if (program.quiet) {
       return;
     }
-    util.log(
-      util.format('%s: ', this.source.path)
-      + util.format.apply(null, arguments)
-    );
+    this.log.apply(null, arguments);
   };
 
   /**

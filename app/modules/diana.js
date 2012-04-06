@@ -62,6 +62,28 @@ GLOBAL.diana = {
       file = __dirname + '/../../config/app.js';
     }
     return require(file).read();
+  },
+
+  /**
+   * Create a util.log() wrapper that prepends each message with a logger name.
+   *
+   * Usage:
+   * var jobLog = diana.createUtilogger('MyJob');
+   * jobLog('Command "%s" returned with reply "%s"', cmd, reply);
+   *
+   * Out:
+   * 6 Apr 06:15:34 - MyJob: Command "SET foo bar" returned with reply "OK"
+   *
+   * @param name {String}
+   * @return {Function} Accepts util.format() arguments.
+   */
+  createUtilogger: function(name) {
+    return function() {
+      util.log(
+        util.format('%s: ', name)
+        + util.format.apply(null, arguments)
+      );
+    };
   }
 };
 
