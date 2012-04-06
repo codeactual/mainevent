@@ -23,7 +23,8 @@
   require(__dirname + '/modules/diana.js');
   var spawn = require('child_process').spawn,
       config = diana.getConfig(program.config),
-      parsers = diana.requireModule('parsers/parsers');
+      parsers = diana.requireModule('parsers/parsers'),
+      procLog = diana.createUtilogger('tail.js');
 
   // To support maximum line count for --test.
   var lineCount = 0;
@@ -125,9 +126,18 @@
     process.emit('END_MONITOR');
   };
   process.on('exit', endAllMonitors);
-  process.on('SIGINT', process.exit);
-  process.on('SIGTERM', process.exit);
-  process.on('uncaughtException', process.exit);
+  process.on('SIGINT', function() {
+    procLog('SIGINT received');
+    process.exit();
+  });
+  process.on('SIGTERM', function() {
+    procLog('SIGTERM received');
+    process.exit();
+  });
+  process.on('uncaughtException', function(err) {
+    procLog('uncaught exception: %s', err.stack ? err.stack : '');
+    process.exit();
+  });
 
   // Test mode -- wait until instructed by parent process.
   if (program.test) {
