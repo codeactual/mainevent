@@ -243,7 +243,7 @@ Redis.prototype.hget = function(key, callback, bulk) {
     var indexed = {};
     _.each(values, function(value, index) {
       // Redis (nil) or not-exists value is retturned as null.
-      if (err || _.isNull(value)) {
+      if (err || _.isEmpty(value)) {
         indexed[key[index]] = undefined;
       } else {
         // Unserialize field values.
