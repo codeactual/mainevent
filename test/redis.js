@@ -147,6 +147,22 @@ exports.strings = {
 
     var updates = {};
     updates[this.key] = {field1: {obj1: 'value1'}};
+
+    var run = this;
+    redis.hset(updates, function(err, replies) {
+      redis.hget(run.key, function(err, actual) {
+        test.deepEqual(actual, updates[run.key]);
+        test.done();
+      });
+    });
+  },
+
+  testHsetMulti: function(test) {
+    test.expect(1);
+    var run = this;
+
+    var updates = {};
+    updates[this.key] = {field1: {obj1: 'value1'}};
     updates[this.key2] = {field1: {obj1: 'value1'}, field2: {obj2: 'value2'}};
 
     var run = this;
@@ -156,5 +172,5 @@ exports.strings = {
         test.done();
       });
     });
-  },
+  }
 };
