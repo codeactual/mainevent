@@ -5,7 +5,8 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    redis = diana.requireModule('redis').createInstance();
+    redis = diana.requireModule('redis').createInstance(),
+    SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass();
 
 exports.strings = {
   setUp: function(callback) {
@@ -162,14 +163,81 @@ exports.strings = {
     var run = this;
 
     var updates = {};
-    updates[this.key] = {field1: {obj1: 'value1'}};
-    updates[this.key2] = {field1: {obj1: 'value1'}, field2: {obj2: 'value2'}};
+    updates[this.keys[0]] = {field1: {obj1: 'value1'}};
+    updates[this.keys[1]] = {field1: {obj1: 'value1'}, field2: {obj2: 'value2'}};
 
-    var run = this;
     redis.hset(updates, function(err, replies) {
       redis.hget(Object.keys(updates), function(err, actual) {
         test.deepEqual(actual, updates);
         test.done();
+      });
+    });
+  },
+
+  testHincrby: function(test) {
+    test.expect(1);
+    var orig = {}, updates = {}, expected = {};
+
+    // Original state.
+    orig[this.keys[0]] = {count: 1};
+    orig[this.keys[1]] = {count: 3};
+
+    // Increment targets and amounts.
+    updates[this.keys[0]] = {count: 5};
+    updates[this.keys[1]] = {count: 7};
+
+    // Final state.
+    expected[this.keys[0]] = {count: 6};
+    expected[this.keys[1]] = {count: 10};
+
+    redis.hset(orig, function(err, actual) {
+      redis.hincrby(updates, function(err, replies) {
+        redis.hget(Object.keys(orig), function(err, actual) {
+          test.deepEqual(actual, expected);
+          test.done()
+        });
+      });
+    });
+  },
+
+  testUpdateExistingHashes: function(test) {
+    test.expect(2);
+    var run = this, orig = {}, updates = {}, expected = {};
+
+    // Original state.
+    orig[this.keys[1]] = {count: 3};
+    orig[this.keys[2]] = {count: 5};
+
+    // Updated counts which 'updater' will decide how to process.
+    updates[this.keys[0]] = {count: 1};
+    updates[this.keys[1]] = {count: 2};
+    updates[this.keys[2]] = {count: 7};
+
+    // Final state.
+    expected[this.keys[0]] = undefined;    // Not in original state.
+    expected[this.keys[1]] = {count: 5};   // Updated.
+    expected[this.keys[2]] = {count: 12};  // Updated.
+
+    // Custom logic for updating preexisting keys.
+    // Here the logic is for 'count' to be incremented by the new values.
+    var updater = function(existing, updates, redis, onDone) {
+      redis.hincrby(updates, function(err, replies) {
+        onDone();
+      });
+    };
+
+    // Set original state.
+    redis.hset(orig, function(err, replies) {
+      // Update state.
+      var shs = new SortedHashSet(null, redis);
+      shs.updateExistingHashes(updates, updater, function(updatedKeys) {
+        // Verify stats from callback.
+        test.deepEqual(updatedKeys, Object.keys(updates));
+        // Verify final state.
+        redis.hget(Object.keys(expected), function(err, actual) {
+          test.deepEqual(actual, expected);
+          test.done();
+        });
       });
     });
   }
