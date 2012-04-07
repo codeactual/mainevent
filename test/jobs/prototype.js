@@ -139,5 +139,11 @@ exports.prototypes = {
       test.done();
     });
     wrapper(expected.err, expected.results);
+  },
+
+  testBuildLastIdKey: function(test) {
+    var namespace = 'graph';
+    test.equal(this.jobA.buildLastIdKey(namespace), namespace + ':JobA:lastId');
+    test.done();
   }
 };

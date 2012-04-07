@@ -187,6 +187,18 @@ Job.prototype.buildHashKey = function(namespace, resultKey) {
 };
 
 /**
+ * Build the key of hash which holds a specific map reduce result.
+ *
+ * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
+ *
+ * @param resultKey {String} Ex. '2012-02'.
+ * @return {String}
+ */
+Job.prototype.buildLastIdKey = function(namespace) {
+  return namespace + ':' + this.name + ':lastId';
+};
+
+/**
  * Curry diana.createUtilLogger() with the job's name.
  *
  * @return {Function}
