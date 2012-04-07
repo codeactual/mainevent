@@ -176,16 +176,27 @@ var runJob = function(lastId) {
     },
     // All parser/interval permutations have been processed.
     function() {
+      var chunkLastId = chunkLastIds.sort(mongodb.sortObjectIdAsc).pop();
+
+      if (lastId == chunkLastId) {
+        log('last event reached, sleeping for 60 seconds');
+        setTimeout(function() {
+          runJob(chunkLastId);
+        }, 60000);
+        return;
+      }
+
       // Save the last processed document ID so the next chunk can start after it.
       var pairs = {};
-      pairs[lastIdKey] = chunkLastIds.sort(mongodb.sortObjectIdAsc).pop();
+      pairs[lastIdKey] = chunkLastId;
+
       redis.set(pairs, null, function(err, replies) {
         if (err) {
-          log('exiting to prevent dupes, could not write last ID %s: %s', pairs[lastIdKey], err);
+          log('exiting to prevent dupes, could not write last ID %s: %s', chunkLastId, err);
           process.exit();
         }
         if (program.verbose) {
-          log('chunk ended with ID: %s', pairs[lastIdKey]);
+          log('chunk ended with ID: %s', chunkLastId);
           log('chunk took %d seconds', ((new Date()).getTime() - chunkStart) / 1000);
         }
 
@@ -194,7 +205,7 @@ var runJob = function(lastId) {
         } else if (program.chunkWait) {  // Start another chunk.
           log('waiting %d seconds until next chunk', program.chunkWait);
           setTimeout(function() {
-            runJob(pairs[lastIdKey]);
+            runJob(chunkLastId);
           }, program.chunkWait * 1000);
         }
       });
