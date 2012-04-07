@@ -30,24 +30,27 @@ var SortedHashSet = function(name, redis) {
  * @param updates {Object} {<hash key>: <field set object>}
  * @param updater {Function} Called for every preexisting hash key found.
  *   Signature:
- *   @param key {String} Hash key.
- *   @param existing {Object} Existing hashes.
- *   @param updates {Object} Updated hashes.
- *   @param onDone {Function} Call after update handler is finished.
+ *     @param key {String} Hash key.
+ *     @param existing {Object} Existing hashes.
+ *     @param updates {Object} Updated hashes.
+ *     @param onDone {Function} Call after update handler is finished.
+ *   onDone signature:
+ *     @param err {mixed} Error object/string, otherwise null.
  *   Example:
- *   function (key, existing, updates, onDone) {
- *     // This particular updater only needs to use 'updates', but 'key' and
- *     // 'existing' are supplied just in case the logic requires them.
- *     redis.hincrby(updates, function(err, replies) {
- *       onDone();
- *     });
- *   }
+ *     function (key, existing, updates, onDone) {
+ *       // This particular updater only needs to use 'updates', but 'key' and
+ *       // 'existing' are supplied just in case the logic requires them.
+ *       redis.hincrby(updates, function(err, replies) {
+ *         onDone(err, replies);
+ *       });
+ *     }
  * @param callback {Function} Fires after upsert completion.
  * - err {String}
- * - replies {Array} From last command to complete.
+ * - replies {Array} Keys of updated hashes.
  */
 SortedHashSet.prototype.updateExistingHashes = function(updates, updater, callback) {
-  var sortedHashSet = this, redis = this.redis;
+  var redis = this.redis;
+  updates = _.clone(updates);
 
   redis.hget(Object.keys(updates), function(err, existing) {
 
@@ -68,11 +71,11 @@ SortedHashSet.prototype.updateExistingHashes = function(updates, updater, callba
 
     // Delegate modification to 'updater'.
     if (_.size(existing)) {
-      updater(existing, updates, redis, function() {
-        callback(Object.keys(existing));
+      updater(existing, updates, redis, function(err) {
+        callback(err, Object.keys(existing));
       });
     } else {
-      callback([]);
+      callback(null, []);
     }
   });
 };

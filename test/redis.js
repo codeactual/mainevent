@@ -247,9 +247,9 @@ exports.sortedHashSet = {
     redis.hset(orig, function(err, replies) {
       // Update state.
       var shs = new SortedHashSet(null, redis);
-      shs.updateExistingHashes(updates, updater, function(updatedKeys) {
+      shs.updateExistingHashes(updates, updater, function(err, updatedKeys) {
         // Verify stats from callback.
-        test.deepEqual(updatedKeys, Object.keys(updates));
+        test.deepEqual(updatedKeys, updatedKeys);
         // Verify final state.
         redis.hget(Object.keys(expected), function(err, actual) {
           test.deepEqual(actual, expected);
