@@ -373,7 +373,7 @@ exports.sortedHashSet = {
     };
 
     var sortedSetKey = this.keys[3],
-        shs = new SortedHashSet(sortedSetKey, redis),
+        shs = new SortedHashSet(redis),
         min = 1333773458509,
         max = 1333773458511;
 
@@ -382,7 +382,7 @@ exports.sortedHashSet = {
       // Set original sorted set state.
       redis.zadd(sortedSetKey, origMembers, function(err, replies) {
         // Modify state.
-        shs.upsert(changes, updater, function(err, replies) {
+        shs.upsert(sortedSetKey, changes, updater, function(err, replies) {
           // Verify final hash states.
           redis.hget(Object.keys(changes), function(err, actual) {
             test.deepEqual(actual, expectedHashes);

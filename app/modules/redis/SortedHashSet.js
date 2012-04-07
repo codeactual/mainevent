@@ -10,12 +10,9 @@ exports.getClass = function() {
 };
 
 /**
- * @param key {String} Sorted set key.
  * @param redis {Object} Redis instance.
  */
-var SortedHashSet = function(name, redis) {
-  this.name = name;
-
+var SortedHashSet = function(redis) {
   // Redis instance providing wrappers/alternatives for RedisClient primitives.
   this.redis = redis;
 };
@@ -25,6 +22,7 @@ var SortedHashSet = function(name, redis) {
  *
  * - If a key already exists, its field set is modified by the 'updater' callback.
  *
+ * @param key {String}
  * @param changes {Object} Hash keys/fields and sorted set member scores.
  * {
  *   <hash key>: {
@@ -43,8 +41,8 @@ var SortedHashSet = function(name, redis) {
  * - replies {Array} Replies from last completed command.
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-SortedHashSet.prototype.upsert = function(changes, updater, callback, bulk) {
-  var shs = this, redis = this.redis, hashes = {}, members = [];
+SortedHashSet.prototype.upsert = function(key, changes, updater, callback, bulk) {
+  var redis = this.redis, hashes = {}, members = [];
   changes = _.clone(changes);
 
   // Unpack hash fields from 'changes' for updateExistingHashes().
@@ -72,7 +70,7 @@ SortedHashSet.prototype.upsert = function(changes, updater, callback, bulk) {
     });
 
     // Insert index entries.
-    redis.zadd(shs.name, members, function(err, replies) {
+    redis.zadd(key, members, function(err, replies) {
       // Command failed.
       if (err) {
         if (!bulk) { redis.end(); }
