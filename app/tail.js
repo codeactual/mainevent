@@ -66,7 +66,7 @@
         if (program.test > 0 && lineCount >= program.test) {
           process.exit();
         }
-      }, true);
+      });
     });
 
     this.tail.on('exit', function(code, signal) {

@@ -3,8 +3,6 @@
 // Load GLOBAL.Parser.
 require(__dirname + '/prototype.js');
 
-var mongodb = diana.requireModule('mongodb').createInstance();
-
 /**
  * Return a named parser.
  *
@@ -22,9 +20,8 @@ exports.createInstance = function(name) {
  * - source {Object} Source properties from config.js
  * - lines {Array|String} Unparsed line(s).
  * @param callback {Function} Fires after success/error.
- * @param bulk {Boolean} If true, DB connection is not auto-closed.
  */
-exports.parseAndInsert = function(sourceLines, callback, bulk) {
+exports.parseAndInsert = function(sourceLines, callback) {
   var lines = [];
   _.each(_.isArray(sourceLines) ? sourceLines : [sourceLines], function(sl) {
     var parser = exports.createInstance(sl.source.parser);
@@ -32,12 +29,11 @@ exports.parseAndInsert = function(sourceLines, callback, bulk) {
     lines = lines.concat(parser.parseLines(sl.source, sl.lines));
   });
 
+  var mongodb = diana.requireModule('mongodb').createInstance();
   mongodb.insertLog(lines, function() {
-    if (!bulk) {
-      mongodb.dbClose();
-    }
+    mongodb.dbClose();
     (callback || function() {})();
-  }, bulk);
+  });
 };
 
 /**
