@@ -17,7 +17,8 @@
   program
     .option('-c, --config <file>', '/path/to/config.js', null)
     .option('-t, --test <#>', 'Exit after # expected lines for unit tests', Number, 0)
-    .option('-q, --quiet', false)
+    .option('-q, --quiet')
+    .option('-v, --verbose')
     .parse(process.argv);
 
   require(__dirname + '/modules/diana.js');
@@ -57,6 +58,10 @@
     this.tail.stdout.on('data', function(data) {
       var lines = data.toString().replace(/\n$/, '').split("\n");
       lineCount += lines.length;
+
+      if (program.verbose) {
+        monitor.log('data=[%s] length={%d]', data.toString(), lines.length);
+      }
 
       parsers.parseAndInsert({source: monitor.source, lines: lines}, function() {
         // Support maximum line count for --test.
