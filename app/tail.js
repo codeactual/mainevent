@@ -25,7 +25,7 @@
   var spawn = require('child_process').spawn,
       config = diana.getConfig(program.config),
       parsers = diana.requireModule('parsers/parsers'),
-      procLog = diana.createUtilogger('tail.js');
+      procLog = diana.createUtilLogger('tail.js');
 
   // To support maximum line count for --test.
   var lineCount = 0;
@@ -40,7 +40,7 @@
     // ChildProcess object.
     this.tail = null;
 
-    this.log = diana.createUtilogger(this.source.path, program.quiet);
+    this.log = diana.createUtilLogger(this.source.path, program.quiet);
   };
 
   /**

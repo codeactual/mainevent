@@ -68,7 +68,7 @@ GLOBAL.diana = {
    * Create a util.log() wrapper that prepends each message with a logger name.
    *
    * Usage:
-   * var jobLog = diana.createUtilogger('MyJob');
+   * var jobLog = diana.createUtilLogger('MyJob');
    * jobLog('Command "%s" returned with reply "%s"', cmd, reply);
    *
    * Out:
@@ -79,7 +79,7 @@ GLOBAL.diana = {
    * - Intended to cleanly support --quiet CLI flag w/out another wrapper.
    * @return {Function} Accepts util.format() arguments.
    */
-  createUtilogger: function(name, quiet) {
+  createUtilLogger: function(name, quiet) {
     if (quiet) {
       return function() {};
     }
