@@ -195,11 +195,21 @@ var runJob = function(lastId) {
       }
 
       if (lastId == chunkLastId) {
-        log('last event reached, sleeping for 60 seconds');
-        setTimeout(function() {
-          runJob(chunkLastId);
-        }, 60000);
-        return;
+        if (program.verbose) {
+          log('last event reached');
+        }
+        if (exitGraceful) {
+          log('next chunk cancelled due to exit signal');
+          return;
+        } else {
+          if (program.verbose) {
+            log('sleeping for 60 seconds');
+          }
+          setTimeout(function() {
+            runJob(chunkLastId);
+          }, 60000);
+          return;
+        }
       }
 
       // Save the last processed document ID so the next chunk can start after it.
