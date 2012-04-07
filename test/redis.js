@@ -421,14 +421,10 @@ exports.sortedHashSet = {
       redis.zadd(sortedSetKey, origMembers, function(err, replies) {
         // Modify state.
         shs.upsert(sortedSetKey, changes, updater, function(err, replies) {
-          // Verify final hash states.
-          redis.hget(Object.keys(changes), function(err, actual) {
-            test.deepEqual(actual, expectedHashes);
-            // Verify final sorted set states.
-            redis.zrangebyscoreWithScores(sortedSetKey, min, max, function(err, actual) {
-              test.deepEqual(actual, expectedMembers);
-              test.done();
-            });
+          shs.get(sortedSetKey, min, max, function(err, actual) {
+            test.deepEqual(actual.hashes, expectedHashes);
+            test.deepEqual(actual.sortedSet, expectedMembers);
+            test.done();
           });
         });
       });
