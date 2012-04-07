@@ -206,7 +206,7 @@ Job.prototype.buildLastIdKey = function(namespace) {
 Job.prototype.createUtilLogger = function() {
   var args = Array.prototype.slice.call(arguments);
   args.unshift(this.name);
-  return diana.createUtilLogger.call(null, arguments);
+  return diana.createUtilLogger.apply(null, args);
 };
 
 /**
