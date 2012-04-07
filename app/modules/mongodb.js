@@ -417,3 +417,54 @@ MongoDb.prototype.dropCollection = function(name, callback) {
     });
   });
 };
+
+/**
+ * Parse an object ID into its decimal representations.
+ *
+ * @param id {String} 24-character object ID.
+ * @return {Object} Properties: time, machine, pid, increment
+ */
+MongoDb.prototype.parseObjectId = function(id) {
+  return {
+    time: parseInt(id.substr(0, 8), 16),
+    machine: parseInt(id.substr(8, 6), 16),
+    pid: parseInt(id.substr(14, 4), 16),
+    increment: parseInt(id.substr(18, 6), 16)
+  };
+};
+
+/**
+ * Array.prototype.sort() compare function for object IDs.
+ *
+ * @return {Number} a < b: -1, a = b: 0, a > b: 1
+ */
+MongoDb.prototype.sortObjectIdAsc = function(a, b) {
+  a = MongoDb.prototype.parseObjectId(a);
+  b = MongoDb.prototype.parseObjectId(b);
+
+  if (a.time == b.time) {
+    if (a.machine == b.machine) {
+      if (a.pid == b.pid) {
+        if (a.increment == b.increment) {
+          return 0;
+        } else if (a.increment < b.increment) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else if (a.pid < b.pid) {
+        return -1;
+      } else {
+        return 1;
+      }
+    } else if (a.machine < b.machine) {
+      return -1;
+    } else {
+      return 1;
+    }
+  } else if (a.time < b.time) {
+    return -1;
+  } else {
+    return 1;
+  }
+}

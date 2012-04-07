@@ -218,3 +218,93 @@ exports.testNextPageDetection = function(test) {
     });
   });
 };
+
+exports.testParseObjectId = function(test) {
+  var id = '4f72b1a766408a452b000003';
+  test.deepEqual(mongodb.parseObjectId(id), {
+    time: 1332916647,
+    machine: 6701194,
+    pid: 17707,
+    increment: 3
+  });
+  test.done();
+};
+/*
+  test.deepEqual(
+    [
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001'
+    ].sort(mongodb.sortObjectIdAsc),
+    [
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001',
+      '4f72b1a7 66408a 452b 000001'
+    ]
+  );
+*/
+exports.testSortObjectIdAsc = function(test) {
+  // Only 'increment' parts are unsorted.
+  test.deepEqual(
+    [
+      '4f72b1a766408a452b000002',
+      '4f72b1a766408a452b000006',
+      '4f72b1a766408a452b000003',
+      '4f72b1a766408a452b000001'
+    ].sort(mongodb.sortObjectIdAsc),
+    [
+      '4f72b1a766408a452b000001',
+      '4f72b1a766408a452b000002',
+      '4f72b1a766408a452b000003',
+      '4f72b1a766408a452b000006'
+    ]
+  );
+  // Only 'pid' parts are unsorted.
+  test.deepEqual(
+    [
+      '4f72b1a766408a4522000001',
+      '4f72b1a766408a4526000001',
+      '4f72b1a766408a4523000001',
+      '4f72b1a766408a4521000001'
+    ].sort(mongodb.sortObjectIdAsc),
+    [
+      '4f72b1a766408a4521000001',
+      '4f72b1a766408a4522000001',
+      '4f72b1a766408a4523000001',
+      '4f72b1a766408a4526000001'
+    ]
+  );
+  // Only 'machine' parts are unsorted.
+  test.deepEqual(
+    [
+      '4f72b1a7664082452b000001',
+      '4f72b1a7664086452b000001',
+      '4f72b1a7664083452b000001',
+      '4f72b1a7664081452b000001'
+    ].sort(mongodb.sortObjectIdAsc),
+    [
+      '4f72b1a7664081452b000001',
+      '4f72b1a7664082452b000001',
+      '4f72b1a7664083452b000001',
+      '4f72b1a7664086452b000001'
+    ]
+  );
+  // Only 'time' parts are unsorted.
+  test.deepEqual(
+    [
+      '4f72b1a266408a452b000001',
+      '4f72b1a666408a452b000001',
+      '4f72b1a366408a452b000001',
+      '4f72b1a166408a452b000001'
+    ].sort(mongodb.sortObjectIdAsc),
+    [
+      '4f72b1a166408a452b000001',
+      '4f72b1a266408a452b000001',
+      '4f72b1a366408a452b000001',
+      '4f72b1a666408a452b000001'
+    ]
+  );
+  test.done();
+};
