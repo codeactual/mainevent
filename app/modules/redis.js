@@ -91,18 +91,20 @@ Redis.prototype.del = function(key, callback, bulk) {
  * @param key {String|Array}
  * @param callback {Function} Fires on completion.
  * - err {String}
- * - value {mixed}
- *   If 'key' is a {String}, then {mixed} based on the serialized data type.
- *   If 'key' is an {Array}, then {Object}.
+ * - results {mixed}
+ *   Single key: {mixed} Unserialized value.
+ *   Multi key: {Object} {<key>: <value>, ...}
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 Redis.prototype.get = function(key, callback, bulk) {
   this.connect();
   var redis = this, multi = this.client.multi(), multiKey = _.isArray(key);
+
   key = multiKey ? key : [key];
   _.each(key, function(k) {
      multi.get(k);
   });
+
   multi.exec(function(err, values) {
     var indexed = {};
     _.each(values, function(value, index) {
@@ -133,19 +135,23 @@ Redis.prototype.get = function(key, callback, bulk) {
 Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, bulk) {
   this.connect();
   var redis = this;
+
   this.get(key, function(err, value) {
+
     // Command failed.
     if (err) {
       if (!bulk) { redis.end(); }
       callback(err, undefined);
       return;
     }
+
     // Cache hit.
     if (!_.isUndefined(value)) {
       if (!bulk) { redis.end(); }
       callback(err, value);
       return;
     }
+
     // Cache miss -- execute reader.
     reader(key, function(err, value) {
       // Reader failed.
@@ -186,14 +192,68 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
 Redis.prototype.zadd = function (key, members, callback, bulk) {
   this.connect();
   var redis = this, args = [key];
+
   _.each(members, function(member) {
     args.push(member[0], member[1]); // (score, member name)
   });
+
   args.push(function(err, replies) {
     if (!bulk) { redis.end(); }
     callback(err, replies);
   });
   this.client.zadd.apply(this.client, args);
+};
+
+/**
+ * Get sorted set members and scores.
+ *
+ * - Workaround until WITHSCORES support is added:
+ *   https://github.com/mranney/node_redis/issues/97
+ *
+ * @param key {String}
+ * @param min {Number}
+ * @param max {Number}
+ * @param callback {Function} Fires on completion.
+ * - err {String}
+ * - results {Array} [[<score>, <member>], ...]
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ */
+Redis.prototype.zrangebyscoreWithScores = function(key, min, max, callback, bulk) {
+  this.connect();
+  var redis = this, multi = this.client.multi();
+
+  redis.client.zrangebyscore(key, min, max, function(err, members) {
+
+    // Command failed.
+    if (err) {
+      if (!bulk) { redis.end(); }
+      callback(err, members);
+      return;
+    }
+
+    // Collect scores.
+    _.each(members, function(member) {
+      multi.zscore(key, member);
+    });
+
+    multi.exec(function(err, scores) {
+
+      // Command failed.
+      if (err) {
+        if (!bulk) { redis.end(); }
+        callback(err, scores);
+        return;
+      }
+
+      var collection = [];
+      _.each(members, function(member, index) {
+        collection.push([scores[index], member]);
+      });
+
+      if (!bulk) { redis.end(); }
+      callback(err, collection);
+    });
+  });
 };
 
 /**
@@ -230,23 +290,29 @@ Redis.prototype.hset = function(pairs, callback, bulk) {
  * @param key {String|Array}
  * @param callback {Function} Fires on completion
  * - err {String}
- * - value {Object}
+ * - results {Object}
+ *   Single key: {Object} {<field>: <value>, ...}
+ *   Multi key: {Object} {<key>: {<field>: <value>, ...}, ...}
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 Redis.prototype.hget = function(key, callback, bulk) {
   this.connect();
   var redis = this, multi = this.client.multi(), multiKey = _.isArray(key);
+
   key = multiKey ? key : [key];
   _.each(key, function(k) {
      multi.hgetall(k);
   });
+
   multi.exec(function(err, values) {
+
     // Command failed.
     if (err) {
       if (!bulk) { redis.end(); }
       callback(err, values);
       return;
     }
+
     // Command succeeded -- build results object.
     var indexed = {};
     _.each(values, function(value, index) {
@@ -286,11 +352,13 @@ Redis.prototype.hget = function(key, callback, bulk) {
 Redis.prototype.hincrby = function(updates, callback, bulk) {
   this.connect();
   var multi = this.client.multi();
+
   _.each(updates, function(update, key) {
     _.each(update, function(increment, field) {
       multi.hincrby(key, field, increment);
     });
   });
+
   var redis = this;
   multi.exec(function(err, replies) {
     if (!bulk) { redis.end(); }

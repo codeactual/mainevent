@@ -181,10 +181,24 @@ exports.sortedSets = {
 
     var expected = [[3, 'three'], [4, 'four'], [5, 'five']];
 
+    var run = this;
+    redis.zadd(this.keys[0], expected, function(err, replies) {
+      redis.zrangebyscoreWithScores(run.keys[0], 3, 5, function(err, actual) {
+        test.deepEqual(actual, expected);
+        test.done();
+      });
+    });
+  },
+
+  testZrangebyscoreWithScore: function(test) {
+    test.expect(1);
+
+    var expected = [[3, 'three'], [4, 'four'], [5, 'five']];
+
     var run = this, deferClose = true;
     redis.zadd(this.keys[0], expected, function(err, replies) {
-      redis.client.zrangebyscore(run.keys[0], 3, 5, function(err, actual) {
-        test.deepEqual(actual, ['three', 'four', 'five']);
+      redis.zrangebyscoreWithScores(run.keys[0], 3, 5, function(err, actual) {
+        test.deepEqual(actual, expected);
         test.done();
       });
     }, deferClose);
