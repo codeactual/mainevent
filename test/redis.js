@@ -341,8 +341,8 @@ exports.sortedHashSet = {
     origHashes[this.keys[1]] = {count: 3};
     origHashes[this.keys[2]] = {count: 5};
     var origMembers = [
-      [1333773458509, this.keys[1]],
-      [1333773458510, this.keys[2]]
+      [1333773458510, this.keys[1]],
+      [1333773458511, this.keys[2]]
     ];
 
     // Passed to SortedHashSet.upsert().
@@ -387,9 +387,8 @@ exports.sortedHashSet = {
           redis.hget(Object.keys(changes), function(err, actual) {
             test.deepEqual(actual, expectedHashes);
             // Verify final sorted set states.
-            redis.connect();
-            redis.client.zrangebyscore(sortedSetKey, min, max, function(err, actual) {
-              test.deepEqual(actual, Object.keys(changes));
+            redis.zrangebyscoreWithScores(sortedSetKey, min, max, function(err, actual) {
+              test.deepEqual(actual, expectedMembers);
               test.done();
             });
           });
