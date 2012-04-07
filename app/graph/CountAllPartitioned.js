@@ -8,26 +8,31 @@
 
 var program = require('commander');
 program
-  .option('-l, --limit <#>', 'Limit chunk size per run', Number, 100)
+  .option('-l, --limit <#>', 'Limit chunk size per run (default 100)', Number, 100)
   .option('-i, --id <hex>', 'Last ID processed')
-  .option('-w, --wait <seconds>', 'Run repeatedly after waiting between cycles', Number)
+  .option('-w, --jobWait <seconds>', 'Wait time between jobs (default 5)', Number, 5)
+  .option('-W, --chunkWait <seconds>', 'Wait time between chunks (default 5)', Number, 5)
   .option('-i, --interval <milliseconds>', 'Only process a specific interval', Number)
   .option('-p, --parser <name>', 'Only process a specific parser', null)
   .option('-q, --quiet')
   .option('-v, --verbose')
+  .option('-V, --vverbose')
   .parse(process.argv);
 
 require(__dirname + '/../modules/diana.js');
 
 var date = diana.shared.Date,
-    cycleStart = null,
-    endGraceful = false,
+    chunkStart = null,
+    chunkLastIds = [],
+    exitGraceful = false,
+    exitMessage = '%s received, will exit after current chunk',
 
     jobName = 'CountAllPartitioned',
     job = new (diana.requireJob(jobName).getClass()),
     namespace = 'graph:' + jobName,
     log = diana.createUtilogger(jobName, program.quiet),
 
+    mongodb = diana.requireModule('mongodb').createInstance(),
     redis = diana.requireModule('redis').createInstance(),
     SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass(),
 
@@ -48,7 +53,7 @@ if (program.interval) {
 
 // Start after a manually set last ID.
 if (program.id) {
-    run(program.id);
+    runJob(program.id);
 
 // Start after the recorded last ID, if possible.
 } else {
@@ -58,7 +63,7 @@ if (program.id) {
       process.exit(1);
     }
 
-    run(lastId);
+    runJob(lastId);
   });
 }
 
@@ -66,7 +71,7 @@ if (program.id) {
  * @param lastId {String} Job will query documents which were inserted after this ID.
  * - If falsey, the job will start at the first inserted ID.
  */
-var run = function(lastId) {
+var runJob = function(lastId) {
   if (program.verbose) {
     if (lastId) {
       log('starting after last ID: %s', lastId);
@@ -75,7 +80,8 @@ var run = function(lastId) {
     }
   }
 
-  cycleStart = (new Date()).getTime();
+  chunkLastIds = [];  // Last IDs processed by all jobs within a chunk.
+  chunkStart = (new Date()).getTime();
 
   /**
    * Increment the existing 'count' value by the updated hash's 'count' value.
@@ -87,9 +93,6 @@ var run = function(lastId) {
       onDone(err);
     });
   };
-
-  // Track the last ID processed by the script. Store at the end of each cycle.
-  var newLastId = null;
 
   // For each parser, walk through the same intervals as available in
   // the UI drop-downs.
@@ -106,13 +109,14 @@ var run = function(lastId) {
         function(interval, onIntervalDone) {
 
           if (program.verbose) {
-            log('started run with parser %s, interval %d', parser, interval);
+            log('started job with parser %s, interval %d', parser, interval);
           }
 
           // Ex. graph:CountAllPartitioned:json:3600000
           var sortedSetKey = util.format('%s:%s:%d', namespace, parser, interval),
-              runStart = (new Date()).getTime(),
-              query = {parser: parser};
+              jobStart = (new Date()).getTime(),
+              query = {parser: parser},
+              jobLastId = null;
 
           // Start at the first inserted event or after the last one processed.
           if (lastId) {
@@ -138,7 +142,7 @@ var run = function(lastId) {
               var member = sortedSetKey + ':result:' + key,
                   score = (new Date(key)).getTime();
 
-              if (program.verbose) {
+              if (program.vverbose) {
                 log('key=%s result=%s score=%d member=%s', key, result, score, member);
               }
 
@@ -147,7 +151,7 @@ var run = function(lastId) {
               changes[member] = {hashFields: result, score: score};
 
               // Track last ID processed.
-              newLastId = result._id;
+              jobLastId = result._id;
             });
 
             // Insert totals for new partitions, increment totals for existing.
@@ -157,39 +161,41 @@ var run = function(lastId) {
               }
 
               if (program.verbose) {
-                log('run took %d seconds', ((new Date()).getTime() - runStart) / 1000);
+                log('job took %d seconds', ((new Date()).getTime() - jobStart) / 1000);
+                log('waiting %d seconds until starting next chunk', program.jobWait)
               }
 
-              onIntervalDone();
+              chunkLastIds.push(jobLastId);
+
+              setTimeout(onIntervalDone, program.jobWait * 1000);
             }, bulk);
           });
         },
         onParserDone
       );
     },
-
     // All parser/interval permutations have been processed.
     function() {
-      // Save the last processed document ID so the next run can start after it.
+      // Save the last processed document ID so the next chunk can start after it.
       var pairs = {};
-      pairs[lastIdKey] = newLastId;
+      pairs[lastIdKey] = chunkLastIds.sort(mongodb.sortObjectIdAsc).pop();
       redis.set(pairs, null, function(err, replies) {
         if (err) {
-          log('exiting to prevent dupes, could not write last ID %s: %s', newLastId, err);
+          log('exiting to prevent dupes, could not write last ID %s: %s', pairs[lastIdKey], err);
           process.exit();
         }
         if (program.verbose) {
-          log('cycle ended with ID: %s', newLastId);
-          log('cycle took %d seconds', ((new Date()).getTime() - cycleStart) / 1000);
+          log('chunk ended with ID: %s', pairs[lastIdKey]);
+          log('chunk took %d seconds', ((new Date()).getTime() - chunkStart) / 1000);
         }
 
-        if (endGraceful) {
-          log('next cycle cancelled due to exit signal');
-        } else if (program.wait) {  // Start another cycle.
-          log('waiting %d seconds until next cycle', program.wait);
+        if (exitGraceful) {
+          log('next chunk cancelled due to exit signal');
+        } else if (program.chunkWait) {  // Start another chunk.
+          log('waiting %d seconds until next chunk', program.chunkWait);
           setTimeout(function() {
-            run(newLastId);
-          }, program.wait * 1000);
+            runJob(pairs[lastIdKey]);
+          }, program.chunkWait * 1000);
         }
       });
     }
@@ -197,10 +203,10 @@ var run = function(lastId) {
 };
 
 process.on('SIGINT', function() {
-  log('SIGINT received');
-  endGraceful = true;
+  log(exitMessage, 'SIGINT');
+  exitGraceful = true;
 });
 process.on('SIGTERM', function() {
-  log('SIGINT received');
-  endGraceful = true;
+  log(exitMessage, 'SIGTERM');
+  exitGraceful = true;
 });
