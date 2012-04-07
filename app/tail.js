@@ -84,7 +84,7 @@
     var killTail = function() {
       process.removeListener('END_MONITOR', killTail);
       if (monitor.tail) {
-        monitor.log('killing ...');
+        monitor.log('killing pid %d ...', monitor.tail.pid);
         monitor.tail.kill('SIGKILL');
         monitor.log('killed');
         monitor.tail = null;
