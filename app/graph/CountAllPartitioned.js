@@ -29,14 +29,14 @@ var date = diana.shared.Date,
 
     jobName = 'CountAllPartitioned',
     job = new (diana.requireJob(jobName).getClass()),
-    namespace = 'graph:' + jobName,
-    log = diana.createUtilogger(jobName, program.quiet),
+    namespace = 'graph',
+    log = job.createUtilLogger(program.quiet),
 
     mongodb = diana.requireModule('mongodb').createInstance(),
     redis = diana.requireModule('redis').createInstance(),
     SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass(),
 
-    lastIdKey = namespace + ':lastId', // Holds last document ID processed.
+    lastIdKey = job.buildLastIdKey(namespace),
     bulk = true;
 
 // Narrow the job permutations to specific parser/interval.
@@ -113,8 +113,7 @@ var runJob = function(lastId) {
           }
 
           // Ex. graph:CountAllPartitioned:json:3600000
-          var sortedSetKey = util.format('%s:%s:%d', namespace, parser, interval),
-              jobStart = (new Date()).getTime(),
+          var jobStart = (new Date()).getTime(),
               query = {parser: parser},
               jobLastId = null;
 
@@ -126,8 +125,12 @@ var runJob = function(lastId) {
           // Ex. suffixes: 'json', 'json_3600000'
           job.updateOptions({
             suffix: _.filterTruthy([parser, interval]).join('_'),
-            partition: date.partitions[date.bestFitInterval(interval)]
+            partition: date.partitions[date.bestFitInterval(interval)],
+            parser: parser,
+            interval: interval
           });
+
+          var sortedSetKey = job.buildSortedSetKey('graph');
 
           // Sort ascending to allow 'lastId' to follow insertion order.
           job.updateMapReduceConfig({sort: {_id: 1}, limit: program.limit});
@@ -139,7 +142,7 @@ var runJob = function(lastId) {
             _.each(results, function(result, key) {
 
               // Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
-              var member = sortedSetKey + ':result:' + key,
+              var member = job.buildHashKey('graph', key),
                   score = (new Date(key)).getTime();
 
               if (program.vverbose) {
