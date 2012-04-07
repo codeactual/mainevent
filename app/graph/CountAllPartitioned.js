@@ -170,7 +170,7 @@ var runJob = function(lastId) {
 
               if (program.verbose) {
                 log('job took %d seconds', ((new Date()).getTime() - jobStart) / 1000);
-                log('waiting %d seconds until starting next chunk', program.jobWait)
+                log('waiting %d seconds until starting next job', program.jobWait)
               }
 
               chunkLastIds.push(jobLastId);
