@@ -67,7 +67,7 @@ if (program.id) {
  * - If falsey, the job will start at the first inserted ID.
  */
 var run = function(lastId) {
-  if (process.verbose) {
+  if (program.verbose) {
     if (lastId) {
       log('starting after last ID: %s', lastId);
     } else {
@@ -156,7 +156,9 @@ var run = function(lastId) {
                 log('upsert failed on key %s, changes: %s', sortedSetKey, changes);
               }
 
-              log('run took %d seconds', (new Date()).getTime() - runStart);
+              if (program.verbose) {
+                log('run took %d seconds', ((new Date()).getTime() - runStart) / 1000);
+              }
 
               onIntervalDone();
             }, bulk);
