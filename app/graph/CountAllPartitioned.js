@@ -10,23 +10,23 @@ var program = require('commander');
 program
   .option('-l, --limit <#>', 'Limit chunk size per run', Number, 100)
   .option('-i, --id <hex>', 'Last ID processed')
-  .option('-w, --wait <seconds>', 'Wait time between runs', Number, 60)
+  .option('-w, --wait <seconds>', 'Run repeatedly after waiting between cycles', Number)
   .option('-i, --interval <milliseconds>', 'Only process a specific interval', Number)
   .option('-p, --parser <name>', 'Only process a specific parser', null)
-  .option('-w, --wait', 'Seconds to wait between runs', Number, 60)
   .option('-q, --quiet')
   .option('-v, --verbose')
   .parse(process.argv);
 
-  require(__dirname + '/../modules/diana.js');
+require(__dirname + '/../modules/diana.js');
 
 var date = diana.shared.Date,
-    now = (new Date()).getTime(),
-    log = diana.createUtilogger(jobName, program.quiet),
+    cycleStart = null,
+    endGraceful = false,
 
     jobName = 'CountAllPartitioned',
     job = new (diana.requireJob(jobName).getClass()),
     namespace = 'graph:' + jobName,
+    log = diana.createUtilogger(jobName, program.quiet),
 
     redis = diana.requireModule('redis').createInstance(),
     SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass(),
@@ -75,6 +75,8 @@ var run = function(lastId) {
     }
   }
 
+  cycleStart = (new Date()).getTime();
+
   /**
    * Increment the existing 'count' value by the updated hash's 'count' value.
    *
@@ -109,7 +111,7 @@ var run = function(lastId) {
 
           // Ex. graph:CountAllPartitioned:json:3600000
           var sortedSetKey = util.format('%s:%s:%d', namespace, parser, interval),
-              start = (new Date()).getTime(),
+              runStart = (new Date()).getTime(),
               query = {parser: parser};
 
           // Start at the first inserted event or after the last one processed.
@@ -153,6 +155,9 @@ var run = function(lastId) {
               if (err) {
                 log('upsert failed on key %s, changes: %s', sortedSetKey, changes);
               }
+
+              log('run took %d seconds', (new Date()).getTime() - runStart);
+
               onIntervalDone();
             }, bulk);
           });
@@ -171,9 +176,28 @@ var run = function(lastId) {
           log('could not write last ID: %s', err);
         }
         if (program.verbose) {
-          log('ended run with ID: %s', newLastId);
+          log('cycle ended with ID: %s', newLastId);
+        }
+        log('cycle took %d seconds', (new Date()).getTime() - cycleStart);
+
+        if (endGraceful) {
+          log('next cycle cancelled due to exit signal');
+        } else if (program.wait) {  // Start another cycle.
+          log('waiting %d seconds until next cycle', program.wait);
+          setTimeout(function() {
+            run(newLastId);
+          }, program.wait * 1000);
         }
       });
     }
   );
 };
+
+process.on('SIGINT', function() {
+  log('SIGINT received');
+  endGraceful = true;
+});
+process.on('SIGTERM', function() {
+  log('SIGINT received');
+  endGraceful = true;
+});
