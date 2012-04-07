@@ -175,7 +175,8 @@ var run = function(lastId) {
       pairs[lastIdKey] = newLastId;
       redis.set(pairs, null, function(err, replies) {
         if (err) {
-          log('could not write last ID: %s', err);
+          log('exiting to prevent dupes, could not write last ID %s: %s', newLastId, err);
+          process.exit();
         }
         if (program.verbose) {
           log('cycle ended with ID: %s', newLastId);
