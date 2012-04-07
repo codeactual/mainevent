@@ -17,6 +17,8 @@ var CountAllPartitioned = function() {
 
 Job.extend(CountAllPartitioned, {
 
+  customOptionKeys: ['partition'],
+
   map: function() {
     var month = (this.time.getMonth() + 1) + '',
         date = this.time.getDate() + '',
@@ -98,16 +100,18 @@ Job.extend(CountAllPartitioned, {
    *   year; YYYY
    * - Value format:
    *   {count: <Number>, _id: <hex ID of last mapped document>}
+   *
+   * @throws Error On missing 'partition' option.
    */
   run: function(query, callback) {
-    var date = diana.shared.Date,
-        bestFitInterval = date.bestFitInterval(
-          parseInt(query['time-lte'], 10) - parseInt(query['time-gte'], 10)
-        ),
-        partition = date.partitions[bestFitInterval];
+    var options = this.getOptions();
+
+    if (!options.partition) {
+      throw new Error('CountAllPartitioned job requires a "partition" value');
+    }
 
     this.extractOptionsFromQuery(query);
-    this.updateMapReduceConfig({scope: {partition: partition}});
+    this.updateMapReduceConfig({scope: {partition: options.partition}});
     this.mapReduce(query, callback);
   },
 
