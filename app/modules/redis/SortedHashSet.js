@@ -148,7 +148,59 @@ SortedHashSet.prototype.updateExistingHashes = function(updates, updater, callba
         callback(err, Object.keys(existing));
       });
     } else {
-      callback(null, []);
+      callback(err, []);
     }
+  });
+};
+
+/**
+ * Read a sorted hash set by key.
+ *
+ * @param key {String}
+ * @param min {Number} Sorted set minimum score.
+ * @param max {Number} Sorted set maximum score.
+ * @param callback {Function} Fires after upsert completion.
+ * - err {String}
+ * - structure {Object}
+ *   {
+ *     hashes: {
+ *       <key>: {<field>: value, ...},
+ *       ...
+ *     },
+ *     sortedSet: [
+ *       [<score>, <member (hash key)>],
+ *       ...
+ *     ]
+ *   }
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ */
+SortedHashSet.prototype.get = function(key, min, max, callback, bulk) {
+  var redis = this.redis;
+
+  redis.zrangebyscoreWithScores(key, min, max, function(err, members) {
+
+    // Command failed.
+    if (err) {
+      if (!bulk) { redis.end(); }
+      callback(err, members);
+      return;
+    }
+
+    var hashKeys = [];
+    _.each(members, function(member) {
+      hashKeys.push(member[1]);
+    });
+
+    redis.hget(hashKeys, function(err, hashes) {
+
+      // Command failed.
+      if (err) {
+        if (!bulk) { redis.end(); }
+        callback(err, hashes);
+        return;
+      }
+
+      callback(err, {hashes: hashes, sortedSet: members});
+    });
   });
 };

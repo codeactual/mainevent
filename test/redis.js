@@ -193,11 +193,15 @@ exports.sortedSets = {
   testZrangebyscoreWithScore: function(test) {
     test.expect(1);
 
-    var expected = [[3, 'three'], [4, 'four'], [5, 'five']];
+    var expected = [[3, 'three'], [4, 'four'], [5, 'five'], [6, 'six']];
 
     var run = this, deferClose = true;
     redis.zadd(this.keys[0], expected, function(err, replies) {
+      // Omit last hash/member from the range.
       redis.zrangebyscoreWithScores(run.keys[0], 3, 5, function(err, actual) {
+        // Verify min/max was applied.
+        delete expected[3];
+
         test.deepEqual(actual, expected);
         test.done();
       });
@@ -291,6 +295,40 @@ exports.sortedHashSet = {
   setUp: function(callback) { setUp(this, callback); },
   tearDown: function(callback) { tearDown(this, callback); },
 
+  testSortedHashSetGet: function(test) {
+    test.expect(2);
+    var run = this, hashes = {}, changes = {}, expectedHashes = {};
+
+    hashes[this.keys[0]] = {count: 5};
+    hashes[this.keys[1]] = {count: 10};
+    hashes[this.keys[2]] = {count: 15};
+    hashes[this.keys[3]] = {count: 20};
+
+    var sortedSetKey = this.keys[4],
+        shs = new SortedHashSet(redis),
+        sortedSet = [
+          [1333773458509, this.keys[0]],
+          [1333773458510, this.keys[1]],
+          [1333773458511, this.keys[2]],
+          [1333773458512, this.keys[3]]
+        ];
+
+    redis.hset(hashes, function() {
+      redis.zadd(sortedSetKey, sortedSet, function() {
+        // Omit last hash/member from the range.
+        shs.get(sortedSetKey, 1333773458509, 1333773458511, function(err, actual) {
+          // Verify min/max was applied.
+          delete hashes[run.keys[3]];
+          delete sortedSet[3];
+
+          test.deepEqual(actual.hashes, hashes);
+          test.deepEqual(actual.sortedSet, sortedSet);
+          test.done();
+        });
+      });
+    });
+  },
+
   testUpdateExistingHashes: function(test) {
     test.expect(2);
     var run = this, orig = {}, updates = {}, expected = {};
@@ -320,7 +358,7 @@ exports.sortedHashSet = {
     // Set original state.
     redis.hset(orig, function(err, replies) {
       // Update state.
-      var shs = new SortedHashSet(null, redis);
+      var shs = new SortedHashSet(redis);
       shs.updateExistingHashes(updates, updater, function(err, updatedKeys) {
         // Verify stats from callback.
         test.deepEqual(updatedKeys, updatedKeys);
