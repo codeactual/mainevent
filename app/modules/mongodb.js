@@ -112,7 +112,7 @@ MongoDb.prototype.extractFilterOptions = function(params) {
       params[key] = new BSON.ObjectID(value);
     } else if ('_id' == key && _.isObject(value)) {
       _.each(value, function(v, comparison) {
-        value[comparison] = new BSON.ObjectID(v);
+        value[comparison] = new BSON.ObjectID(v.toString());
       });
     }
   });
