@@ -154,6 +154,14 @@ var runJob = function(lastId) {
               jobLastId = result._id;
             });
 
+            if (!_.size(changes)) {
+              if (program.verbose) {
+                log('no job results');
+              };
+              onIntervalDone();
+              return;
+            }
+
             // Insert totals for new partitions, increment totals for existing.
             (new SortedHashSet(redis)).upsert(sortedSetKey, changes, incrCount, function(err) {
               if (err) {
@@ -174,9 +182,17 @@ var runJob = function(lastId) {
         onParserDone
       );
     },
+
     // All parser/interval permutations have been processed.
     function() {
-      var chunkLastId = chunkLastIds.sort(mongodb.sortObjectIdAsc).pop();
+
+      // Find the last inserted ID seen in the chunk.
+      if (chunkLastIds.length) {
+        var chunkLastId = chunkLastIds.sort(mongodb.sortObjectIdAsc).pop();
+      // No results from chunk -- keep old cursor.
+      } else {
+        chunkLastId = lastId;
+      }
 
       if (lastId == chunkLastId) {
         log('last event reached, sleeping for 60 seconds');
