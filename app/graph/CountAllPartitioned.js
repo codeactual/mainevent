@@ -179,8 +179,8 @@ var run = function(lastId) {
         }
         if (program.verbose) {
           log('cycle ended with ID: %s', newLastId);
+          log('cycle took %d seconds', ((new Date()).getTime() - cycleStart) / 1000);
         }
-        log('cycle took %d seconds', (new Date()).getTime() - cycleStart);
 
         if (endGraceful) {
           log('next cycle cancelled due to exit signal');
