@@ -154,7 +154,15 @@ Redis.prototype.getWithWriteThrough = function(key, reader, expires, callback, b
         callback(err, undefined);
         return;
       }
-      // Reader succeeded -- write to cache.
+
+      // Reader also missed -- skip set.
+      if (_.isUndefined(value)) {
+        if (!bulk) { redis.end(); }
+        callback(err, value);
+        return;
+      }
+
+      // Reader hit -- write to cache.
       var pairs = {};
       pairs[key] = value;
       redis.set(pairs, expires, function(err) {
