@@ -75,9 +75,14 @@ GLOBAL.diana = {
    * 6 Apr 06:15:34 - MyJob: Command "SET foo bar" returned with reply "OK"
    *
    * @param name {String}
+   * @param quiet {Boolean} If true, function exits immediately.
+   * - Intended to cleanly support --quiet CLI flag w/out another wrapper.
    * @return {Function} Accepts util.format() arguments.
    */
-  createUtilogger: function(name) {
+  createUtilogger: function(name, quiet) {
+    if (quiet) {
+      return function() {};
+    }
     return function() {
       var args = Array.prototype.slice.call(arguments);
       args = _.map(args, function(arg) {

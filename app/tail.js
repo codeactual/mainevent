@@ -40,9 +40,7 @@
     // ChildProcess object.
     this.tail = null;
 
-    if (!program.quiet) {
-      this.log = diana.createUtilogger(this.source.path);
-    }
+    this.log = diana.createUtilogger(this.source.path, program.quiet);
   };
 
   /**
@@ -101,18 +99,6 @@
     process.on('END_MONITOR', killTail);
 
     this.log('pid %d', this.tail.pid);
-  };
-
-  /**
-   * Send a formatted message to stdout. Prepend the timestamp and source path.
-   *
-   * Accepts util.format() arguments.
-   */
-  Monitor.prototype.log = function() {
-    if (program.quiet) {
-      return;
-    }
-    this.log.apply(null, arguments);
   };
 
   /**
