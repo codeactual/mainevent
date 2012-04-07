@@ -104,7 +104,6 @@ exports.addPreviewContext = function(logs, onAllDone) {
         }
       }
     },
-    null,
     function() {
       onAllDone(updatedLogs);
     }
