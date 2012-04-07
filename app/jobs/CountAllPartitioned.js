@@ -11,13 +11,13 @@ exports.getClass = function() {
 };
 
 var CountAllPartitioned = function() {
-  this.name = __filename;
+  this.name = diana.extractJobName(__filename);
   this.__super__.call(this);
 };
 
 Job.extend(CountAllPartitioned, {
 
-  customOptionKeys: ['partition'],
+  customOptionKeys: ['partition', 'parser', 'interval'],
 
   map: function() {
     var month = (this.time.getMonth() + 1) + '',
@@ -129,5 +129,21 @@ Job.extend(CountAllPartitioned, {
     // for a minute. Otherwise store it without an expiration.
     now = now || (new Date()).getTime();
     return Math.abs(now - query['time-lte']) <= defaultExpires * 1000 ? defaultExpires : null;
+  },
+
+  /**
+   * See prototype in prototype.js for additional notes.
+   *
+   * @param namespace {String} Ex. 'graph'.
+   * @param parser {String} Ex. 'json'.
+   * @param interval {Number} Ex. 3600000.
+   * @return {String} 'graph:CountAllPartitioned:json:3600000'
+   */
+  buildSortedSetKey: function(namespace) {
+    var options = this.getOptions();
+    return util.format(
+      '%s:%s:%s:%d',
+      namespace, this.name, options['parser'], options['interval']
+    );
   }
 });

@@ -168,6 +168,36 @@ Job.prototype.mapReduce = function(query, callback) {
 };
 
 /**
+ * Build the key of the sorted set which indexes this job's results.
+ *
+ * Ex. 'graph:CountAllPartitioned:json:3600000'.
+ */
+Job.prototype.buildSortedSetKey = function() { return ''; };
+
+/**
+ * Build the key of hash which holds a specific map reduce result.
+ *
+ * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
+ *
+ * @param resultKey {String} Ex. '2012-02'.
+ * @return {String}
+ */
+Job.prototype.buildHashKey = function(namespace, resultKey) {
+  return this.buildSortedSetKey(namespace) + ':result:' + resultKey;
+};
+
+/**
+ * Curry diana.createUtilLogger() with the job's name.
+ *
+ * @return {Function}
+ */
+Job.prototype.createUtilLogger = function() {
+  var args = Array.prototype.slice.call(arguments);
+  args.unshift(this.name);
+  return diana.createUtilLogger.call(null, arguments);
+};
+
+/**
  * Placeholders.
  */
 Job.prototype.map = function() {};

@@ -201,3 +201,35 @@ exports.testGetCacheExpires = function(test) {
   test.equal(null, job.getExpires({'time-lte': now + 60001}, now));
   test.done();
 };
+
+exports.testBuildSortedSetKey = function(test) {
+  var job = new (diana.requireJob(__filename).getClass()),
+      namespace = 'graph';
+
+  job.updateOptions({
+    parser: 'json',
+    interval: 3600000
+  });
+
+  test.equal(
+    job.buildSortedSetKey(namespace, 'json', 3600000),
+    namespace + ':CountAllPartitioned:json:3600000'
+  );
+  test.done();
+};
+
+exports.testBuildHashKey = function(test) {
+  var job = new (diana.requireJob(__filename).getClass()),
+      namespace = 'graph';
+
+  job.updateOptions({
+    parser: 'json',
+    interval: 3600000
+  });
+
+  test.equal(
+    job.buildHashKey('graph', '2012-02'),
+    namespace + ':CountAllPartitioned:json:3600000:result:2012-02'
+  );
+  test.done();
+};
