@@ -257,5 +257,70 @@ exports.sortedHashSet = {
         });
       });
     });
+  },
+
+  testUpsert: function(test) {
+    test.expect(2);
+    var run = this, origHashes = {}, changes = {}, expectedHashes = {};
+
+    // Original state.
+    origHashes[this.keys[1]] = {count: 3};
+    origHashes[this.keys[2]] = {count: 5};
+    var origMembers = [
+      [1333773458509, this.keys[1]],
+      [1333773458510, this.keys[2]]
+    ];
+
+    // Passed to SortedHashSet.upsert().
+    //
+    // Should trigger insert.
+    changes[this.keys[0]] = { hashFields: {count: 20}, score: 1333773458509 };
+    // Should trigger update.
+    changes[this.keys[1]] = {hashFields: {count: 2}, score: 1333773458510};
+    // Should trigger update.
+    changes[this.keys[2]] = {hashFields: {count: 7}, score: 1333773458511};
+
+    // Final state.
+    expectedHashes[this.keys[0]] = {count: 20};  // Inserted.
+    expectedHashes[this.keys[1]] = {count: 5};   // Updated.
+    expectedHashes[this.keys[2]] = {count: 12};  // Updated.
+    var expectedMembers = [
+      [1333773458509, this.keys[0]],
+      [1333773458510, this.keys[1]],
+      [1333773458511, this.keys[2]]
+    ];
+
+    // Custom logic for updating preexisting keys.
+    // Here the logic is for 'count' to be incremented by the new values.
+    var updater = function(existing, updates, redis, onDone) {
+      redis.hincrby(updates, function(err, replies) {
+        onDone(err);
+      });
+    };
+
+    var sortedSetKey = this.keys[3],
+        shs = new SortedHashSet(sortedSetKey, redis),
+        min = 1333773458509,
+        max = 1333773458511;
+
+    // Set original hash states.
+    redis.hset(origHashes, function(err, replies) {
+      // Set original sorted set state.
+      redis.zadd(sortedSetKey, origMembers, function(err, replies) {
+        // Modify state.
+        shs.upsert(changes, updater, function(err, replies) {
+          // Verify final hash states.
+          redis.hget(Object.keys(changes), function(err, actual) {
+            test.deepEqual(actual, expectedHashes);
+            // Verify final sorted set states.
+            redis.connect();
+            redis.client.zrangebyscore(sortedSetKey, min, max, function(err, actual) {
+              test.deepEqual(actual, Object.keys(changes));
+              test.done();
+            });
+          });
+        });
+      });
+    });
   }
 };

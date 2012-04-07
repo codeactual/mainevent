@@ -21,9 +21,84 @@ var SortedHashSet = function(name, redis) {
 };
 
 /**
- * Update field sets of multiple hash keys if they exist.
- * Delegate update logic to a callback.
+ * Creates new hash keys and their sorted set members (scored pointers to the hash keys).
  *
+ * - If a key already exists, its field set is modified by the 'updater' callback.
+ *
+ * @param changes {Object} Hash keys/fields and sorted set member scores.
+ * {
+ *   <hash key>: {
+ *     hashFields: <field set object>,
+ *     score: <sorted set member score>
+ *   },
+ *   <hash key>: {
+ *     ...
+ *   },
+ *   ...
+ * }
+ * @param updater {Function} Applied to all preexisting hash keys.
+ * - See SortedHashSet.updateExistingHashes().
+ * @param callback {Function} Fires after upsert completion.
+ * - err {String}
+ * - replies {Array} Replies from last completed command.
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ */
+SortedHashSet.prototype.upsert = function(changes, updater, callback, bulk) {
+  var shs = this, redis = this.redis, hashes = {}, members = [];
+  changes = _.clone(changes);
+
+  // Unpack hash fields from 'changes' for updateExistingHashes().
+  _.each(changes, function(change, key) {
+    hashes[key] = change.hashFields;
+  });
+
+  this.updateExistingHashes(hashes, updater, function(err, updatedKeys) {
+
+    // Remove updated keys from insert eligibility.
+    _.each(updatedKeys, function(key) {
+      delete changes[key];
+      delete hashes[key];
+    });
+
+    // No insertions required.
+    if (!_.size(changes)) {
+      callback(null, []);
+      return;
+    }
+
+    // Unpack hash fields from 'changes' for zadd().
+    _.each(changes, function(change, key) {
+      members.push([change.score, key]);
+    });
+
+    // Insert index entries.
+    redis.zadd(shs.name, members, function(err, replies) {
+      // Command failed.
+      if (err) {
+        if (!bulk) { redis.end(); }
+        callback(err, replies);
+        return;
+      }
+
+      // Insert indexed data.
+      redis.hset(hashes, function(err, replies) {
+        // Command failed.
+        if (err) {
+          if (!bulk) { redis.end(); }
+          callback(err, replies);
+          return;
+        }
+
+        callback(err, replies);
+      });
+    });
+  });
+};
+
+/**
+ * Update fields of multiple hash keys -- only if they exist.
+ *
+ * - Delegate update logic to a callback.
  * - Intended to support SortedHashSet.upsert().
  *
  * @param hashes {Object} {<hash key>: <field set object>}
