@@ -41,7 +41,7 @@ app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
 // All non-API requests go to Backbone.js + pushState.
-app.get(/^((?!\/(api|js|css|img)\/).)*$/, function(req, res) {
+app.get(/^((?!\/(api|js|css|img|socket.io)\/).)*$/, function(req, res) {
   requirejs([__dirname + '/controllers/index.js'], function(controller) {
     controller(req, res);
   });
