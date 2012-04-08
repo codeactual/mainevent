@@ -25,7 +25,9 @@ var date = diana.shared.Date,
     chunkStart = null,
     chunkLastIds = [],
     exitGraceful = false,
-    exitMessage = '%s received, will exit after current chunk',
+    exitGracefulMessage = '%s received, will exit after current chunk',
+    exitSleepingMessage = '%s received, exiting from sleep',
+    sleeping = false,
 
     jobName = 'CountAllPartitioned',
     job = new (diana.requireJob(jobName).getClass())('graph'),
@@ -216,9 +218,13 @@ var runJob = function(lastId) {
           if (program.verbose) {
             log('sleeping for 60 seconds');
           }
+
           setTimeout(function() {
+            sleeping = false;
             runJob(chunkLastId);
           }, 60000);
+
+          sleeping = true;
           return;
         }
       }
@@ -251,10 +257,18 @@ var runJob = function(lastId) {
 };
 
 process.on('SIGINT', function() {
-  log(exitMessage, 'SIGINT');
+  if (sleeping) {
+    log(exitSleepingMessage, 'SIGINT');
+    process.exit();
+  }
+  log(exitGracefulMessage, 'SIGINT');
   exitGraceful = true;
 });
 process.on('SIGTERM', function() {
-  log(exitMessage, 'SIGTERM');
+  if (sleeping) {
+    log(exitSleepingMessage, 'SIGTERM');
+    process.exit();
+  }
+  log(exitGracefulMessage, 'SIGTERM');
   exitGraceful = true;
 });
