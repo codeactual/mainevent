@@ -28,15 +28,14 @@ var date = diana.shared.Date,
     exitMessage = '%s received, will exit after current chunk',
 
     jobName = 'CountAllPartitioned',
-    job = new (diana.requireJob(jobName).getClass()),
-    namespace = 'graph',
+    job = new (diana.requireJob(jobName).getClass())('graph'),
     log = job.createUtilLogger(program.quiet),
 
     mongodb = diana.requireModule('mongodb').createInstance(),
     redis = diana.requireModule('redis').createInstance(),
     SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass(),
 
-    lastIdKey = job.buildLastIdKey(namespace),
+    lastIdKey = job.buildLastIdKey(),
     bulk = true;
 
 // Narrow the job permutations to specific parser/interval.
@@ -133,7 +132,7 @@ var runJob = function(lastId) {
             interval: interval
           });
 
-          var sortedSetKey = job.buildSortedSetKey('graph');
+          var sortedSetKey = job.buildSortedSetKey();
 
           job.updateMapReduceConfig({
             // Sort ascending to allow 'lastId' to follow insertion order.
@@ -149,7 +148,7 @@ var runJob = function(lastId) {
             _.each(results, function(result, key) {
 
               // Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
-              var member = job.buildHashKey('graph', key),
+              var member = job.buildHashKey(key),
                   score = (new Date(key)).getTime();
 
               if (program.vverbose) {
