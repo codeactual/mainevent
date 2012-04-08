@@ -228,9 +228,11 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    *
    * @param base {String} Ex. 'timeline', w/out trailing slash.
    * @param args {Object}
+   * @param pushState {Boolean} (Optional, Default: true)
+   * - If false, '?' is appended to 'base'.
    * @return {String}
    */
-  Backbone.View.prototype.buildUrl = function(base, args) {
+  Backbone.View.prototype.buildUrl = function(base, args, pushState) {
     var pairs = [];
     _.each(args, function(value, key) {
       if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
@@ -238,7 +240,8 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
       }
       pairs.push(key + '=' + encodeURIComponent(value));
     });
-    return base + (pairs.length ? '/' + pairs.join('&') : '');
+    baseSuffix = _.isUndefined(pushState) || pushState ? '/' : '?';
+    return base + (pairs.length ? baseSuffix + pairs.join('&') : '');
   };
 
   /**
