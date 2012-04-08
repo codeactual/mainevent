@@ -10,9 +10,12 @@ exports.getClass = function() {
   return CountAllPartitioned;
 };
 
-var CountAllPartitioned = function() {
+/**
+ * @param namespace {String} (Optional) For building Redis keys. Ex. 'graph'.
+ */
+var CountAllPartitioned = function(namespace) {
   this.name = diana.extractJobName(__filename);
-  this.__super__.call(this);
+  this.__super__.apply(this, arguments);
 };
 
 Job.extend(CountAllPartitioned, {
@@ -134,16 +137,17 @@ Job.extend(CountAllPartitioned, {
   /**
    * See prototype in prototype.js for additional notes.
    *
-   * @param namespace {String} Ex. 'graph'.
    * @param parser {String} Ex. 'json'.
    * @param interval {Number} Ex. 3600000.
    * @return {String} 'graph:CountAllPartitioned:json:3600000'
    */
-  buildSortedSetKey: function(namespace) {
+  buildSortedSetKey: function() {
     var options = this.getOptions();
     return util.format(
-      '%s:%s:%s:%d',
-      namespace, this.name, options['parser'], options['interval']
+      '%s:%s:%d',
+      this.__super__.prototype.buildSortedSetKey.call(this),
+      options['parser'],
+      options['interval']
     );
   }
 });

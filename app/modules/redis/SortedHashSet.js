@@ -135,8 +135,8 @@ SortedHashSet.prototype.updateExistingHashes = function(updates, updater, callba
     }
 
     // Remove misses.
-    _.each(existing, function(fieldSet, key) {
-      if (_.isUndefined(fieldSet)) {
+    _.each(existing, function(fieldset, key) {
+      if (_.isUndefined(fieldset)) {
         delete existing[key];
         delete updates[key];
       }

@@ -6,18 +6,19 @@ exports.prototypes = {
   setUp: function(callback) {
     var JobAClass = function() {
       this.name = 'JobA';
-      this.__super__.call(this);
+      this.__super__.apply(this, arguments);
     };
     var JobBClass = function() {
       this.name = 'JobB';
-      this.__super__.call(this);
+      this.__super__.apply(this, arguments);
     };
     var proto = diana.requireJob('prototype');
     proto.extend(JobAClass, {});
     proto.extend(JobBClass, {});
-    this.jobA = new JobAClass();
-    this.jobA2 = new JobAClass();
-    this.jobB = new JobBClass();
+    this.namespace = 'test';
+    this.jobA = new JobAClass(this.namespace);
+    this.jobA2 = new JobAClass(this.namespace);
+    this.jobB = new JobBClass(this.namespace);
 
     // For wrapCallback() tests.
     var jobA = this.jobA;
@@ -141,9 +142,33 @@ exports.prototypes = {
     wrapper(expected.err, expected.results);
   },
 
+  testBuildKey: function(test) {
+    test.equal(this.jobA.buildKey('a', 'b', 'c'), 'a:b:c');
+    test.equal(this.jobA.buildKey('', 'b', 'c'), 'b:c');
+    test.done();
+  },
+
   testBuildLastIdKey: function(test) {
-    var namespace = 'graph';
-    test.equal(this.jobA.buildLastIdKey(namespace), namespace + ':JobA:lastId');
+    test.equal(this.jobA.buildLastIdKey(), this.namespace + ':JobA:lastId');
+    test.done();
+  },
+
+  testBuildHashKey: function(test) {
+    var resultId = '2012-02';
+    test.equal(
+      this.jobA.buildHashKey(resultId),
+      this.namespace + ':JobA:result:' + resultId
+    );
+    test.done();
+  },
+
+  testExtractResultKey: function(test) {
+    var resultId = '2012-02',
+        hashKey = this.jobA.buildHashKey(resultId);
+    test.equal(
+      this.jobA.extractResultKey(hashKey),
+      resultId
+    );
     test.done();
   }
 };

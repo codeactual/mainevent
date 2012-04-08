@@ -10,15 +10,14 @@ var parsers = diana.requireModule('parsers/parsers');
  * Verify the job results for a given interval and log set.
  *
  * @param test {Object} Test instance.
- * @param jobName {String}
+ * @param job {Object} Job instance.
  * @param logs {Array} Event objects.
  * @param expected {Object} Reduce results indexed by their _id values.
  * @param options {Object} Job-specific options.
  *
  * Additional arguments are passed to the job's run() function.
  */
-exports.verifyJob = function(test, jobName, logs, expected, options) {
-  var job = new (diana.requireJob(jobName).getClass());
+exports.verifyJob = function(test, job, logs, expected, options) {
   test.expect(1);
   parsers.parseAndInsert(logs, function() {
     job.run(options, function(err, results) {

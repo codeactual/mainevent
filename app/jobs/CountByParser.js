@@ -12,9 +12,12 @@ exports.getClass = function() {
   return CountByParser;
 };
 
+/**
+ * @param namespace {String} (Optional) For building Redis keys. Ex. 'graph'.
+ */
 var CountByParser = function() {
-  this.name = __filename;
-  this.__super__.call(this);
+  this.name = diana.extractJobName(__filename);
+  this.__super__.apply(this, arguments);
 };
 
 Job.extend(CountByParser, {

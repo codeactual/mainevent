@@ -8,7 +8,7 @@ exports.extend = function(subType, props) {
   _.extend(subType.prototype, props);
 };
 
-var Job = function() {
+var Job = function(namespace) {
   var options = {
     // Result collection is dropped after the callback receives the content.
     dropResultsAfterUse: true,
@@ -19,6 +19,8 @@ var Job = function() {
 
   // Collection.mapReduce() options.
   var mapReduceConfig = {};
+
+  this.namespace = namespace;
 
   /**
    * Return a shallow copy of the job's options.
@@ -168,34 +170,58 @@ Job.prototype.mapReduce = function(query, callback) {
 };
 
 /**
+ * Build a key string composed of all (truthy) arguments delimited by ':'.
+ *
+ * @return {String}
+ */
+Job.prototype.buildKey = function() {
+ return  _.compact(Array.prototype.slice.call(arguments)).join(':');
+};
+
+/**
  * Build the key of the sorted set which indexes this job's results.
  *
  * Ex. 'graph:CountAllPartitioned:json:3600000'.
- */
-Job.prototype.buildSortedSetKey = function() { return ''; };
-
-/**
- * Build the key of hash which holds a specific map reduce result.
  *
- * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
- *
- * @param resultKey {String} Ex. '2012-02'.
  * @return {String}
  */
-Job.prototype.buildHashKey = function(namespace, resultKey) {
-  return this.buildSortedSetKey(namespace) + ':result:' + resultKey;
+Job.prototype.buildSortedSetKey = function() {
+  return this.buildKey(this.namespace, this.name);
 };
 
 /**
  * Build the key of hash which holds a specific map reduce result.
  *
- * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
+ * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
  *
- * @param resultKey {String} Ex. '2012-02'.
+ * @param resultId {String} Ex. '2012-02'.
  * @return {String}
  */
-Job.prototype.buildLastIdKey = function(namespace) {
-  return namespace + ':' + this.name + ':lastId';
+Job.prototype.buildHashKey = function(resultId) {
+  return this.buildKey(this.buildSortedSetKey(), 'result', resultId);
+};
+
+/**
+ * Return just the result ID from buildHashKey() string.
+ *
+ * @param hashKey {String} Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
+ * @return {String} Ex. '2012-02'.
+ */
+Job.prototype.extractResultKey = function(hashKey) {
+  return hashKey.substr(
+    (this.buildKey(this.buildSortedSetKey(), 'result')).length + 1
+  );
+};
+
+/**
+ * Build the key of hash which holds a specific map reduce result.
+ *
+ * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
+ *
+ * @return {String}
+ */
+Job.prototype.buildLastIdKey = function() {
+  return this.buildKey(this.namespace, this.name, 'lastId');
 };
 
 /**
