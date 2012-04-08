@@ -18,11 +18,12 @@ exports.async = {
     };
 
     var onDone = function() {
-      test.deepEqual(consumed, list);
+      test.deepEqual(list, [1, 2, 3]);
+      test.deepEqual(consumed, [1, 2, 3]);
       test.done();
     };
 
-    test.expect(1);
+    test.expect(2);
     diana.shared.Async.runOrdered(list, consumer, onDone);
   }
 };
