@@ -118,3 +118,17 @@ exports.getConfiguredParsers = function() {
   });
   return _.keys(parsers);
 };
+
+/**
+ * Split a string into lines for parsing.
+ *
+ * @param str {String}
+ * @return {Array}
+ */
+exports.splitString = function(str) {
+  // Remove trailing whitespace and split on newline.
+  return _.reject(_.compact(str.trim().split("\n")), function(line) {
+    // Remove any lines composed of only whitespace.
+    return line.match(/^\s+$/);
+  });
+};

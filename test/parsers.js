@@ -415,3 +415,11 @@ exports.testUnparsableTime = function(test) {
     });
   });
 };
+
+exports.testSplitString = function(test) {
+  test.deepEqual(
+    parsers.splitString("\n\na1\nb1\nfalse\nc1\n\t\n0\n\nd1\ne1\n\t\n"),
+    ['a1', 'b1', 'false', 'c1', '0', 'd1', 'e1']
+  );
+  test.done();
+};

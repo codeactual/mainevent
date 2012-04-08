@@ -54,7 +54,7 @@
     var monitor = this;
 
     this.tail.stdout.on('data', function(data) {
-      var lines = data.toString().replace(/\n$/, '').split("\n");
+      var lines = parsers.splitString(data.toString());
       lineCount += lines.length;
 
       if (program.verbose) {
