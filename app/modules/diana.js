@@ -109,7 +109,6 @@ _.sha1 = function(value) {
   return sha1.digest('hex');
 };
 
-requirejs('shared/Underscore');
 requirejs('shared/Async');
 requirejs('shared/Date');
 requirejs('shared/Lang');

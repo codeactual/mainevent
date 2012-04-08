@@ -20,7 +20,6 @@ require([
   'order!helpers/Cache',
   'order!helpers/Event',
   'order!helpers/Prefs',
-  'order!shared/Underscore',
   'order!shared/Date',
   'order!helpers/Widget',
   'order!observers/ContentPreRender'

@@ -127,7 +127,7 @@ var runJob = function(lastId) {
 
           job.updateOptions({
             // Ex. 'json', 'json_3600000'
-            suffix: _.filterTruthy([parser, interval]).join('_'),
+            suffix: _.compact([parser, interval]).join('_'),
             // Ex. 'hour'
             partition: date.partitions[date.bestFitInterval(interval)],
           });
