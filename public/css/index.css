@@ -1,67 +1,77 @@
-.form-inline .form-row {
-  margin-bottom: 8px;
-}
-.taglist .label {
-  margin-right: 0.25em;
-}
-.timeline-update {
-  font-weight: bold;
-}
-.modal-footer input,
-.modal-footer select {
-  margin-right: 8px;
-}
-.condition-pair select {
-  width: 50px;
-}
-select.parser {
-  width: 140px;
-}
-select.time-interval {
-  width: 110px;
-}
+/**
+ * CLASS
+ */
+
+/* [ALL] Box containing show-until-click and timed alert messages */
 .alert {
   cursor: pointer;
 }
-.kb-shortcut {
-  font-size: 0.9em;
-  color: #999999
+/* [DASHBOARD,EVENT,TIMELINE] Drop-down, ex. value '='. */
+.condition-pair select {
+  width: 50px;
 }
+/* [DASHBOARD,EVENT,TIMELINE]
+ * - Horizontally aligned modal forms.
+ * - Header grid content.
+ * - Elements adjacent to modal submit button.
+ */
+.inline-control {
+  margin-right: 8px;
+}
+/* [DASHBOARD,EVENT,TIMELINE] Horizontally aligned modal forms. */
+.form-inline .form-row {
+  margin-bottom: 8px;
+}
+/* [DASHBOARD,EVENT,TIMELINE] */
+.header-nav-group {
+  margin-bottom: 1em;
+}
+/* [DASHBOARD,EVENT] Middle header cell. */
+.header-grid > div:nth-child(2) {
+  text-align: center;
+}
+/* [TIMELINE] Above and below results table. */
 .pagination-group {
   text-align: center;
   margin-bottom: 1em;
 }
-.form-row input,
-.form-row select,
-.header-nav-group a,
-.pagination-group a {
-  margin-right: 8px;
+/* [DASHBOARD,EVENT,TIMELINE] Drop-down, ex. value "json". */
+.parser {
+  width: 140px;
 }
-.header-nav-group {
-  margin-bottom: 1em;
+/* [EVENT] */
+.taglist {
+  margin-bottom: 18px;
 }
+/* [EVENT] */
+.taglist .label {
+  margin-right: 0.25em;
+}
+/* [DASHBOARD,EVENT,TIMELINE] Drop-down, ex. value "Last 1 minute". */
+.time-interval {
+  width: 110px;
+}
+/* [TIMELINE] All rows prepended to the table in the most recent batch. */
+.timeline-update {
+  font-weight: bold;
+}
+
+/**
+ * ID
+ */
+
+/* [DASHBBOARD] Constrain jqPplot canvases inside. */
+#dashboard-main-graph {
+  height: 400px;
+}
+/* [DASHBBOARD, TIMELINE] "Keyboard shortcuts available" link/icon */
 #keyboard-shortcuts-group {
   margin-top: 9px; /* Align with drop-down text */
   text-align: right;
 }
+/* [DASHBBOARD, TIMELINE] Ex. "<Shift> +  ?" */
 #keyboard-shortcuts-modal .keyChar {
   font-weight: bold;
   text-align: right;
   padding-right: 8px;
-}
-.taglist {
-  margin-bottom: 18px;
-}
-.header-grid > div:nth-child(2) {
-  text-align: center;
-}
-.btn-group-center .btn-group {
-  margin: 0 auto;
-  display: inline-block;
-}
-.header-grid form > * {
-  margin-right: 8px;
-}
-#dashboard-main-graph {
-  height: 400px;
 }

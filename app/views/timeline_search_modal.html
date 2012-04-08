@@ -6,16 +6,16 @@
   <form class="well form-inline form-inline">
     <div class="modal-body">
       <div class="form-row">
-        <select class="parser"></select>
+        <select class="inline-control parser"></select>
       </div>
       <div class="form-row">
         {>select_time_interval/}
-        <input id="time-gte" type="text" class="input-medium any-time" placeholder="Earliest Time" /><input id="time-lte" type="text" class="input-medium any-time" placeholder="Latest Time" />
-        <a id="time-interval-clear" class="btn btn-danger any-time" href="#"><i class="icon-trash icon-white any-time" /></a>
+        <input id="time-gte" type="text" class="any-time inline-control input-medium" placeholder="Earliest Time" /><input id="time-lte" type="text" class="input-medium any-time" placeholder="Latest Time" />
+        <a id="time-interval-clear" class="any-time btn btn-danger" href="#"><i class="icon-trash icon-white any-time" /></a>
       </div>
       <div class="form-row condition-pair">
-        <input type="text" class="input-small" placeholder="Name">
-        <select>
+        <input type="text" class="inline-control input-small" placeholder="Name">
+        <select class="inline-control">
           <option value="">=</option>
           <option value="gte">&gt;=</option>
           <option value="gt">&gt;</option>
@@ -23,16 +23,16 @@
           <option value="lt">&lt;</option>
           <option value="ne">!=</option>
         </select>
-        <input type="text" class="input-xlarge" placeholder="Value" />
+        <input type="text" class="inline-control input-xlarge" placeholder="Value" />
         <a class="btn btn-danger" href="#"><i class="icon-trash icon-white" /></a>
       </div>
     </div>
     <div class="modal-footer">
       <span class="input-prepend sort-option">
         <span class="add-on">Sort By</span>
-        <input id="sort-attr" type="text" class="input-small" placeholder="Name" />
+        <input id="sort-attr" type="text" class="inline-control input-small" placeholder="Name" />
       </span>
-      <select id="sort-dir" class="sort-option">
+      <select id="sort-dir" class="inline-control sort-option">
         <option value="asc">Low to High</option>
         <option value="desc">High to Low</option>
       </select>
