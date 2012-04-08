@@ -62,6 +62,8 @@ MongoDb.prototype.eventPostFind = function(docs, options) {
  */
 MongoDb.prototype.extractSortOptions = function(params) {
   var options = {};
+  params = params || {};
+
   if (params['sort-attr']) {
     if ('desc' == params['sort-dir']) {
       options.sort = [[params['sort-attr'], 'desc']];
@@ -192,10 +194,13 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
     mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
       var docs = [];
       logs = _.isArray(logs) ? logs : [logs];
+
       _.each(logs, function(log) {
         log.time = new Date(log.time);
+        log = diana.shared.Lang.numericStrToNum(log);
         docs.push(log);
       });
+
       collection.insert(docs, {safe: true}, function(err, docs) {
         if (!bulk) {
           mongo.dbClose();
