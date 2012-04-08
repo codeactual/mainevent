@@ -48,7 +48,8 @@ exports.lang = {
           '0.31',
           '300d',
           'd300'
-        ];
+        ],
+        date = new Date();
 
     var actual = convert(obj);
     test.strictEqual(actual.a.b.num0, 300);
@@ -70,6 +71,9 @@ exports.lang = {
     test.strictEqual(convert('0.31'), 0.31);
     test.strictEqual(convert('300d'), '300d');
     test.strictEqual(convert('d300'), 'd300');
+
+    // Verify constructor filter.
+    test.strictEqual(convert(date).getTime(), date.getTime());
     test.done();
   }
 };
