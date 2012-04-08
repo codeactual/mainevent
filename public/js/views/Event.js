@@ -57,11 +57,20 @@ define([
         modal.modal('show');
       } else {
         var searchArgs = this.model.toJSON();
+
+        // Support JSON events' arbitrary key/value pairs.
+        if (searchArgs.__list) {
+          _.each(searchArgs.__list, function(pair) {
+            searchArgs[pair.key] = pair.value;
+          });
+        }
+
         _.each(searchArgs, function(value, key) {
           if ('_' == key[0] || '' == value || key.match(/^(previewAttr|time|id)$/)) {
             delete searchArgs[key];
           }
         });
+
         this.subViews.search = new TimelineSearch({
           el: modal,
           searchArgs: searchArgs,
