@@ -22,7 +22,7 @@ Job.extend(CountAllPartitioned, {
 
   customOptionKeys: ['partition'],
 
-  keyFields: ['parser', 'interval'],
+  keyFields: ['parser'],
 
   map: function() {
     var month = (this.time.getMonth() + 1) + '',
@@ -144,12 +144,13 @@ Job.extend(CountAllPartitioned, {
    * @return {String} 'graph:CountAllPartitioned:json:3600000'
    */
   buildSortedSetKey: function() {
-    var fields = this.getKeyFields();
+    var fields = this.getKeyFields(),
+        options = this.getOptions();
     return util.format(
-      '%s:%s:%d',
+      '%s:%s:%s',
       this.__super__.prototype.buildSortedSetKey.call(this),
       fields['parser'],
-      fields['interval']
+      options['partition']
     );
   }
 });

@@ -130,11 +130,8 @@ var runJob = function(lastId) {
             suffix: _.filterTruthy([parser, interval]).join('_'),
             // Ex. 'hour'
             partition: date.partitions[date.bestFitInterval(interval)],
-            // Ex. 'json'
-            parser: parser,
-            // Ex. 3600000
-            interval: interval
           });
+          job.updateKeyFields({parser: parser});
 
           var sortedSetKey = job.buildSortedSetKey();
 

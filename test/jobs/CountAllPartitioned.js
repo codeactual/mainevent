@@ -232,27 +232,23 @@ exports.job = {
   },
 
   testBuildSortedSetKey: function(test) {
-    this.job.updateKeyFields({
-      parser: 'json',
-      interval: 3600000
-    });
+    this.job.updateKeyFields({parser: 'json'});
+    this.job.updateOptions({partition: 'hour'});
 
     test.equal(
-      this.job.buildSortedSetKey('json', 3600000),
-      this.namespace + ':CountAllPartitioned:json:3600000'
+      this.job.buildSortedSetKey('json', 'hour'),
+      this.namespace + ':CountAllPartitioned:json:hour'
     );
     test.done();
   },
 
   testBuildHashKey: function(test) {
-    this.job.updateKeyFields({
-      parser: 'json',
-      interval: 3600000
-    });
+    this.job.updateKeyFields({parser: 'json'});
+    this.job.updateOptions({partition: 'hour'});
 
     test.equal(
       this.job.buildHashKey('2012-02'),
-      this.namespace + ':CountAllPartitioned:json:3600000:result:2012-02'
+      this.namespace + ':CountAllPartitioned:json:hour:result:2012-02'
     );
     test.done();
   }
