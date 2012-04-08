@@ -8,7 +8,7 @@
 'use strict';
 
 var redis = require('redis'),
-    config = diana.getConfig().redis;
+    config = mainevent.getConfig().redis;
 
 exports.createInstance = function() {
   return new Redis();

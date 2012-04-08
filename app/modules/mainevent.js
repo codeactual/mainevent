@@ -15,7 +15,7 @@ requirejs.config({
   baseUrl: __dirname + '/../../public/js'
 });
 
-GLOBAL.diana = {
+GLOBAL.mainevent = {
   /**
    * Load core module.
    *
@@ -33,7 +33,7 @@ GLOBAL.diana = {
    * @return {Object}
    */
   requireJob: function(name) {
-    name = diana.extractJobName(name);
+    name = mainevent.extractJobName(name);
     return require(__dirname + '/../jobs/' + name + '.js');
   },
 
@@ -68,7 +68,7 @@ GLOBAL.diana = {
    * Create a util.log() wrapper that prepends each message with a logger name.
    *
    * Usage:
-   * var jobLog = diana.createUtilLogger('MyJob');
+   * var jobLog = mainevent.createUtilLogger('MyJob');
    * jobLog('Command "%s" returned with reply "%s"', cmd, reply);
    *
    * Out:

@@ -2,11 +2,11 @@ define(['shared/Date'], function() {
 
   'use strict';
 
-  window.diana = window.diana || {};
-  window.diana.helpers = window.diana.helpers || {};
-  var diana = window.diana;
+  window.mainevent = window.mainevent || {};
+  window.mainevent.helpers = window.mainevent.helpers || {};
+  var mainevent = window.mainevent;
 
-  var Graph = diana.helpers.Graph = {
+  var Graph = mainevent.helpers.Graph = {
 
     formatRegex: {
       'minute|second': /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/,
@@ -92,7 +92,7 @@ define(['shared/Date'], function() {
         return axes;
       }
 
-      var date = diana.shared.Date;
+      var date = mainevent.shared.Date;
       axes = _.clone(axes);
       axes.xaxis = axes.xaxis || {};
       axes.yaxis = axes.yaxis || {};

@@ -52,7 +52,7 @@ define([
       });
 
       $.when(
-        diana.helpers.View.deferRender(
+        mainevent.helpers.View.deferRender(
           'timeline_table',
           null,
           function(err, out) {
@@ -86,7 +86,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     openSearch: function(event) {
-      diana.helpers.Widget.closeDropdown(event);
+      mainevent.helpers.Widget.closeDropdown(event);
 
       var modal = $('#timeline-search-modal');
 
@@ -97,7 +97,7 @@ define([
       if (this.subViews.search) {
         modal.modal('show');
       } else {
-        diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
+        mainevent.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
         this.subViews.search = new TimelineSearch({
           el: modal,
           searchArgs: this.options.searchArgs,
@@ -112,7 +112,7 @@ define([
      * @param event {Object} jQuery event object.
      */
     toggleUpdates: function(event) {
-      diana.helpers.Widget.closeDropdown(event);
+      mainevent.helpers.Widget.closeDropdown(event);
       this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
@@ -121,7 +121,7 @@ define([
         this.closeSocket();
       }
 
-      diana.helpers.Widget.alert(
+      mainevent.helpers.Widget.alert(
         'Updates ' + (this.prefs.autoUpdate ? 'enabled' : 'disabled') + '.',
         'info',
         3
@@ -137,7 +137,7 @@ define([
      */
     editRowLimit: function(event) {
       var view = this;
-      diana.helpers.Widget.closeDropdown(event);
+      mainevent.helpers.Widget.closeDropdown(event);
 
       this.rowLimitView = new EditSingleValue({
         defaults: this.prefs.rowLimit,
@@ -197,7 +197,7 @@ define([
           var searchArgs = _.clone(view.options.searchArgs);
           var skip = parseInt(searchArgs.skip || '0', 10); // Use '0' to avoid NaN.
           var limit = parseInt(searchArgs.limit || '0', 10); // Use '0' to avoid NaN.
-          var pageSize = limit ? Math.min(limit, diana.maxResultSize) : diana.maxResultSize;
+          var pageSize = limit ? Math.min(limit, mainevent.maxResultSize) : mainevent.maxResultSize;
           if (response.info.prevPage) {
             searchArgs = _.clone(view.options.searchArgs);
             searchArgs.skip = Math.max(0, parseInt(skip, 10) - pageSize);
@@ -219,7 +219,7 @@ define([
         },
 
         error: function(collection, response) {
-          diana.helpers.Event.trigger('CritFetchError', response);
+          mainevent.helpers.Event.trigger('CritFetchError', response);
           callback.call(view, []);
         }
       });
@@ -291,7 +291,7 @@ define([
       event.relTime = moment(event.time).fromNow();
       event.intReferer = this.buildUrl('timeline', this.options.searchArgs);
 
-      return diana.helpers.View.deferRender(
+      return mainevent.helpers.View.deferRender(
         'timeline_table_row',
         event,
         function(err, out) {
@@ -327,11 +327,11 @@ define([
       view.newestEventId = initialId;
       view.newestEventTime = initialTime;
 
-      if (!this.prefs.autoUpdate || !diana.features.timelineUpdate) {
+      if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
         return;
       }
 
-      this.socket = diana.helpers.Socket.create({
+      this.socket = mainevent.helpers.Socket.create({
         event: {
           connect: function() {
             // Start/restart automatic updates.

@@ -25,7 +25,7 @@ define([
       this.model.bind('change', this.render, this);
 
       // Bubble up the model error, ex. 'Event not found.'
-      diana.helpers.Event.on('EventSyncError', this.onEventSyncError);
+      mainevent.helpers.Event.on('EventSyncError', this.onEventSyncError);
 
       this.model.fetch();
     },
@@ -36,7 +36,7 @@ define([
 
     onClose: function() {
       this.model.unbind('change', this.render);
-      diana.helpers.Event.off('EventSyncError', this.onEventSyncError);
+      mainevent.helpers.Event.off('EventSyncError', this.onEventSyncError);
     },
 
     /**
@@ -71,7 +71,7 @@ define([
     },
 
     onEventSyncError: function(response) {
-      diana.helpers.Event.trigger('CritFetchError', response);
+      mainevent.helpers.Event.trigger('CritFetchError', response);
     },
 
     render: function() {
@@ -105,7 +105,7 @@ define([
         // Ex. format the time attribute.
         context.list = _.map(context.list, function(pair, index) {
           if ('time' == pair.key) {
-            context.time = diana.shared.Date.formatTime(pair.value);
+            context.time = mainevent.shared.Date.formatTime(pair.value);
             context.timeFromNow = moment(pair.value).fromNow();
           }
           return pair;
@@ -121,7 +121,7 @@ define([
       } else {
         var context = event;
         context.timeFromNow = moment(context.time).fromNow();
-        context.time = diana.shared.Date.formatTime(context.time);
+        context.time = mainevent.shared.Date.formatTime(context.time);
         delete context.previewAttr;
       }
 

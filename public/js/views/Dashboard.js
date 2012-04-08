@@ -44,7 +44,7 @@ define([
 
     onClose: function() {
       if (this.subViews.search) {
-        diana.helpers.Event.off('TimelineSearchSubmit', this.onSearchSubmit);
+        mainevent.helpers.Event.off('TimelineSearchSubmit', this.onSearchSubmit);
       }
     },
 
@@ -57,7 +57,7 @@ define([
           changed = {'time-gte': now - interval, 'time-lte': now};
 
       // Apply state change to listening dashboards.
-      diana.helpers.Event.trigger('DashboardArgsChange', changed);
+      mainevent.helpers.Event.trigger('DashboardArgsChange', changed);
 
       // Save the new state.
       this.options.dashArgs['time-gte'] = changed['time-gte'];
@@ -71,7 +71,7 @@ define([
       var changed = {parser: this.$('.parser').val()};
 
       // Apply state change to listening dashboards.
-      diana.helpers.Event.trigger('DashboardArgsChange', changed);
+      mainevent.helpers.Event.trigger('DashboardArgsChange', changed);
 
       // Save the new state.
       this.options.dashArgs.parser = changed.parser;
@@ -116,7 +116,7 @@ define([
         syncDropDowns();
         this.searchModal.modal('show');
       } else {
-        diana.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
+        mainevent.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
         this.subViews.search = new TimelineSearch({
           el: this.searchModal,
           searchArgs: {},
@@ -137,7 +137,7 @@ define([
       delete this.options.dashArgs.interval;
 
       // Trigger the data fetch and graph refresh.
-      diana.helpers.Event.trigger('DashboardArgsChange', {query: this.options.dashArgs});
+      mainevent.helpers.Event.trigger('DashboardArgsChange', {query: this.options.dashArgs});
 
       this.searchMode = true;
       this.toggleDropDowns();
@@ -197,11 +197,11 @@ define([
               timeInterval = $('#dashboard-header-grid .time-interval');
 
           if (parser) {
-            diana.helpers.Widget.fillParserSelect(parser, false);
+            mainevent.helpers.Widget.fillParserSelect(parser, false);
             parser.val(view.options.dashArgs.parser);
           }
           if (timeInterval) {
-            diana.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
+            mainevent.helpers.Widget.fillPresetTimeSelect(timeInterval, false);
             timeInterval.val(view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']);
           }
         }
@@ -236,7 +236,7 @@ define([
 
       // Reuse the change event so the arguments pass through the same logic
       // as do changes originating from drop-downs or search modal.
-      diana.helpers.Event.trigger('DashboardArgsChange', initialDashArgs);
+      mainevent.helpers.Event.trigger('DashboardArgsChange', initialDashArgs);
     }
   });
 });

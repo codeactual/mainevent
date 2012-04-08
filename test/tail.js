@@ -8,9 +8,9 @@ var fs = require('fs'),
     testutil = require(__dirname + '/modules/testutil.js'),
     fork = require('child_process').fork,
     exec = require('child_process').exec,
-    mongodb = diana.requireModule('mongodb').createInstance(),
+    mongodb = mainevent.requireModule('mongodb').createInstance(),
     testConfigFile = __dirname + '/fixtures/tail-config.js',
-    testConfig = diana.getConfig(testConfigFile),
+    testConfig = mainevent.getConfig(testConfigFile),
     path = testConfig.sources[0].path;
 
 exports.testMonitoring = function(test) {

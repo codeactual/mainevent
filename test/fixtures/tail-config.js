@@ -1,9 +1,9 @@
 'use strict';
 
 exports.read = function () {
-  var config = diana.getConfig();
+  var config = mainevent.getConfig();
   config.sources = [{
-    path: '/tmp/diana-test-tail.log',
+    path: '/tmp/mainevent-test-tail.log',
     parser: 'json',
     tags: ['test1', 'test2'],
     timeAttr: 't',

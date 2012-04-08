@@ -18,7 +18,7 @@ define([], function() {
 
       // Divert all reads through localStorage cache.
       var cacheKey = 'id-' + model.id;
-      diana.helpers.cache.get({
+      mainevent.helpers.cache.get({
         ns: 'event',
         keys: cacheKey,
         onDone: function(results) {
@@ -33,7 +33,7 @@ define([], function() {
               onMissDone(write);
             },
             error: function(response) {
-              diana.helpers.Event.trigger('EventSyncError', response);
+              mainevent.helpers.Event.trigger('EventSyncError', response);
             }
           });
         }

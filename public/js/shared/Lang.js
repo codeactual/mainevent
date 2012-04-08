@@ -3,11 +3,11 @@ define([], function() {
   'use strict';
 
   var root = 'undefined' == typeof window ? GLOBAL : window;
-  root.diana = root.diana || {};
-  root.diana.shared = root.diana.shared || {};
-  var diana = root.diana;
+  root.mainevent = root.mainevent || {};
+  root.mainevent.shared = root.mainevent.shared || {};
+  var mainevent = root.mainevent;
 
-  var Lang = diana.shared.Lang = {
+  var Lang = mainevent.shared.Lang = {
 
     /**
      * Recursively convert all numeric Strings to Numbers.

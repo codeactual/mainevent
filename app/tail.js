@@ -21,11 +21,11 @@
     .option('-v, --verbose')
     .parse(process.argv);
 
-  require(__dirname + '/modules/diana.js');
+  require(__dirname + '/modules/mainevent.js');
   var spawn = require('child_process').spawn,
-      config = diana.getConfig(program.config),
-      parsers = diana.requireModule('parsers/parsers'),
-      procLog = diana.createUtilLogger('tail.js');
+      config = mainevent.getConfig(program.config),
+      parsers = mainevent.requireModule('parsers/parsers'),
+      procLog = mainevent.createUtilLogger('tail.js');
 
   // To support maximum line count for --test.
   var lineCount = 0;
@@ -40,7 +40,7 @@
     // ChildProcess object.
     this.tail = null;
 
-    this.log = diana.createUtilLogger(this.source.path, program.quiet);
+    this.log = mainevent.createUtilLogger(this.source.path, program.quiet);
   };
 
   /**

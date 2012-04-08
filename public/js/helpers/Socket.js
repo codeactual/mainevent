@@ -2,11 +2,11 @@ define([], function() {
 
   'use strict';
 
-  window.diana = window.diana || {};
-  window.diana.helpers = window.diana.helpers || {};
-  var diana = window.diana;
+  window.mainevent = window.mainevent || {};
+  window.mainevent.helpers = window.mainevent.helpers || {};
+  var mainevent = window.mainevent;
 
-  diana.helpers.Socket = {
+  mainevent.helpers.Socket = {
     /**
      * socket.io events observable via create()/reuse() options parameter.
      */

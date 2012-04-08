@@ -13,7 +13,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    * @param defaults {Object} Default map.
    */
   Backbone.View.prototype.initPrefs = function(ns, defaults) {
-    var saved = diana.helpers.Prefs.get(ns + 'View');
+    var saved = mainevent.helpers.Prefs.get(ns + 'View');
     this.prefs = _.extend(defaults, saved);
     this.prefsNs = ns;
   };
@@ -43,7 +43,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
   Backbone.View.prototype.setPref = function(key, value) {
     if (!this.prefsNs) { throw new Error('Preferences namespace missing.'); }
     this.prefs[key] = value;
-    diana.helpers.Prefs.set(this.prefsNs + 'View', this.prefs);
+    mainevent.helpers.Prefs.set(this.prefsNs + 'View', this.prefs);
     return value;
   };
 
@@ -180,24 +180,24 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
   };
 
   Backbone.View.prototype.enableModalEvents = function() {
-    diana.helpers.Event.on('ModalOpen', this.onModalOpen, this);
-    diana.helpers.Event.on('ModalClose', this.onModalClose, this);
+    mainevent.helpers.Event.on('ModalOpen', this.onModalOpen, this);
+    mainevent.helpers.Event.on('ModalClose', this.onModalClose, this);
   };
 
   Backbone.View.prototype.disableModalEvents = function() {
-    diana.helpers.Event.off('ModalOpen', this.onModalOpen);
-    diana.helpers.Event.off('ModalClose', this.onModalClose);
+    mainevent.helpers.Event.off('ModalOpen', this.onModalOpen);
+    mainevent.helpers.Event.off('ModalClose', this.onModalClose);
   };
 
   Backbone.View.prototype.enableKeyboardShortcuts = function() {
     if (this.onKeyboardShortcutsClick) {
-      diana.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+      mainevent.helpers.Event.on('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
     }
   };
 
   Backbone.View.prototype.disableKeyboardShortcuts = function() {
     if (this.onKeyboardShortcutsClick) {
-      diana.helpers.Event.off('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
+      mainevent.helpers.Event.off('KeyboardShortcutsHelp', this.onKeyboardShortcutsClick);
     }
   };
 

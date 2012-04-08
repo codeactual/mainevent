@@ -1,5 +1,5 @@
 {
-  "name": "diana",
+  "name": "mainevent",
   "description": "Parse, store, and view events written to flat file logs.",
   "version": "0.1.0",
   "keywords": [ "logs", "mongodb", "frontend" ],
@@ -11,18 +11,18 @@
   ],
   "contributors": [],
   "bugs": {
-    "url": "https://github.com/codeactual/diana/issues"
+    "url": "https://github.com/codeactual/mainevent/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/codeactual/diana/blob/master/LICENSE"
+      "url": "https://github.com/codeactual/mainevent/blob/master/LICENSE"
     }
   ],
   "repositories": [
     {
       "type": "git",
-      "url": "https://codeactual@github.com/codeactual/diana.git"
+      "url": "https://codeactual@github.com/codeactual/mainevent.git"
     }
   ],
   "dependencies": {

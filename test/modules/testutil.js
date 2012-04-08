@@ -4,7 +4,7 @@
 
 'use strict';
 
-require(__dirname + '/../../app/modules/diana.js');
+require(__dirname + '/../../app/modules/mainevent.js');
 
 var fs = require('fs');
 var crypto = require('crypto');
@@ -16,7 +16,7 @@ exports.getRandHash = function() {
 };
 
 exports.getTempFile = function() {
-  var path = '/tmp/diana-test-' + exports.getRandHash();
+  var path = '/tmp/mainevent-test-' + exports.getRandHash();
   return {
     path: path,
     fd: fs.openSync(path, 'w')

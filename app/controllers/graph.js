@@ -28,7 +28,7 @@ define([], function() {
     }
 
     try {
-      var job = new (diana.requireJob(req.params.name).getClass())('graph');
+      var job = new (mainevent.requireJob(req.params.name).getClass())('graph');
     } catch (e) {
       if (e.toString().match(/Cannot find module/)) {
         send404();
@@ -44,9 +44,9 @@ define([], function() {
     // Ex. extract 'parser' value.
     job.updateKeyFields(req.query);
 
-    var redis = diana.requireModule('redis').createInstance(),
+    var redis = mainevent.requireModule('redis').createInstance(),
         key = job.buildSortedSetKey(),
-        shs = new (diana.requireModule('redis/SortedHashSet').getClass())(redis);
+        shs = new (mainevent.requireModule('redis/SortedHashSet').getClass())(redis);
 
     shs.get(key, req.query['time-gte'], req.query['time-lte'], function(err, results) {
       if (err) {

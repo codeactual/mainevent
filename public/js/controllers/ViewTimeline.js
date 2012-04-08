@@ -52,7 +52,7 @@ define(['views/Timeline'], function(view) {
     });
 
     // Enable compatible feature(s).
-    diana.features.timelineUpdate =
+    mainevent.features.timelineUpdate =
       'time' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
       && !_.has(searchArgs, 'skip')

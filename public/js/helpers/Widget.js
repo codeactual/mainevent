@@ -2,15 +2,15 @@ define([], function() {
 
   'use strict';
 
-  window.diana = window.diana || {};
-  window.diana.helpers = window.diana.helpers || {};
-  var diana = window.diana;
+  window.mainevent = window.mainevent || {};
+  window.mainevent.helpers = window.mainevent.helpers || {};
+  var mainevent = window.mainevent;
 
   var config = {
     alert: {max: 3, format: 'LT'}
   };
 
-  diana.helpers.Widget = {
+  mainevent.helpers.Widget = {
     /**
      * Add an alert above the main content area.
      *
@@ -54,7 +54,7 @@ define([], function() {
     closeModal: function(event) {
       event.preventDefault();
       $('.modal').modal('hide');
-      diana.helpers.Event.trigger('ModalClose');
+      mainevent.helpers.Event.trigger('ModalClose');
     },
 
     /**
@@ -68,7 +68,7 @@ define([], function() {
       if (_.isUndefined(includeAny) || includeAny) {
         select.append('<option value="">Any Event Type</option>');
       }
-      _.each(diana.parsers, function(name) {
+      _.each(mainevent.parsers, function(name) {
         select.append('<option value="' + name + '">' + name + '</option>');
       });
     },
@@ -84,7 +84,7 @@ define([], function() {
       if (_.isUndefined(includeAny) || includeAny) {
         select.append('<option value="">Any Time</option>');
       }
-      _.each(diana.shared.Date.presetTimeIntervals, function(interval, name) {
+      _.each(mainevent.shared.Date.presetTimeIntervals, function(interval, name) {
         select.append('<option value="' + interval + '">' + name + '</option>');
       });
     }

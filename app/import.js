@@ -35,8 +35,8 @@
     process.exit(1);
   }
 
-  require(__dirname + '/modules/diana.js');
-  var parsers = diana.requireModule('parsers/parsers');
+  require(__dirname + '/modules/mainevent.js');
+  var parsers = mainevent.requireModule('parsers/parsers');
 
   var lazy = require('lazy');
   new lazy(require("fs").createReadStream(source.path))

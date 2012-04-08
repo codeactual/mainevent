@@ -8,7 +8,7 @@ var JsonParser = function() {
   Parser.call(this, 'json');
 };
 
-diana.shared.Lang.inheritPrototype(JsonParser, Parser);
+mainevent.shared.Lang.inheritPrototype(JsonParser, Parser);
 
 JsonParser.prototype.parse = function(log) {
   return JSON.parse(log);

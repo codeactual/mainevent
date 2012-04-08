@@ -27,17 +27,17 @@ require([
 
   'use strict';
 
-  window.diana = window.diana || {};
-  var diana = window.diana;
+  window.mainevent = window.mainevent || {};
+  var mainevent = window.mainevent;
 
   // Feature switches.
-  diana.features = {
+  mainevent.features = {
     // Conditionally enabled later only for compatible search conditions.
     timelineUpdate: false
   };
 
   // Used to close() the preexisting view during a route change.
-  diana.mainView = null;
+  mainevent.mainView = null;
 
   /**
    * Custom routing used to allow 'context' attributes to support behaviors
@@ -82,15 +82,15 @@ require([
               config.context,
               function(err, out) {
                 // Allow observers to tweak the layout based on configuration.
-                diana.helpers.Event.trigger('ContentPreRender', config.context);
+                mainevent.helpers.Event.trigger('ContentPreRender', config.context);
 
                 // Display the rendered content container.
                 $('#content').html(out);
 
                 // Let the preexisting view clean itself up.
-                if (diana.mainView) {
-                  diana.mainView.close();
-                  diana.mainView = null;
+                if (mainevent.mainView) {
+                  mainevent.mainView.close();
+                  mainevent.mainView = null;
                 }
 
                 routeArgs = _.map(routeArgs, decodeURIComponent);
@@ -98,7 +98,7 @@ require([
                 // Pass the matched route parameters to the actual controller.
                 var mainView = controller.apply(config.context, routeArgs);
                 if (mainView) {
-                  diana.mainView = mainView;
+                  mainevent.mainView = mainView;
                 }
               }
             );
@@ -114,7 +114,7 @@ require([
      *
      * @param response {Object} AJAX response.
      */
-    diana.helpers.Event.on('CritFetchError', function(response) {
+    mainevent.helpers.Event.on('CritFetchError', function(response) {
       var context = {message: JSON.parse(response.responseText).__error};
       dust.render('error', context, function(err, out) {
         $('#content').html(out);

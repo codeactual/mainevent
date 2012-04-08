@@ -3,12 +3,12 @@
 var testutil = require(__dirname + '/../modules/testutil.js');
 var jobutil = require(__dirname + '/../modules/job.js');
 
-var strtotime = diana.shared.Date.strtotime;
+var strtotime = mainevent.shared.Date.strtotime;
 
 exports.job = {
   setUp: function(callback) {
     this.namespace = 'test';
-    this.job = new (diana.requireJob(__filename).getClass())(this.namespace);
+    this.job = new (mainevent.requireJob(__filename).getClass())(this.namespace);
     callback();
   },
 

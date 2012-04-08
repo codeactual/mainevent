@@ -12,7 +12,7 @@ exports.prototypes = {
       this.name = 'JobB';
       this.__super__.apply(this, arguments);
     };
-    var proto = diana.requireJob('prototype');
+    var proto = mainevent.requireJob('prototype');
     proto.extend(JobAClass, {});
     proto.extend(JobBClass, {});
     this.namespace = 'test';

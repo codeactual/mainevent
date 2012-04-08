@@ -1,5 +1,5 @@
 require(['helpers/Graph'], function() {
-  var Graph = diana.helpers.Graph;
+  var Graph = mainevent.helpers.Graph;
 
   YUI({useBrowserConsole: true}).use('test', function(Y) {
     var suite = new Y.Test.Suite("Graph Data");

@@ -14,6 +14,6 @@ define([], function() {
   });
 
   _.each(observers, function(observer) {
-    diana.helpers.Event.on('ContentPreRender', observer);
+    mainevent.helpers.Event.on('ContentPreRender', observer);
   });
 });

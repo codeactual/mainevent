@@ -5,8 +5,8 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    parsers = diana.requireModule('parsers/parsers'),
-    mongodb = diana.requireModule('mongodb').createInstance();
+    parsers = mainevent.requireModule('parsers/parsers'),
+    mongodb = mainevent.requireModule('mongodb').createInstance();
 
 /**
  * Verification logic used by most test cases below.
@@ -50,7 +50,7 @@ exports.testNginxAccess = function(test) {
 exports.testNginxError = function(test) {
   assertParseValid(
     test,
-    '2012/02/12 09:03:31 [error] 16939#0: *491 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: diana, request: "GET /timeline HTTP/1.1", upstream: "fastcgi://unix:/usr/var/run/php-fpm.sock:", host: "diana"',
+    '2012/02/12 09:03:31 [error] 16939#0: *491 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: mainevent, request: "GET /timeline HTTP/1.1", upstream: "fastcgi://unix:/usr/var/run/php-fpm.sock:", host: "mainevent"',
     'nginx_error',
     {
       time: '2012/02/12 09:03:31',
@@ -58,17 +58,17 @@ exports.testNginxError = function(test) {
       errno: '16939#0',
       errstr: '*491 recv() failed (104: Connection reset by peer) while reading response header from upstream',
       client: '127.0.0.1',
-      server: 'diana',
+      server: 'mainevent',
       method: 'GET',
       path: '/timeline',
       upstream: 'fastcgi://unix:/usr/var/run/php-fpm.sock:',
-      host: 'diana',
+      host: 'mainevent',
       parser_subtype: 'standard'
     }
   );
   assertParseValid(
     test,
-    '2012/02/05 00:26:21 [error] 18242#0: *1 access forbidden by rule, client: 127.0.0.1, server: diana, request: "GET /.htaccess HTTP/1.1", host: "diana"',
+    '2012/02/05 00:26:21 [error] 18242#0: *1 access forbidden by rule, client: 127.0.0.1, server: mainevent, request: "GET /.htaccess HTTP/1.1", host: "mainevent"',
     'nginx_error',
     {
       time: '2012/02/05 00:26:21',
@@ -76,10 +76,10 @@ exports.testNginxError = function(test) {
       errno: '18242#0',
       errstr: '*1 access forbidden by rule',
       client: '127.0.0.1',
-      server: 'diana',
+      server: 'mainevent',
       method: 'GET',
       path: '/.htaccess',
-      host: 'diana',
+      host: 'mainevent',
       parser_subtype: 'no_upstream'
     }
   );
@@ -118,15 +118,15 @@ exports.testSymfonyEvent = function(test) {
 exports.testSymfonyUncaughtException = function(test) {
   assertParseValid(
     test,
-    '[2012-02-10 10:24:17] request.CRITICAL: Twig_Error_Runtime: Variable "rows" does not exist in "DianaTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception) at /var/dev/diana/app/cache/dev/classes.php line 8024 [] []',
+    '[2012-02-10 10:24:17] request.CRITICAL: Twig_Error_Runtime: Variable "rows" does not exist in "MaineventTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception) at /var/dev/mainevent/app/cache/dev/classes.php line 8024 [] []',
     'symfony',
     {
       time: '2012-02-10 10:24:17',
       type: 'request',
       level: 'CRITICAL',
       class: 'Twig_Error_Runtime',
-      message: 'Variable "rows" does not exist in "DianaTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception)',
-      file: '/var/dev/diana/app/cache/dev/classes.php',
+      message: 'Variable "rows" does not exist in "MaineventTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception)',
+      file: '/var/dev/mainevent/app/cache/dev/classes.php',
       line: '8024',
       parser_subtype: 'uncaught_exception'
     }
@@ -168,11 +168,11 @@ exports.testPhpUserDefined = function(test) {
 exports.testSyslog = function(test) {
   assertParseValid(
     test,
-    'Mar  5 21:36:00 diana kernel: [186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1',
+    'Mar  5 21:36:00 mainevent kernel: [186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1',
     'syslog',
     {
       time: 'Mar  5 21:36:00',
-      host: 'diana',
+      host: 'mainevent',
       ident: 'kernel',
       pid: null,
       message: '[186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1'

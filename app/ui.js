@@ -11,12 +11,12 @@
 
 'use strict';
 
-require(__dirname + '/modules/diana.js');
+require(__dirname + '/modules/mainevent.js');
 
 var express = require('express'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
-    build = diana.requireModule('build');
+    build = mainevent.requireModule('build');
 
 build.compileViews();
 build.staticDir();

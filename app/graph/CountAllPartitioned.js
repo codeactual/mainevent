@@ -19,9 +19,9 @@ program
   .option('-V, --vverbose')
   .parse(process.argv);
 
-require(__dirname + '/../modules/diana.js');
+require(__dirname + '/../modules/mainevent.js');
 
-var date = diana.shared.Date,
+var date = mainevent.shared.Date,
     chunkStart = null,
     chunkLastIds = [],
     exitGraceful = false,
@@ -30,12 +30,12 @@ var date = diana.shared.Date,
     sleeping = false,
 
     jobName = 'CountAllPartitioned',
-    job = new (diana.requireJob(jobName).getClass())('graph'),
+    job = new (mainevent.requireJob(jobName).getClass())('graph'),
     log = job.createUtilLogger(program.quiet),
 
-    mongodb = diana.requireModule('mongodb').createInstance(),
-    redis = diana.requireModule('redis').createInstance(),
-    SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass(),
+    mongodb = mainevent.requireModule('mongodb').createInstance(),
+    redis = mainevent.requireModule('redis').createInstance(),
+    SortedHashSet = mainevent.requireModule('redis/SortedHashSet').getClass(),
 
     lastIdKey = job.buildLastIdKey(),
     bulk = true;
@@ -44,7 +44,7 @@ var date = diana.shared.Date,
 if (program.parser) {
   var parserNames = [program.parser];
 } else {
-  var parserNames = diana.requireModule('parsers/parsers').getConfiguredParsers();
+  var parserNames = mainevent.requireModule('parsers/parsers').getConfiguredParsers();
 }
 if (program.interval) {
   var intervals = [program.interval];
@@ -99,14 +99,14 @@ var runJob = function(lastId) {
 
   // For each parser, walk through the same intervals as available in
   // the UI drop-downs.
-  diana.shared.Async.runOrdered(
+  mainevent.shared.Async.runOrdered(
     parserNames,
 
     function(parser, onParserDone) {
 
       // For each interval, run the map/reduce job if the related cache
       // entry has expired.
-      diana.shared.Async.runOrdered(
+      mainevent.shared.Async.runOrdered(
         intervals,
 
         function(interval, onIntervalDone) {

@@ -7,9 +7,9 @@
 var fs = require('fs'),
     testutil = require(__dirname + '/modules/testutil.js'),
     spawn = require('child_process').spawn,
-    mongodb = diana.requireModule('mongodb').createInstance(),
+    mongodb = mainevent.requireModule('mongodb').createInstance(),
     testConfigFile = __dirname + '/fixtures/tail-config.js',
-    testConfig = diana.getConfig(testConfigFile),
+    testConfig = mainevent.getConfig(testConfigFile),
     source = testConfig.sources[0];
 
 exports.testImport = function(test) {

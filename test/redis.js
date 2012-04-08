@@ -5,8 +5,8 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    redis = diana.requireModule('redis').createInstance(),
-    SortedHashSet = diana.requireModule('redis/SortedHashSet').getClass();
+    redis = mainevent.requireModule('redis').createInstance(),
+    SortedHashSet = mainevent.requireModule('redis/SortedHashSet').getClass();
 
 var setUp = function(suite, callback) {
   // Random keys deleted before/after each test case.

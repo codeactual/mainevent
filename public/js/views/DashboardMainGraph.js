@@ -2,7 +2,7 @@ define([], function() {
 
   'use strict';
 
-  var Graph = diana.helpers.Graph;
+  var Graph = mainevent.helpers.Graph;
 
   return Backbone.View.extend({
 
@@ -24,7 +24,7 @@ define([], function() {
     initialize: function(options) {
       this.options.dashArgs = options.dashArgs || {};
 
-      diana.helpers.Event.on('DashboardArgsChange', this.onArgsChange, this);
+      mainevent.helpers.Event.on('DashboardArgsChange', this.onArgsChange, this);
 
       /**
        * Re-render the graph, in response to resize events, every 300ms at the most.
@@ -38,7 +38,7 @@ define([], function() {
 
     onClose: function() {
       $(window).off('resize', this.resizeGraph);
-      diana.helpers.Event.off('DashboardArgsChange', this.onArgsChange);
+      mainevent.helpers.Event.off('DashboardArgsChange', this.onArgsChange);
     },
 
     /**
@@ -85,7 +85,7 @@ define([], function() {
      */
     fetchGraphPoints: function(callback) {
       var dashArgs = _.clone(this.options.dashArgs),
-          date = diana.shared.Date,
+          date = mainevent.shared.Date,
           span = dashArgs['time-lte'] - dashArgs['time-gte'];
 
       dashArgs.partition = date.partitions[date.bestFitInterval(span)];

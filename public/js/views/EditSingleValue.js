@@ -30,7 +30,7 @@ define([], function() {
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
+      mainevent.helpers.Widget.closeModal(event);
       this.options.onEdit(this.$('input').val());
     }
   });

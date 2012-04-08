@@ -3,11 +3,11 @@ define([], function() {
   'use strict';
 
   return function(req, res) {
-    var parsers = diana.requireModule('parsers/parsers'),
+    var parsers = mainevent.requireModule('parsers/parsers'),
         send404 = function() {
           res.send({__error: 'Event not found.'}, 404);
         },
-        mongodb = diana.requireModule('mongodb').createInstance();
+        mongodb = mainevent.requireModule('mongodb').createInstance();
 
     if (!req.params.id.match(/^[a-z0-9]{24}$/)) {
       send404();

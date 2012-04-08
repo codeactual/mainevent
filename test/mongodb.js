@@ -5,10 +5,10 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    parsers = diana.requireModule('parsers/parsers'),
-    mongodb = diana.requireModule('mongodb').createInstance();
+    parsers = mainevent.requireModule('parsers/parsers'),
+    mongodb = mainevent.requireModule('mongodb').createInstance();
 
-var strtotime = diana.shared.Date.strtotime;
+var strtotime = mainevent.shared.Date.strtotime;
 
 exports.timeline = {
 

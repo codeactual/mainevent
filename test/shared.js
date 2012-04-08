@@ -24,14 +24,14 @@ exports.async = {
     };
 
     test.expect(2);
-    diana.shared.Async.runOrdered(list, consumer, onDone);
+    mainevent.shared.Async.runOrdered(list, consumer, onDone);
   }
 };
 
 exports.lang = {
 
   testNumericStrToNum: function(test) {
-    var convert = diana.shared.Lang.numericStrToNum,
+    var convert = mainevent.shared.Lang.numericStrToNum,
         obj = {
           a: {
             b: {

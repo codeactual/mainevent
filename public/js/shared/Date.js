@@ -7,11 +7,11 @@ define([], function() {
   }
 
   var root = 'undefined' == typeof window ? GLOBAL : window;
-  root.diana = root.diana || {};
-  root.diana.shared = root.diana.shared || {};
-  var diana = root.diana;
+  root.mainevent = root.mainevent || {};
+  root.mainevent.shared = root.mainevent.shared || {};
+  var mainevent = root.mainevent;
 
-  diana.shared.Date = {
+  mainevent.shared.Date = {
     /**
      * Time units used by background jobs and UI widgets.
      */
@@ -95,7 +95,7 @@ define([], function() {
        if (_.isUndefined(asString) || asString) {
          return interval;
        }
-       return diana.shared.Date.unitToMilli(1, interval);
+       return mainevent.shared.Date.unitToMilli(1, interval);
      },
 
      /**

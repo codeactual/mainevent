@@ -6,7 +6,7 @@
 
 var mongodb = require('mongodb'),
     BSON = mongodb.BSONPure,
-    config = diana.getConfig().mongodb;
+    config = mainevent.getConfig().mongodb;
 
 exports.createInstance = function() {
   return new MongoDb();
@@ -197,7 +197,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
 
       _.each(logs, function(log) {
         log.time = new Date(log.time);
-        log = diana.shared.Lang.numericStrToNum(log);
+        log = mainevent.shared.Lang.numericStrToNum(log);
         docs.push(log);
       });
 
@@ -303,7 +303,7 @@ MongoDb.prototype.getTimelineUpdates = function(id, time, params, callback) {
  *     stats {Object}
  */
 MongoDb.prototype.mapReduce = function(job) {
-  job.name = diana.extractJobName(job.name);
+  job.name = mainevent.extractJobName(job.name);
   var collectionName = job.suffix ? job.name + '_' + job.suffix : job.name;
   var returnAsArray = job.return != 'cursor';
 
@@ -346,7 +346,7 @@ MongoDb.prototype.mapReduce = function(job) {
  */
 MongoDb.prototype.getMapReduceResults = function(name, callback, asArray) {
   asArray = _.isUndefined(asArray) ? true : asArray;
-  name = diana.extractJobName(name);
+  name = mainevent.extractJobName(name);
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, name, callback, function(err, collection) {
@@ -481,12 +481,12 @@ MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
   var mongo = this, lastError = null, lastResults = null;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     // Process each collection's list of definitions.
-    diana.shared.Async.runOrdered(
+    mainevent.shared.Async.runOrdered(
       config.indexes,
       function(index, onIndexDone) {
 
         // Process each index definition.
-        diana.shared.Async.runOrdered(
+        mainevent.shared.Async.runOrdered(
           index.definitions,
           function(definition, onDefinitionDone) {
 

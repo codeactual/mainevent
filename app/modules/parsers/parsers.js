@@ -29,7 +29,7 @@ exports.parseAndInsert = function(sourceLines, callback) {
     lines = lines.concat(parser.parseLines(sl.source, sl.lines));
   });
 
-  var mongodb = diana.requireModule('mongodb').createInstance();
+  var mongodb = mainevent.requireModule('mongodb').createInstance();
   mongodb.insertLog(lines, function() {
     mongodb.dbClose();
     (callback || function() {})();
@@ -62,7 +62,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
 
   var updateLogFromTemplate = function(name, log, context, callback) {
     dust.loadSource(
-      require('fs').readFileSync(diana.requireModule('build').getTemplatesPath())
+      require('fs').readFileSync(mainevent.requireModule('build').getTemplatesPath())
     );
     dust.render(
       name,
@@ -75,7 +75,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
     );
   };
 
-  diana.shared.Async.runOrdered(
+  mainevent.shared.Async.runOrdered(
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);
@@ -113,7 +113,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
  */
 exports.getConfiguredParsers = function() {
   var parsers = {};
-  _.each(diana.getConfig().sources, function(source) {
+  _.each(mainevent.getConfig().sources, function(source) {
     parsers[source.parser] = 1;
   });
   return _.keys(parsers);

@@ -5,7 +5,7 @@ define([], function() {
 
   'use strict';
 
-  var intervalDelay = diana.getConfig().timelineUpdateDelay,
+  var intervalDelay = mainevent.getConfig().timelineUpdateDelay,
       updateInterval = null;
 
   return function(socket) {
@@ -28,7 +28,7 @@ define([], function() {
             options.newestEventId = docs[0]._id.toString();
             options.newestEventTime = docs[0].time;
 
-            var parsers = diana.requireModule('parsers/parsers');
+            var parsers = mainevent.requireModule('parsers/parsers');
             parsers.addPreviewContext(docs, function(docs) {
               socket.emit('TimelineUpdate', docs);
             });
@@ -44,7 +44,7 @@ define([], function() {
           return;
         }
 
-        var mongodb = diana.requireModule('mongodb').createInstance();
+        var mongodb = mainevent.requireModule('mongodb').createInstance();
         mongodb.getTimelineUpdates(
           options.newestEventId,
           options.newestEventTime,

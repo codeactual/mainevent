@@ -1,9 +1,9 @@
 'use strict';
 
-require(__dirname + '/../modules/diana');
+require(__dirname + '/../modules/mainevent');
 
 exports.extend = function(subType, props) {
-  diana.shared.Lang.inheritPrototype(subType, Job);
+  mainevent.shared.Lang.inheritPrototype(subType, Job);
   subType.prototype.__super__ = Job;
   _.extend(subType.prototype, props);
 };
@@ -99,7 +99,7 @@ var Job = function(namespace) {
     return _.clone(mapReduceConfig);
   };
 
-  this.mongodb = diana.requireModule('mongodb').createInstance();
+  this.mongodb = mainevent.requireModule('mongodb').createInstance();
 };
 
 /**
@@ -247,14 +247,14 @@ Job.prototype.buildLastIdKey = function() {
 };
 
 /**
- * Curry diana.createUtilLogger() with the job's name.
+ * Curry mainevent.createUtilLogger() with the job's name.
  *
  * @return {Function}
  */
 Job.prototype.createUtilLogger = function() {
   var args = Array.prototype.slice.call(arguments);
   args.unshift(this.name);
-  return diana.createUtilLogger.apply(null, args);
+  return mainevent.createUtilLogger.apply(null, args);
 };
 
 /**

@@ -52,8 +52,8 @@ define([], function() {
       }
 
       // Populate drop-downs.
-      diana.helpers.Widget.fillParserSelect(parser);
-      diana.helpers.Widget.fillPresetTimeSelect(
+      mainevent.helpers.Widget.fillParserSelect(parser);
+      mainevent.helpers.Widget.fillPresetTimeSelect(
         this.$('.time-interval'),
         this.options.acceptAnyTime
       );
@@ -107,8 +107,8 @@ define([], function() {
      * @param event {Object} jQuery event object.
      */
     submit: function(event) {
-      diana.helpers.Widget.closeModal(event);
-      diana.helpers.Event.trigger('TimelineSearchSubmit', this.getSearchArgs());
+      mainevent.helpers.Widget.closeModal(event);
+      mainevent.helpers.Event.trigger('TimelineSearchSubmit', this.getSearchArgs());
     },
 
     /**

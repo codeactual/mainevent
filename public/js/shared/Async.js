@@ -3,11 +3,11 @@ define([], function() {
   'use strict';
 
   var root = 'undefined' == typeof window ? GLOBAL : window;
-  root.diana = root.diana || {};
-  root.diana.shared = root.diana.shared || {};
-  var diana = root.diana;
+  root.mainevent = root.mainevent || {};
+  root.mainevent.shared = root.mainevent.shared || {};
+  var mainevent = root.mainevent;
 
-  diana.shared.Async = {
+  mainevent.shared.Async = {
     /**
       * Iterate synchronously over a list with a async consumer, ex. insert 5
       * order-specific rows into a DB through an async driver.
@@ -26,7 +26,7 @@ define([], function() {
         if (list.length) {
           // E.g. pass one element for an async DB insert.
           consumer(list.shift(), function() {
-            diana.shared.Async.runOrdered(list, consumer, onDone);
+            mainevent.shared.Async.runOrdered(list, consumer, onDone);
           });
         } else {
           onDone();

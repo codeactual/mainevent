@@ -8,7 +8,7 @@ var PhpParser = function() {
   Parser.call(this, 'php');
 };
 
-diana.shared.Lang.inheritPrototype(PhpParser, Parser);
+mainevent.shared.Lang.inheritPrototype(PhpParser, Parser);
 
 PhpParser.prototype.parse = function(log) {
   return this.candidateCapture(log, [
@@ -43,7 +43,7 @@ PhpParser.prototype.extractTime = function(date) {
 
   var parsable = util.format(
     '%d/%d/%d %s',
-    diana.shared.Date.monthNameToNum(matches[2]),
+    mainevent.shared.Date.monthNameToNum(matches[2]),
     matches[1],
     matches[3],
     matches[4]
