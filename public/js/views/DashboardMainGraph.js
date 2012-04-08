@@ -56,7 +56,7 @@ define([], function() {
         // Replace dashboard settings with submitted args.
         view.options.dashArgs = changed.query;
 
-        view.runJobAndFetchResult(function() {
+        view.fetchGraphPoints(function() {
           view.render.call(view);
         });
 
@@ -68,7 +68,7 @@ define([], function() {
         // Merge changed args with current.
         view.options.dashArgs = _.extend(view.options.dashArgs, changed);
 
-        view.fetchJobResult(function() {
+        view.fetchGraphPoints(function() {
           view.render.call(view);
         });
 
@@ -77,45 +77,26 @@ define([], function() {
         dashArgs['dd'] = 1; // Indicate change came from drop-downs, not search.
         view.navigate('dashboard', dashArgs, {trigger: false});
       }
-
-      this.changed++;
     },
 
     /**
      * Run the graph data job with an ad-hoc query, ex. total JSON events
      * between timestamp X and Y with the condition 'code > 200'.
      */
-    runJobAndFetchResult: function(callback) {
-      var dashArgs = _.clone(this.options.dashArgs);
+    fetchGraphPoints: function(callback) {
+      var dashArgs = _.clone(this.options.dashArgs),
+          date = diana.shared.Date,
+          span = dashArgs['time-lte'] - dashArgs['time-gte'];
+
+      dashArgs.partition = date.partitions[date.bestFitInterval(span)];
 
       var view = this,
           url = this.buildUrl(
-            '/jobrun/count_all_graph?',
+            '/graph/CountAllPartitioned?',
             dashArgs,
             false
           );
 
-      $.ajax(
-        url, {
-          success: function(data) {
-            view.data = data;
-            data = null;
-            callback();
-          }
-        }
-      );
-    },
-
-    /**
-     * Fetch a pre-cached result set, ex. total JSON events from the last 1 day.
-     */
-    fetchJobResult: function(callback) {
-      var view = this,
-          url = _.filterTruthy([
-            '/jobresult/count_all_graph',
-            this.options.dashArgs.parser,
-            this.options.dashArgs['time-lte'] - this.options.dashArgs['time-gte']
-          ]).join('_');
       $.ajax(
         url, {
           success: function(data) {

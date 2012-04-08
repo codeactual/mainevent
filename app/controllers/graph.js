@@ -54,10 +54,10 @@ define([], function() {
         return;
       }
 
-      var points = [];
+      var points = {};
 
       _.each(results.hashes, function(fieldset, key) {
-        points.push([job.extractResultKey(key), fieldset]);
+        points[job.extractResultKey(key)] = fieldset;
       });
 
       res.send(points);

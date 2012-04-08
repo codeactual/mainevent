@@ -197,7 +197,7 @@ define([
               timeInterval = $('#dashboard-header-grid .time-interval');
 
           if (parser) {
-            diana.helpers.Widget.fillParserSelect(parser);
+            diana.helpers.Widget.fillParserSelect(parser, false);
             parser.val(view.options.dashArgs.parser);
           }
           if (timeInterval) {

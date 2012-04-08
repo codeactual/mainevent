@@ -19,7 +19,7 @@ define([
         defaultDashArgs = {
         'time-gte': now - 60000,
         'time-lte': now,
-        parser: ''
+        parser: diana.parsers[0]
       },
       dashArgs = _.clone(defaultDashArgs);
 

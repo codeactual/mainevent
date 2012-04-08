@@ -61,10 +61,13 @@ define([], function() {
      * Add <option> list based on configured parser list.
      *
      * @param select {Object} jQuery object or selector.
+     * @param includeAny {Boolean} If true, "Any Event Type" option is first.
      */
-    fillParserSelect: function(select) {
+    fillParserSelect: function(select, includeAny) {
       select = $(select);
-      select.append('<option value="">Any Event Type</option>');
+      if (_.isUndefined(includeAny) || includeAny) {
+        select.append('<option value="">Any Event Type</option>');
+      }
       _.each(diana.parsers, function(name) {
         select.append('<option value="' + name + '">' + name + '</option>');
       });
