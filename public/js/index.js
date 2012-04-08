@@ -1,7 +1,7 @@
 /**
  * Log timeline and event viewer.
  *
- * Relies on app/ui.js for backbone.js syncs.
+ * Relies on app/mainevent_server for backbone.js syncs.
  * index.html provides the layout that includes #backbone-view used below.
  * content.html is injected into #content that's also in index.html.
  */

@@ -1,7 +1,7 @@
 /**
  * Supply common/stateless helpers and module instances.
  *
- * All entry points (ui.js, app/tail.js, test runners, etc) must require()
+ * All entry points (mainevent_server, app/tail.js, test runners, etc) must require()
  * this module. Modules like parsers/parsers.js assume its presence.
  */
 

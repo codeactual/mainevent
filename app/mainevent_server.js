@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 /**
  * Serve HTTP requests for the backbone.js powered frontend, assets, and log JSON.
  *
- * Example usage: supervisor --extensions 'css|js|html' app/ui.js
+ * Example usage: supervisor --extensions 'css|js|html' app/mainevent_server.js
  *
  * Example flow:
  *   browser - GET /#event/4f44bc7ea679dd8866000002
