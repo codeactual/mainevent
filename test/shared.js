@@ -73,6 +73,7 @@ exports.lang = {
     test.strictEqual(convert('300d'), '300d');
     test.strictEqual(convert('d300'), 'd300');
     test.strictEqual(convert(undefined), undefined);
+    test.strictEqual(convert('127.0.0.1'), '127.0.0.1');
 
     // Verify constructor filter.
     test.strictEqual(convert(date).getTime(), date.getTime());

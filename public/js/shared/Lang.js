@@ -27,8 +27,9 @@ define([], function() {
           val[oKey] = Lang.numericStrToNum(oVal);
         });
       } else if (_.isString(val) && val.match(/^-?[0-9.]+$/)) {
-        if (val.match(/\./)) {
-          val = parseFloat(val);
+        var dots = val.match(/(\.)/g);
+        if (dots) {
+          val = dots.length == 1 ? parseFloat(val) : val;
         } else {
           val = parseInt(val, 10);
         }
