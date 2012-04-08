@@ -6,8 +6,6 @@ define([], function() {
   'use strict';
 
   var intervalDelay = diana.getConfig().timelineUpdateDelay,
-      parsers = diana.requireModule('parsers/parsers'),
-      mongodb = diana.requireModule('mongodb').createInstance(),
       updateInterval = null;
 
   return function(socket) {
@@ -29,6 +27,8 @@ define([], function() {
           if (docs.length) {
             options.newestEventId = docs[0]._id.toString();
             options.newestEventTime = docs[0].time;
+
+            var parsers = diana.requireModule('parsers/parsers');
             parsers.addPreviewContext(docs, function(docs) {
               socket.emit('TimelineUpdate', docs);
             });
@@ -43,6 +43,8 @@ define([], function() {
           // Client never sent the ID for some reason -- don't stop the updates.
           return;
         }
+
+        var mongodb = diana.requireModule('mongodb').createInstance(),
         mongodb.getTimelineUpdates(
           options.newestEventId,
           options.newestEventTime,
