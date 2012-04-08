@@ -4,6 +4,8 @@
 
 'use strict';
 
+var log = diana.createUtilLogger('build');
+
 /**
  * Compile all dust.js templates into a public directory.
  */
@@ -58,4 +60,16 @@ exports.getPath = function(name) {
  */
 exports.getTemplatesPath = function() {
   return __dirname + '/../../public/js/templates.js';
+};
+
+/**
+ * Ensure MongoDB indexes exist.
+ */
+exports.mongoDbIndexes = function() {
+  var mongodb = diana.requireModule('mongodb').createInstance();
+  mongodb.ensureConfiguredIndexes(function(err) {
+    if (err) {
+      log('mongoDbIndexes() did not complete, last error: %s', err);
+    }
+  });
 };

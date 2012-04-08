@@ -20,6 +20,7 @@ var express = require('express'),
 
 build.compileViews();
 build.staticDir();
+build.mongoDbIndexes();
 
 // Required for using *.html with res.render().
 app.register('.html', {

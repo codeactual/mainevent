@@ -18,8 +18,21 @@ exports.read = function () {
       db: 'mydb',
       host: '127.0.0.1',
       port: 27017,
-      eventCollection: 'mycollection',
-      maxResultSize: 100
+      collections: {
+        eventCollection: 'mycollection'
+      },
+      maxResultSize: 100,
+      indexes: [
+        {
+          collection: 'eventCollection', // Do not modify.
+          definitions: [
+            {
+              fieldset: {time: -1,_id: -1}, // Timeline search.
+              options: {}
+            }
+          ]
+        }
+      ]
     },
     redis: {
       port: 6379,

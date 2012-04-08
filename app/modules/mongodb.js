@@ -18,7 +18,7 @@ var MongoDb = function() {};
 MongoDb.prototype.link = null;
 
 // Read from app/config.js.
-MongoDb.prototype.eventCollection = null;
+MongoDb.prototype.collections = null;
 
 /**
  * Post-process events found via findOne(), find(), etc.
@@ -130,7 +130,7 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success) {
   if (this.link) {
     success(null, this.link);
   } else {
-    this.eventCollection = config.eventCollection;
+    this.collections = config.collections;
     this.link = new mongodb.Db(
       config.db,
       new mongodb.Server(config.host, config.port, {})
@@ -191,7 +191,7 @@ MongoDb.prototype.dbClose = function(err, callback) {
 MongoDb.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
       var docs = [];
       logs = _.isArray(logs) ? logs : [logs];
 
@@ -220,7 +220,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
 MongoDb.prototype.getLog = function(id, callback) {
   var mongo = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         if (err) { mongo.dbClose(err, callback); return; }
         mongo.dbClose();
@@ -253,7 +253,7 @@ MongoDb.prototype.getLog = function(id, callback) {
 MongoDb.prototype.getTimeline = function(params, callback) {
   var mongo = this;
   mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.eventCollection, callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
       var options = mongo.extractSortOptions(params);
       mongo.extractFilterOptions(params);
       collection.find(params, options).toArray(function(err, docs) {
@@ -311,7 +311,7 @@ MongoDb.prototype.mapReduce = function(job) {
   mongo.dbConnectAndOpen(job.callback, function(err, db) {
     job.options = job.options || {};
     job.options.out = job.options.out || {replace: collectionName};
-    mongo.dbCollection(db, mongo.eventCollection, job.callback, function(err, collection) {
+    mongo.dbCollection(db, mongo.collections.eventCollection, job.callback, function(err, collection) {
       if (job.options.query) {
         mongo.extractFilterOptions(job.options.query);
 
@@ -468,4 +468,48 @@ MongoDb.prototype.sortObjectIdAsc = function(a, b) {
   } else {
     return 1;
   }
-}
+};
+
+/**
+ * Run ensureIndex() on each definition in config/app.js.
+ *
+ * @param callback {Function} Fires after all definition have been processed.
+ * - err {String} Last error.
+ * - results {String} Last result.
+ */
+MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
+  var mongo = this, lastError = null, lastResults = null;
+  mongo.dbConnectAndOpen(callback, function(err, db) {
+    // Process each collection's list of definitions.
+    diana.shared.Async.runOrdered(
+      config.indexes,
+      function(index, onIndexDone) {
+
+        // Process each index definition.
+        diana.shared.Async.runOrdered(
+          index.definitions,
+          function(definition, onDefinitionDone) {
+
+            mongo.dbCollection(db, mongo.collections[index.collection], callback, function(err, collection) {
+              definition.options = definition.options || {};
+              definition.options.background = true;
+              collection.ensureIndex(definition.fieldset, definition.options, function(err, results) {
+                if (err) {
+                  lastError = err;
+                }
+                lastResults = results;
+                onDefinitionDone();
+              });
+            });
+          },
+          onIndexDone
+        );
+      },
+      // After all collection lists have been processed.
+      function() {
+        mongo.dbClose();
+        callback(lastError, lastResults);
+      }
+    );
+  });
+};
