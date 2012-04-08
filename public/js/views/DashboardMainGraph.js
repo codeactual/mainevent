@@ -130,9 +130,8 @@ define([], function() {
 
         var axes = Graph.adjustAxes(view.$el, graphData, defaultAxes),
             title =
-              'Total Events, '
-              + Graph.trimDate(graphData[0][0])
-              + ' - ' + Graph.trimDate(graphData[graphData.length - 1][0]);
+              mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-gte'], 10))
+              + ' &mdash; ' +  mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-lte'], 10));
       } else {
         var axes = defaultAxes,
              graphData = [[0,0]],
