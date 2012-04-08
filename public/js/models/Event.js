@@ -7,7 +7,7 @@ define([], function() {
    * Attributes vary from one event to the next based on the parser.
    */
   return Backbone.Model.extend({
-    urlRoot: '/event',
+    urlRoot: '/api/event',
 
     sync: function(method, model, options) {
       // Only override reads.
@@ -17,7 +17,7 @@ define([], function() {
       }
 
       // Divert all reads through localStorage cache.
-      var cacheKey = 'id-' + model.id;
+      var cacheKey = 'id-' + model.id, model = this;
       mainevent.helpers.cache.get({
         ns: 'event',
         keys: cacheKey,
@@ -26,7 +26,7 @@ define([], function() {
         },
         onMiss: function(keys, onMissDone) {
           Backbone.sync.call(this, method, this, {
-            url: '/event/' + model.id,
+            url: model.urlRoot + '/' + model.id,
             success: function(data) {
               var write = {};
               write[cacheKey] = data;

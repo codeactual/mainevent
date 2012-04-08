@@ -40,12 +40,18 @@ app.use(express.static(__dirname + '/../static'));
 app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
-// Route patterns mapped to app/controllers/*.js modules.
+// All non-API requests go to Backbone.js + pushState.
+app.get(/^((?!\/(api|js|css|img)\/).)*$/, function(req, res) {
+  requirejs([__dirname + '/controllers/index.js'], function(controller) {
+    controller(req, res);
+  });
+});
+
+// API routes mapped to app/controllers/*.js modules.
 var routes = {
-  '/': 'index',
-  '/event/:id': 'event',
-  '/graph/:name': 'graph',
-  '/timeline': 'timeline'
+  '/api/event/:id': 'event',
+  '/api/graph/:name': 'graph',
+  '/api/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {
   app.get(route, function(req, res) {

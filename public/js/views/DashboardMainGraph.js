@@ -92,7 +92,7 @@ define([], function() {
 
       var view = this,
           url = this.buildUrl(
-            '/graph/CountAllPartitioned?',
+            '/api/graph/CountAllPartitioned?',
             dashArgs,
             false
           );
