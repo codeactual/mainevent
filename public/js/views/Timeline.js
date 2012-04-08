@@ -72,7 +72,6 @@ define([
     },
 
     onClose: function() {
-      $(document).off('keyup', this.onKey);
       this.closeSocket();
     },
 

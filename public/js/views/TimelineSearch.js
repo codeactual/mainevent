@@ -18,7 +18,7 @@ define([], function() {
 
     render: function() {
       var view = this,
-          body = this.$('.modal-body'),
+          modal = this.$('.modal-body'),
           parser = this.$('.parser'),
           coreArgNames = ['parser'];
 
@@ -40,11 +40,6 @@ define([], function() {
           input.datetimepicker({});
         });
 
-        $('#time-interval-clear').on('click', function(event) {
-          event.preventDefault();
-          $('#time-interval,#time-gte,#time-lte').val('');
-        });
-
         coreArgNames.push('time-gte', 'time-lte');
       } else {
         $('.any-time').remove();
@@ -55,17 +50,6 @@ define([], function() {
       } else {
         $('.sort-option').remove();
       }
-
-      // Each trash can button will remove the adjacent condition row,
-      // or clear the last remaining row's values.
-      $(this.el).delegate('.condition-pair .btn-danger', 'click', function(event) {
-        event.preventDefault();
-        if (view.$('.condition-pair').length > 1) {
-          view.$(this).parent().remove();
-        } else {
-          view.$(this).parent().find('input,select').val('');
-        }
-      });
 
       // Populate drop-downs.
       diana.helpers.Widget.fillParserSelect(parser);
@@ -100,7 +84,7 @@ define([], function() {
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;
         $('input:nth-child(1)', condPair).val(key);
         $('input:nth-child(3)', condPair).val(value);
-        body.append(condPair);
+        modal.append(condPair);
       });
       if (condCount) { // And an extra to hint at expansion behavior.
         view.addConditionRow();
@@ -112,7 +96,9 @@ define([], function() {
 
     events: {
       'submit': 'submit',
-      'change .time-interval': 'applyPresetTime'
+      'change .time-interval': 'applyPresetTime',
+      'click #time-interval-clear': 'onTimeIntervalClear',
+      'click .condition-pair .btn-danger': 'onConditionRowRemove'
     },
 
     /**
@@ -139,15 +125,29 @@ define([], function() {
       event.stopImmediatePropagation();
     },
 
+    onTimeIntervalClear: function(event) {
+      event.preventDefault();
+      $('#time-interval,#time-gte,#time-lte').val('');
+    },
+
+    onConditionRowRemove: function(event) {
+      event.preventDefault();
+      if (this.$('.condition-pair').length > 1) {
+        $(event.currentTarget).parent().remove();
+      } else {
+        $(event.currentTarget).parent().find('input,select').val('');
+      }
+    },
+
     /**
      * Append a pair of text boxes for defining 'x = y' conditions.
      */
     addConditionRow: function() {
-      var body = this.$('.modal-body');
-      var condPair = body.find('.condition-pair:last-child').clone();
+      var modal = this.$('.modal-body');
+      var condPair = modal.find('.condition-pair:last-child').clone();
       $('input:nth-child(1)', condPair).val('');
       $('input:nth-child(3)', condPair).val('');
-      body.append(condPair);
+      modal.append(condPair);
     },
 
     /**
