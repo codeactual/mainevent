@@ -50,6 +50,8 @@ if (program.interval) {
   var intervals = _.values(date.presetTimeIntervals);
 }
 
+program.verbose = program.verbose || program.vverbose;
+
 // Start after a manually set last ID.
 if (program.id) {
     runJob(program.id);
