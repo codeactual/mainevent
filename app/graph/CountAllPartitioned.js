@@ -122,18 +122,25 @@ var runJob = function(lastId) {
             query._id = {$gt: lastId};
           }
 
-          // Ex. suffixes: 'json', 'json_3600000'
           job.updateOptions({
+            // Ex. 'json', 'json_3600000'
             suffix: _.filterTruthy([parser, interval]).join('_'),
+            // Ex. 'hour'
             partition: date.partitions[date.bestFitInterval(interval)],
+            // Ex. 'json'
             parser: parser,
+            // Ex. 3600000
             interval: interval
           });
 
           var sortedSetKey = job.buildSortedSetKey('graph');
 
-          // Sort ascending to allow 'lastId' to follow insertion order.
-          job.updateMapReduceConfig({sort: {_id: 1}, limit: program.limit});
+          job.updateMapReduceConfig({
+            // Sort ascending to allow 'lastId' to follow insertion order.
+            sort: {_id: 1},
+            // Enforce chunk size.
+            limit: program.limit
+          });
 
           job.run(query, function(err, results, stats) {
             var changes = {};
