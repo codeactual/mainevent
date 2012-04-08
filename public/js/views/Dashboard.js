@@ -96,15 +96,15 @@ define([
       var view = this;
       var syncDropDowns = function() {
         if (view.searchMode) {
-          view.searchTimeInterval.val(view.dashTimeInterval.val());
-          view.searchParser.val(view.dashParser.val());
-        } else {
-          if (view.options.dashParser['time-lte']) {
+          if (view.options.dashArgs['time-lte']) {
             view.searchTimeInterval.val(
               view.options.dashArgs['time-lte'] - view.options.dashArgs['time-gte']
             );
           }
           view.searchParser.val(view.options.dashArgs.parser);
+        } else {
+          view.searchTimeInterval.val(view.dashTimeInterval.val());
+          view.searchParser.val(view.dashParser.val());
         }
       };
 
