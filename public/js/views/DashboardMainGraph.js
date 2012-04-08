@@ -93,8 +93,7 @@ define([], function() {
       var view = this,
           url = this.buildUrl(
             '/api/graph/CountAllPartitioned?',
-            dashArgs,
-            false
+            dashArgs
           );
 
       $.ajax(

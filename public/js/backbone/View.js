@@ -230,8 +230,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    * @param args {Object}
    * @return {String}
    */
-  Backbone.View.prototype.buildUrl = function(base, args, prependHash) {
-    prependHash = _.isUndefined(prependHash) ? true : prependHash;
+  Backbone.View.prototype.buildUrl = function(base, args) {
     var pairs = [];
     _.each(args, function(value, key) {
       if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
@@ -239,9 +238,7 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
       }
       pairs.push(key + '=' + encodeURIComponent(value));
     });
-
-    pairs = (prependHash && pairs.length ? '/' : '') + pairs.join('&');
-    return (prependHash ? '#' : '') + base + pairs;
+    return base + (pairs.length ? '/' + pairs.join('&') : '');
   };
 
   /**
