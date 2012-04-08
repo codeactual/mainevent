@@ -4,25 +4,14 @@
 
 'use strict';
 
-var dust = require('dust');
-var fs = require('fs');
-var path = require('path');
-
-/**
- * Remove strict directive from a string.
- *
- * @param script {String}
- * @return {String}
- */
-var stripStrict = function(str) {
-  return str.replace(/^['"]use strict['"];\n/gm, '');
-};
-
 /**
  * Compile all dust.js templates into a public directory.
  */
 exports.compileViews = function() {
-  var fd = fs.openSync(__dirname + '/../../public/js/templates.js', 'w');
+  var dust = require('dust'),
+      fs = require('fs'),
+      fd = fs.openSync(__dirname + '/../../public/js/templates.js', 'w'),
+      path = require('path');
 
   // For server-side loading w/out RequireJS.
   fs.writeSync(fd, "if ('undefined' === typeof define) { var define = function(deps, callback) { callback(dust); }; }");
