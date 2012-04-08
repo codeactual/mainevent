@@ -44,7 +44,7 @@ define([], function() {
           return;
         }
 
-        var mongodb = diana.requireModule('mongodb').createInstance(),
+        var mongodb = diana.requireModule('mongodb').createInstance();
         mongodb.getTimelineUpdates(
           options.newestEventId,
           options.newestEventTime,
