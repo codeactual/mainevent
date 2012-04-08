@@ -66,6 +66,7 @@ io.sockets.on('connection', function (socket) {
 });
 
 app.error(function(err, req, res, next) {
+  console.log(err, err.stack, req.query, req.params);
   res.send({__error: err.message}, 500);
 });
 
