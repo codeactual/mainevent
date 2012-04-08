@@ -457,15 +457,11 @@ MongoDb.prototype.sortObjectIdAsc = function(a, b) {
         } else {
           return 1;
         }
-      } else if (a.pid < b.pid) {
-        return -1;
-      } else {
-        return 1;
+      } else {    // Different process, can't tie-break.
+        return 0;
       }
-    } else if (a.machine < b.machine) {
-      return -1;
     } else {
-      return 1;
+      return 0;   // Different machine, can't tie-break.
     }
   } else if (a.time < b.time) {
     return -1;

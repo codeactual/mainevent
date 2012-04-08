@@ -236,7 +236,7 @@ exports.dataTypes = {
   },
 
   testSortObjectIdAsc: function(test) {
-    // Only 'increment' parts are unsorted.
+    // Only the increments differ, so expect an order based on them.
     test.deepEqual(
       [
         '4f72b1a766408a452b000002',
@@ -251,7 +251,8 @@ exports.dataTypes = {
         '4f72b1a766408a452b000006'
       ]
     );
-    // Only 'pid' parts are unsorted.
+    // PIDs differ, so expect an unchanged order because their separate
+    // increments can't tie-break.
     test.deepEqual(
       [
         '4f72b1a766408a4522000001',
@@ -260,13 +261,14 @@ exports.dataTypes = {
         '4f72b1a766408a4521000001'
       ].sort(mongodb.sortObjectIdAsc),
       [
-        '4f72b1a766408a4521000001',
         '4f72b1a766408a4522000001',
+        '4f72b1a766408a4526000001',
         '4f72b1a766408a4523000001',
-        '4f72b1a766408a4526000001'
+        '4f72b1a766408a4521000001'
       ]
     );
-    // Only 'machine' parts are unsorted.
+    // Machines differ, so expect an unchanged order because their separate
+    // times/PIDs/increments can't tie-break.
     test.deepEqual(
       [
         '4f72b1a7664082452b000001',
@@ -275,13 +277,13 @@ exports.dataTypes = {
         '4f72b1a7664081452b000001'
       ].sort(mongodb.sortObjectIdAsc),
       [
-        '4f72b1a7664081452b000001',
         '4f72b1a7664082452b000001',
+        '4f72b1a7664086452b000001',
         '4f72b1a7664083452b000001',
-        '4f72b1a7664086452b000001'
+        '4f72b1a7664081452b000001'
       ]
     );
-    // Only 'time' parts are unsorted.
+    // Only the times differ, so expect an order based on them.
     test.deepEqual(
       [
         '4f72b1a266408a452b000001',
