@@ -32,6 +32,8 @@ exports.prototypes = {
     };
 
     this.defaultOptions = {dropResultsAfterUse: true, suffix: ''};
+    this.defaultMapReduceConfig = {};
+    this.defaultKeyFields = {};
 
     callback();
   },
@@ -51,6 +53,28 @@ exports.prototypes = {
 
     this.jobA.updateOptions(updates);
     test.deepEqual(this.jobA.getOptions(), expected);
+    test.done();
+  },
+
+  testUpdateMapReduceConfig: function(test) {
+    test.deepEqual(this.jobA.getMapReduceConfig(), this.defaultMapReduceConfig);
+
+    var updates = {o: 1},
+        expected = _.extend(this.defaultMapReduceConfig, updates);
+
+    this.jobA.updateMapReduceConfig(updates);
+    test.deepEqual(this.jobA.getMapReduceConfig(), expected);
+    test.done();
+  },
+
+  testUpdateKeyFields: function(test) {
+    test.deepEqual(this.jobA.getKeyFields(), this.defaultKeyFields);
+
+    var updates = {o: 1},
+        expected = _.extend(this.defaultKeyFields, updates);
+
+    this.jobA.updateKeyFields(updates);
+    test.deepEqual(this.jobA.getKeyFields(), expected);
     test.done();
   },
 

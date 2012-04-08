@@ -17,6 +17,9 @@ var Job = function(namespace) {
     suffix: ''
   };
 
+  // Fields used to build Redis key names.
+  var keyFields = {};
+
   // Collection.mapReduce() options.
   var mapReduceConfig = {};
 
@@ -56,6 +59,25 @@ var Job = function(namespace) {
       }
     });
     return _.clone(options);
+  };
+
+  /**
+   * Return a shallow copy of the job's key fields.
+   *
+   * @param updates {Object} Key/value pairs to change.
+   * @return {Object} The merge result.
+   */
+  this.updateKeyFields = function(updates) {
+    return _.extend(keyFields, updates);
+  };
+
+  /**
+   * Return a shallow copy of the job's key fields.
+   *
+   * @return {Object}
+   */
+  this.getKeyFields = function() {
+    return _.clone(keyFields);
   };
 
   /**

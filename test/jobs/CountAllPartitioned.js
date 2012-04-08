@@ -232,20 +232,20 @@ exports.job = {
   },
 
   testBuildSortedSetKey: function(test) {
-    this.job.updateOptions({
+    this.job.updateKeyFields({
       parser: 'json',
       interval: 3600000
     });
 
     test.equal(
-      this.job.buildSortedSetKey(),
+      this.job.buildSortedSetKey('json', 3600000),
       this.namespace + ':CountAllPartitioned:json:3600000'
     );
     test.done();
   },
 
   testBuildHashKey: function(test) {
-    this.job.updateOptions({
+    this.job.updateKeyFields({
       parser: 'json',
       interval: 3600000
     });
