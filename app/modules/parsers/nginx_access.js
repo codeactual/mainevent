@@ -21,7 +21,7 @@ NginxAccessParser.prototype.parse = function(log) {
 
 NginxAccessParser.prototype.addPreviewContext = function(log) {
   if (log.code) {
-    switch (log.code[0]) {
+    switch (log.code.toString()[0]) {
       case '2': log.__codeClass = 'success'; break;
       case '3': log.__codeClass = 'info'; break;
       case '4': log.__codeClass = 'important'; break;
