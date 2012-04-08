@@ -72,6 +72,7 @@ exports.lang = {
     test.strictEqual(convert('0.31'), 0.31);
     test.strictEqual(convert('300d'), '300d');
     test.strictEqual(convert('d300'), 'd300');
+    test.strictEqual(convert(undefined), undefined);
 
     // Verify constructor filter.
     test.strictEqual(convert(date).getTime(), date.getTime());

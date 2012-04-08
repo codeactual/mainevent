@@ -16,6 +16,10 @@ define([], function() {
      * @return {mixed}
      */
     numericStrToNum: function(val) {
+      if (_.isUndefined(val)) {
+        return val;
+      }
+
       var constructor = val.constructor.toString().match(/^function ([^\(]+)/);
       if (constructor[1] == 'Object' || constructor[1] == 'Array') {
         val = _.clone(val);
