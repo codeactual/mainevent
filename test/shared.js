@@ -24,7 +24,7 @@ exports.async = {
     };
 
     test.expect(2);
-    mainevent.shared.Async.runOrdered(list, consumer, onDone);
+    mainevent.shared.Async.runSync(list, consumer, onDone);
   }
 };
 

@@ -16,7 +16,7 @@ define([], function() {
       * @param consumer {Function} Function executed on each element, ex. DB insert.
       * @param onDone {Function} Callback fired after last element is consumed.
       */
-    runOrdered: function(list, consumer, onDone) {
+    runSync: function(list, consumer, onDone) {
       // Prevent shift() from affecting source list.
       arguments[0] = _.clone(arguments[0]);
 
@@ -26,7 +26,7 @@ define([], function() {
         if (list.length) {
           // E.g. pass one element for an async DB insert.
           consumer(list.shift(), function() {
-            mainevent.shared.Async.runOrdered(list, consumer, onDone);
+            mainevent.shared.Async.runSync(list, consumer, onDone);
           });
         } else {
           onDone();

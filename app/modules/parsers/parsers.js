@@ -75,7 +75,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
     );
   };
 
-  mainevent.shared.Async.runOrdered(
+  mainevent.shared.Async.runSync(
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);

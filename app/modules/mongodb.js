@@ -481,12 +481,12 @@ MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
   var mongo = this, lastError = null, lastResults = null;
   mongo.dbConnectAndOpen(callback, function(err, db) {
     // Process each collection's list of definitions.
-    mainevent.shared.Async.runOrdered(
+    mainevent.shared.Async.runSync(
       config.indexes,
       function(index, onIndexDone) {
 
         // Process each index definition.
-        mainevent.shared.Async.runOrdered(
+        mainevent.shared.Async.runSync(
           index.definitions,
           function(definition, onDefinitionDone) {
 
