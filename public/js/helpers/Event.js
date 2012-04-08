@@ -25,6 +25,13 @@ define([], function() {
   $('body').delegate('a.disabled', 'click', function(event) {
     event.preventDefault();
   });
+  $('body').delegate('a', 'click', function(event) {
+    var href = $(this).attr('href');
+    if (href[0] == '/') {
+      event.preventDefault();
+      mainevent.helpers.Event.trigger('LinkClick', href);
+    };
+  });
   // Use a global delegate to bypass view delegation/interception. Otherwise each
   // view's 'events' map would need to handle it redundantly.
   $('body').delegate('#keyboard-shortcuts', 'click', function(event) {

@@ -120,6 +120,15 @@ require([
         $('#content').html(out);
       });
     });
+
+    /**
+     * Respond to intercepted clicks on links with local HREFs.
+     *
+     * @param href {String} Ex. '/event/4f81c78146b5dac510000ef5'
+     */
+    mainevent.helpers.Event.on('LinkClick', function(href) {
+      Backbone.history.navigate(href, {trigger: true});
+    });
   });
 
   new Router();
