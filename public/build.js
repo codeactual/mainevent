@@ -83,6 +83,22 @@ var steps = [
           SOURCE + '/css/index.css'
         ];
 
+
+    // Add files from each parser directory.
+    var baseDir = __dirname + '/../app/parsers';
+    _.each(fs.readdirSync(baseDir), function(parser) {
+      if (!fs.statSync(baseDir + '/' + parser).isDirectory()) {
+        return;
+      }
+
+      // Ex. 'app/parsers/Json/css'.
+      var cssDir = baseDir + '/' + parser + '/css';
+
+      _.each(fs.readdirSync(cssDir), function(template) {
+        files.push(cssDir + '/' + template);
+      });
+    });
+
     commands.push('cat ' + files.join(' ') + ' > ' + BUILD_TMP + '/css/all.css');
 
     if (program.prod) {
