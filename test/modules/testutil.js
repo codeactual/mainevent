@@ -26,3 +26,13 @@ exports.getTempFile = function() {
 exports.sortNum = function(arr) {
   return _.sortBy(arr, function(num) { return num; });
 };
+
+exports.getTestMongoDb = function() {
+  // Disable all listeners by default. Tests which need them can create
+  // a separate instance with custom configuration.
+  var config = mainevent.getConfig().mongodb,
+      instanceConfig = _.clone(config);
+  instanceConfig.listeners = [];
+
+  return mainevent.requireModule('mongodb').createInstance(instanceConfig);
+};

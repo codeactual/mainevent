@@ -36,7 +36,6 @@
   }
 
   require(__dirname + '/modules/mainevent.js');
-  var parsers = mainevent.requireModule('parsers/parsers');
 
   var lazy = require('lazy');
   new lazy(require("fs").createReadStream(source.path))
@@ -48,7 +47,9 @@
     })
     .join(function (lines) {
       if (lines.length) {
-        parsers.parseAndInsert({source: source, lines: lines});
+        var mongodb = mainevent.requireModule('mongodb').createInstance(),
+            parsers = mainevent.requireModule('parsers/parsers');
+        parsers.parseAndInsert(mongodb, {source: source, lines: lines});
       }
     });
 })();

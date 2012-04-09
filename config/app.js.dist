@@ -24,7 +24,7 @@ exports.read = function () {
       maxResultSize: 100,
       indexes: [
         {
-          collection: 'eventCollection', // Do not modify.
+          collection: 'eventCollection', // Do not modify this name.
           definitions: [
             {
               fieldset: {time: -1,_id: -1}, // Timeline search.

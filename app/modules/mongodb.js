@@ -9,8 +9,14 @@ var mongodb = require('mongodb'),
     config = mainevent.getConfig().mongodb,
     EventEmitter = require('events').EventEmitter;
 
-exports.createInstance = function() {
-  return new MongoDb();
+/**
+ * @param config {Object} (Optional, Default: 'mongodb' object in config/app.js)
+ */
+exports.createInstance = function(instanceConfig) {
+  var mongodb = new MongoDb();
+  mongodb.config = instanceConfig || config;
+  mongodb.attachConfiguredListeners(mongodb.config.listeners);
+  return mongodb;
 };
 
 var MongoDb = function() {};
@@ -83,10 +89,10 @@ MongoDb.prototype.extractSortOptions = function(params) {
     }
   }
   if (params.limit) {
-    options.limit = Math.min(parseInt(params.limit, 10), config.maxResultSize);
+    options.limit = Math.min(parseInt(params.limit, 10), this.config.maxResultSize);
     delete params.limit;
   } else {
-    options.limit = config.maxResultSize;
+    options.limit = this.config.maxResultSize;
   }
   if (params.skip) {
     options.skip = parseInt(params.skip, 10);
@@ -134,10 +140,10 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success) {
   if (this.link) {
     success(null, this.link);
   } else {
-    this.collections = config.collections;
+    this.collections = this.config.collections;
     this.link = new mongodb.Db(
-      config.db,
-      new mongodb.Server(config.host, config.port, {})
+      this.config.db,
+      new mongodb.Server(this.config.host, this.config.port, {})
     );
     this.link.open(function(err, db) {
       if (err) {
@@ -158,10 +164,10 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success) {
  * @param success {Function} Fired on success.
  */
 MongoDb.prototype.dbCollection = function(db, collection, error, success) {
-  var mongo = this;
+  var mongodb = this;
   db.collection(collection, function(err, collection) {
     if (err) {
-      mongo.dbClose('Could not access collection.', error);
+      mongodb.dbClose('Could not access collection.', error);
     } else {
       success(err, collection);
     }
@@ -193,12 +199,12 @@ MongoDb.prototype.dbClose = function(err, callback) {
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
 MongoDb.prototype.insertLog = function(logs, callback, bulk) {
-  var mongo = this;
+  var mongodb = this;
 
   callback = callback || function() {};
 
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
       var docs = [];
       logs = _.isArray(logs) ? logs : [logs];
 
@@ -210,12 +216,12 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
 
       collection.insert(docs, {safe: true}, function(err, docs) {
         if (!bulk) {
-          mongo.dbClose();
+          mongodb.dbClose();
         }
 
         if (!err) {
           // Trigger other serializations, ex. Redis.
-          mongo.emit('InsertLog', _.clone(docs));
+          mongodb.emit('InsertLog', _.clone(docs));
         }
 
         callback(err, docs);
@@ -231,14 +237,14 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
  * @param callback {Function} Receives findOne() results.
  */
 MongoDb.prototype.getLog = function(id, callback) {
-  var mongo = this;
+  var mongodb = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
-        if (err) { mongo.dbClose(err, callback); return; }
-        mongo.dbClose();
+        if (err) { mongodb.dbClose(err, callback); return; }
+        mongodb.dbClose();
         if (doc) {
-          var post = mongo.eventPostFind(doc);
+          var post = mongodb.eventPostFind(doc);
           callback(err, post.docs[0]);
         } else {
           callback(err, null);
@@ -264,15 +270,15 @@ MongoDb.prototype.getLog = function(id, callback) {
  *   'nextPage' {Boolean} True if additional documents exist.
  */
 MongoDb.prototype.getTimeline = function(params, callback) {
-  var mongo = this;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
-      var options = mongo.extractSortOptions(params);
-      mongo.extractFilterOptions(params);
+  var mongodb = this;
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
+    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
+      var options = mongodb.extractSortOptions(params);
+      mongodb.extractFilterOptions(params);
       collection.find(params, options).toArray(function(err, docs) {
-        if (err) { mongo.dbClose(err, callback); return; }
-        mongo.dbClose();
-        var post = mongo.eventPostFind(docs, options);
+        if (err) { mongodb.dbClose(err, callback); return; }
+        mongodb.dbClose();
+        var post = mongodb.eventPostFind(docs, options);
         callback(err, post.docs, post.info);
       });
     });
@@ -320,26 +326,26 @@ MongoDb.prototype.mapReduce = function(job) {
   var collectionName = job.suffix ? job.name + '_' + job.suffix : job.name;
   var returnAsArray = job.return != 'cursor';
 
-  var mongo = this;
-  mongo.dbConnectAndOpen(job.callback, function(err, db) {
+  var mongodb = this;
+  mongodb.dbConnectAndOpen(job.callback, function(err, db) {
     job.options = job.options || {};
     job.options.out = job.options.out || {replace: collectionName};
-    mongo.dbCollection(db, mongo.collections.eventCollection, job.callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.eventCollection, job.callback, function(err, collection) {
       if (job.options.query) {
-        mongo.extractFilterOptions(job.options.query);
+        mongodb.extractFilterOptions(job.options.query);
 
         // Hack to remove any sort options from repurposed search forms.
-        mongo.extractSortOptions(job.options.query);
+        mongodb.extractSortOptions(job.options.query);
       }
       collection.mapReduce(job.map, job.reduce, job.options, function(err, stats) {
-        if (err) { mongo.dbClose(); job.callback(err); return; }
+        if (err) { mongodb.dbClose(); job.callback(err); return; }
         if (job.return) {
-          mongo.getMapReduceResults(collectionName, function(err, results) {
-            mongo.dbClose();
+          mongodb.getMapReduceResults(collectionName, function(err, results) {
+            mongodb.dbClose();
             job.callback(err, results, stats);
           }, returnAsArray);
         } else {
-          mongo.dbClose();
+          mongodb.dbClose();
           job.callback(err, stats);
         }
       });
@@ -360,12 +366,12 @@ MongoDb.prototype.mapReduce = function(job) {
 MongoDb.prototype.getMapReduceResults = function(name, callback, asArray) {
   asArray = _.isUndefined(asArray) ? true : asArray;
   name = mainevent.extractJobName(name);
-  var mongo = this;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, name, callback, function(err, collection) {
+  var mongodb = this;
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
+    mongodb.dbCollection(db, name, callback, function(err, collection) {
       if (asArray) {
         collection.find().toArray(function(err, docs) {
-          mongo.dbClose();
+          mongodb.dbClose();
           var results = {};
           _.each(docs, function(doc) {
             results[doc._id] = doc.value;
@@ -387,8 +393,8 @@ MongoDb.prototype.getMapReduceResults = function(name, callback, asArray) {
  * - {Boolean}
  */
 MongoDb.prototype.collectionExists = function(name, callback) {
-  var mongo = this;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
+  var mongodb = this;
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
     db.collections(function(err, results) {
       var names = {};
       _.each(results, function(collection) {
@@ -408,11 +414,11 @@ MongoDb.prototype.collectionExists = function(name, callback) {
  * @param callback {Function} Receives a Cursor object.
  */
 MongoDb.prototype.getCollectionCursor = function(name, params, options, callback) {
-  var mongo = this;
+  var mongodb = this;
   params = params || {};
   options = options || {};
-  mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, name, callback, function(err, collection) {
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
+    mongodb.dbCollection(db, name, callback, function(err, collection) {
       callback(collection.find(params, options));
     });
   });
@@ -425,11 +431,11 @@ MongoDb.prototype.getCollectionCursor = function(name, params, options, callback
  * @param callback {Function} Fires on drop completion.
  */
 MongoDb.prototype.dropCollection = function(name, callback) {
-  var mongo = this;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
-    mongo.dbCollection(db, name, callback, function(err, collection) {
+  var mongodb = this;
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
+    mongodb.dbCollection(db, name, callback, function(err, collection) {
       collection.drop(function() {
-        mongo.dbClose();
+        mongodb.dbClose();
         callback();
       });
     });
@@ -491,11 +497,11 @@ MongoDb.prototype.sortObjectIdAsc = function(a, b) {
  * - results {String} Last result.
  */
 MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
-  var mongo = this, lastError = null, lastResults = null;
-  mongo.dbConnectAndOpen(callback, function(err, db) {
+  var mongodb = this, lastError = null, lastResults = null;
+  mongodb.dbConnectAndOpen(callback, function(err, db) {
     // Process each collection's list of definitions.
     mainevent.shared.Async.runSync(
-      config.indexes,
+      mongodb.config.indexes,
       function(index, onIndexDone) {
 
         // Process each index definition.
@@ -503,7 +509,7 @@ MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
           index.definitions,
           function(definition, onDefinitionDone) {
 
-            mongo.dbCollection(db, mongo.collections[index.collection], callback, function(err, collection) {
+            mongodb.dbCollection(db, mongodb.collections[index.collection], callback, function(err, collection) {
               definition.options = definition.options || {};
               definition.options.background = true;
               collection.ensureIndex(definition.fieldset, definition.options, function(err, results) {
@@ -520,9 +526,28 @@ MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
       },
       // After all collection lists have been processed.
       function() {
-        mongo.dbClose();
+        mongodb.dbClose();
         callback(lastError, lastResults);
       }
     );
+  });
+};
+
+MongoDb.prototype.attachConfiguredListeners = function(config) {
+  var mongodb = this;
+
+  _.each(config, function(listener) {
+    if (!listener.enabled) {
+      return;
+    }
+
+    var maxListeners = 1;
+    _.each(listener.subscribers, function(subscriber) {
+      mongodb.setMaxListeners(listener.event, maxListeners++);
+      if ('/' != subscriber[0]) {
+        subscriber = __dirname + '/../../' + subscriber;
+      }
+      mongodb.on(listener.event, require(subscriber).on);
+    });
   });
 };

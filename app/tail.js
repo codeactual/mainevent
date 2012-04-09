@@ -40,7 +40,11 @@
     // ChildProcess object.
     this.tail = null;
 
+    // stdout logger.
     this.log = mainevent.createUtilLogger(this.source.path, program.quiet);
+
+    // MongoDB instance.
+    this.mongodb = mainevent.requireModule('mongodb').createInstance();
   };
 
   /**
@@ -61,7 +65,8 @@
         monitor.log('data=[%s] length={%d]', data.toString(), lines.length);
       }
 
-      parsers.parseAndInsert({source: monitor.source, lines: lines}, function() {
+      var sourceLines = {source: monitor.source, lines: lines};
+      parsers.parseAndInsert(monitor.mongodb, sourceLines, function() {
         // Support maximum line count for --test.
         if (program.test > 0 && lineCount >= program.test) {
           process.exit();

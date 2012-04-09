@@ -16,12 +16,13 @@ exports.createInstance = function(name) {
 /**
  * Parse each line list according to its source parser.
  *
+ * @param mongodb {Object} MongoDb instance.
  * @param sourceLines {Array|Object} Line object(s).
  * - source {Object} Source properties from config.js
  * - lines {Array|String} Unparsed line(s).
  * @param callback {Function} Fires after success/error.
  */
-exports.parseAndInsert = function(sourceLines, callback) {
+exports.parseAndInsert = function(mongodb, sourceLines, callback) {
   var lines = [];
   _.each(_.isArray(sourceLines) ? sourceLines : [sourceLines], function(sl) {
     var parser = exports.createInstance(sl.source.parser);
@@ -29,7 +30,6 @@ exports.parseAndInsert = function(sourceLines, callback) {
     lines = lines.concat(parser.parseLines(sl.source, sl.lines));
   });
 
-  var mongodb = mainevent.requireModule('mongodb').createInstance();
   mongodb.insertLog(lines, function() {
     mongodb.dbClose();
     (callback || function() {})();

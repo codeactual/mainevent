@@ -6,7 +6,7 @@
 
 var testutil = require(__dirname + '/modules/testutil.js'),
     parsers = mainevent.requireModule('parsers/parsers'),
-    mongodb = mainevent.requireModule('mongodb').createInstance();
+    mongodb = testutil.getTestMongoDb();
 
 /**
  * Verification logic used by most test cases below.
@@ -200,7 +200,7 @@ exports.testUnparsableLine = function(test) {
   var parser = parsers.createInstance('php');
   var line = testutil.getRandHash();  // Only for verification lookup.
   test.expect(3);
-  parsers.parseAndInsert({source: source, lines: line}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: line}, function() {
     mongodb.getTimeline({message: line}, function(err, docs) {
       test.ok(Math.abs(docs[0].time - time) < 1000);
       test.deepEqual(docs[0].tags, source.tags);
@@ -277,7 +277,7 @@ exports.testCustomTimeAttr = function(test) {
   var log = JSON.stringify(expected);
 
   test.expect(3);
-  parsers.parseAndInsert({source: source, lines: log}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: log}, function() {
     mongodb.getTimeline({run: expected.run}, function(err, docs) {
       test.equal(docs[0].message, expected.message);
       test.equal(docs[0].time, 1331543011000);
@@ -299,7 +299,7 @@ exports.testCustomPreviewAttr = function(test) {
   var line = JSON.stringify(expected);
 
   test.expect(1);
-  parsers.parseAndInsert({source: source, lines: line}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: line}, function() {
     mongodb.getTimeline({run: expected.run}, function(err, docs) {
       parsers.addPreviewContext(docs, function(actual) {
         test.equal(actual[0].preview, 'role=db-slave');
@@ -359,7 +359,7 @@ exports.testDirectTimeExtraction = function(test) {
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: 1331543011, message: "something happened", run: run};
   test.expect(2);
-  parsers.parseAndInsert({source: source, lines: JSON.stringify(log)}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: JSON.stringify(log)}, function() {
     mongodb.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].time, 1331543011000);
       test.equal(docs[0].message, log.message);
@@ -374,7 +374,7 @@ exports.testDirectTimeParse = function(test) {
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: "3/12/2012 09:03:31", message: "something happened", run: run};
   test.expect(2);
-  parsers.parseAndInsert({source: source, lines: JSON.stringify(log)}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: JSON.stringify(log)}, function() {
     mongodb.getTimeline({run: run}, function(err, docs) {
       test.equal(docs[0].time, 1331543011000);
       test.equal(docs[0].message, log.message);
@@ -390,7 +390,7 @@ exports.testExtractedTimeInsertion = function(test) {
   var line = '[12-Mar-2012 09:03:31 UTC] ' + run;
 
   test.expect(2);
-  parsers.parseAndInsert({source: source, lines: line}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: line}, function() {
     mongodb.getTimeline({message: run}, function(err, docs) {
       test.equal(docs[0].message, run);
       test.equal(docs[0].time, 1331543011000);
@@ -406,7 +406,7 @@ exports.testUnparsableTime = function(test) {
   var message = testutil.getRandHash();  // Only for verification lookup.
   var line = '[invalid time] ' + message;
   test.expect(3);
-  parsers.parseAndInsert({source: source, lines: line}, function() {
+  parsers.parseAndInsert(mongodb, {source: source, lines: line}, function() {
     mongodb.getTimeline({message: message}, function(err, docs) {
       test.ok(Math.abs(docs[0].time - time) < 1000);
       test.deepEqual(docs[0].tags, source.tags);

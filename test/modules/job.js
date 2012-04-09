@@ -4,7 +4,7 @@
 
 'use strict';
 
-var parsers = mainevent.requireModule('parsers/parsers');
+var testutil = require(__dirname + '/testutil.js');
 
 /**
  * Verify the job results for a given interval and log set.
@@ -19,7 +19,11 @@ var parsers = mainevent.requireModule('parsers/parsers');
  */
 exports.verifyJob = function(test, job, logs, expected, options) {
   test.expect(1);
-  parsers.parseAndInsert(logs, function() {
+
+  var parsers = mainevent.requireModule('parsers/parsers'),
+      mongodb = testutil.getTestMongoDb();
+
+  parsers.parseAndInsert(mongodb, logs, function() {
     job.run(options, function(err, results) {
       // Remove non-verified attribute.
       _.each(results, function(result, key) {
