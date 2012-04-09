@@ -4,8 +4,8 @@
 
 'use strict';
 
-var mongodb = require('mongodb'),
-    BSON = mongodb.BSONPure,
+var mongoDbLib = require('mongodb'),
+    BSON = mongoDbLib.BSONPure,
     config = mainevent.getConfig().mongodb,
     EventEmitter = require('events').EventEmitter;
 
@@ -15,7 +15,6 @@ var mongodb = require('mongodb'),
 exports.createInstance = function(instanceConfig) {
   var mongodb = new MongoDb();
   mongodb.config = instanceConfig || config;
-  mongodb.attachConfiguredListeners(mongodb.config.listeners);
   return mongodb;
 };
 
@@ -141,14 +140,16 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success) {
     success(null, this.link);
   } else {
     this.collections = this.config.collections;
-    this.link = new mongodb.Db(
+    this.link = new mongoDbLib.Db(
       this.config.db,
-      new mongodb.Server(this.config.host, this.config.port, {})
+      new mongoDbLib.Server(this.config.host, this.config.port, {})
     );
+    var mongodb = this;
     this.link.open(function(err, db) {
       if (err) {
         error('Could not access database.', null);
       } else {
+        mongodb.attachConfiguredListeners(mongodb.config.listeners);
         success(err, db);
       }
     });
@@ -183,6 +184,7 @@ MongoDb.prototype.dbCollection = function(db, collection, error, success) {
  */
 MongoDb.prototype.dbClose = function(err, callback) {
   if (this.link) {
+    this.removeAllListeners();
     this.link.close();
     this.link = null;
   }
@@ -215,13 +217,13 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
       });
 
       collection.insert(docs, {safe: true}, function(err, docs) {
-        if (!bulk) {
-          mongodb.dbClose();
-        }
-
         if (!err) {
           // Trigger other serializations, ex. Redis.
           mongodb.emit('InsertLog', _.clone(docs));
+        }
+
+        if (!bulk) {
+          mongodb.dbClose();
         }
 
         callback(err, docs);

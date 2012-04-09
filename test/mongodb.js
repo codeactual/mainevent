@@ -403,5 +403,34 @@ exports.events = {
     });
 
     mainevent.requireModule('mongodb').createInstance(instanceConfig).insertLog(expected);
+  },
+
+  testInsertLogPubSub: function(test) {
+    test.expect(2);
+
+    var testcase = this,
+        run = testutil.getRandHash(),  // Only for verification lookup.
+        expected = [{run: run, parser: 'json', time: '3/12/2012 11:00:00'}],
+        redis = mainevent.requireModule('redis').createInstance(),
+        mongodb = mainevent.requireModule('mongodb').createInstance();
+
+    redis.connect();
+
+    redis.client.on('message', function(channel, actual) {
+      actual = JSON.parse(actual);
+      if (actual[0].run == expected[0].run) {
+        redis.client.unsubscribe();
+        test.equal(actual[0].parser, expected[0].parser);
+        test.equal(actual[0].time, '2012-03-12T11:00:00.000Z');
+        redis.client.end();
+        mongodb.dbClose();
+        test.done();
+      }
+    });
+
+    redis.client.subscribe('InsertLog', function() {
+      var bulk = true;
+      mongodb.insertLog(expected, function() {}, bulk);
+    });
   }
 };

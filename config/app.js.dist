@@ -32,6 +32,16 @@ exports.read = function () {
             }
           ]
         }
+      ],
+      listeners: [
+        {
+          // Customize this event but do not remove.
+          event: 'InsertLog',
+          enabled: true,
+          subscribers: [
+            'app/modules/redis/InsertLogPubSub.js'
+          ],
+        }
       ]
     },
     redis: {
