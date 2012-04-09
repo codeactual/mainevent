@@ -3,12 +3,12 @@ exports.read = function () {
     sources: [
       {
         path: '/path/to/php/log',
-        parser: 'php',
+        parser: 'Php',
         tags: []
       },
       {
         path: '/path/to/json/log',
-        parser: 'json',
+        parser: 'Json',
         tags: [],
         timeAttr: 'atime',
         previewAttr: ['subject']
