@@ -18,7 +18,7 @@ define([], function() {
         res.send({__error: err}, 500);
       } else if (docs.length) {
         // Augment each document object with preview text for the view table.
-        mainevent.requireModule('parsers/parsers').addPreviewContext(docs, function(updated) {
+        mainevent.requireModule('parsers').addPreviewContext(docs, function(updated) {
           res.send({info: info, results: updated});
         });
       } else {

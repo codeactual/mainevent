@@ -24,7 +24,7 @@
   require(__dirname + '/modules/mainevent.js');
   var spawn = require('child_process').spawn,
       config = mainevent.getConfig(program.config),
-      parsers = mainevent.requireModule('parsers/parsers'),
+      parsers = mainevent.requireModule('parsers'),
       procLog = mainevent.createUtilLogger('tail.js');
 
   // To support maximum line count for --test.

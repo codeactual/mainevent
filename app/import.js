@@ -48,7 +48,7 @@
     .join(function (lines) {
       if (lines.length) {
         var mongodb = mainevent.requireModule('mongodb').createInstance(),
-            parsers = mainevent.requireModule('parsers/parsers');
+            parsers = mainevent.requireModule('parsers');
         parsers.parseAndInsert(mongodb, {source: source, lines: lines});
       }
     });

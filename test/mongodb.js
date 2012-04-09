@@ -5,7 +5,7 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    parsers = mainevent.requireModule('parsers/parsers'),
+    parsers = mainevent.requireModule('parsers'),
     config = mainevent.getConfig().mongodb,
     strtotime = mainevent.shared.Date.strtotime;
 

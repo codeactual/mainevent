@@ -22,7 +22,7 @@ mainevent.shared.Lang.inheritPrototype(ExampleParser, Parser);
  */
 ExampleParser.prototype.parse = function(log) {
   /**
-   * Helpers available in app/modules/parsers/parsers.js:
+   * Helpers available in app/modules/parsers.js:
    *
    * - namedCapture() - creates named match() results
    * - candidateCapture() - wraps multiple namedCapture() attempts

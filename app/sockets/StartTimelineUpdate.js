@@ -26,7 +26,7 @@ define([], function() {
           redis.client.on('message', function(channel, message) {
             if ('InsertLog' == channel) {
               var docs = JSON.parse(message),
-              parsers = mainevent.requireModule('parsers/parsers');
+              parsers = mainevent.requireModule('parsers');
 
               parsers.addPreviewContext(docs, function(docs) {
                 socket.emit('TimelineUpdate', docs);

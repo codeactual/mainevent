@@ -1,7 +1,7 @@
 'use strict';
 
 // Load GLOBAL.Parser.
-require(__dirname + '/prototype.js');
+require(__dirname + '/../parsers/prototype.js');
 
 /**
  * Return a named parser.
@@ -10,7 +10,7 @@ require(__dirname + '/prototype.js');
  * @return {Object} Copy of a cached parser module.
  */
 exports.createInstance = function(name) {
-  return require(__dirname + '/' + name + '.js').createInstance();
+  return require(util.format('%s/../parsers/%s/js/%s', __dirname, name, name)).createInstance();
 };
 
 /**
@@ -43,11 +43,7 @@ exports.parseAndInsert = function(mongodb, sourceLines, callback) {
  * @return {String}
  */
 exports.getPreviewTemplate = function(log) {
-  return util.format(
-    'preview_%s%s',
-    log.parser,
-    undefined === log.parser_subtype ? '' : '_' + log.parser_subtype
-  );
+  return util.format('%s%sPreview', log.parser, log.parser_subtype || '');
 };
 
 /**

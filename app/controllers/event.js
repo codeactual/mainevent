@@ -3,7 +3,7 @@ define([], function() {
   'use strict';
 
   return function(req, res) {
-    var parsers = mainevent.requireModule('parsers/parsers'),
+    var parsers = mainevent.requireModule('parsers'),
         send404 = function() {
           res.send({__error: 'Event not found.'}, 404);
         },

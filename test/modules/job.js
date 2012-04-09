@@ -20,7 +20,7 @@ var testutil = require(__dirname + '/testutil.js');
 exports.verifyJob = function(test, job, logs, expected, options) {
   test.expect(1);
 
-  var parsers = mainevent.requireModule('parsers/parsers'),
+  var parsers = mainevent.requireModule('parsers'),
       mongodb = testutil.getTestMongoDb();
 
   parsers.parseAndInsert(mongodb, logs, function() {

@@ -2,7 +2,7 @@
  * Supply common/stateless helpers and module instances.
  *
  * All entry points (mainevent_server, app/tail.js, test runners, etc) must require()
- * this module. Modules like parsers/parsers.js assume its presence.
+ * this module. Modules like parsers.js assume its presence.
  */
 
 'use strict';

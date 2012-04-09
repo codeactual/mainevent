@@ -5,7 +5,7 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    parsers = mainevent.requireModule('parsers/parsers'),
+    parsers = mainevent.requireModule('parsers'),
     mongodb = testutil.getTestMongoDb();
 
 /**
@@ -211,10 +211,10 @@ exports.testUnparsableLine = function(test) {
 };
 
 exports.testGetPreviewTemplate = function(test) {
-  var log = {parser: 'Php', parser_subtype: 'userdef'};
-  test.equal(parsers.getPreviewTemplate(log), 'preview_php_userdef');
+  var log = {parser: 'Php', parser_subtype: 'UserDefined'};
+  test.equal(parsers.getPreviewTemplate(log), 'PhpUserDefinedPreview');
   log = {parser: 'Json'};
-  test.equal(parsers.getPreviewTemplate(log), 'preview_json');
+  test.equal(parsers.getPreviewTemplate(log), 'JsonPreview');
   test.done();
 };
 
