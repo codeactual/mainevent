@@ -5,10 +5,9 @@ define([], function() {
 
   'use strict';
 
-  var intervalDelay = mainevent.getConfig().timelineUpdateDelay,
-      updateInterval = null;
-
   return function(socket) {
+
+    var redis = null;
 
     /**
      * Client seeds the update stream with the last-seen ID/time.
@@ -18,48 +17,28 @@ define([], function() {
      * - newestEventTime {Number}
      */
     socket.on('StartTimelineUpdate', function (options) {
+      if (!redis) {
+        redis = mainevent.requireModule('redis').createInstance();
 
-      var sendUpdates = function(err, docs) {
-        if (err) {
-          docs = {__socket_error: err};
-          socket.emit('TimelineUpdate', docs);
-        } else {
-          if (docs.length) {
-            options.newestEventId = docs[0]._id.toString();
-            options.newestEventTime = docs[0].time;
+        redis.connect();
+        redis.client.subscribe('InsertLog');
+        redis.client.on('message', function(channel, message) {
+          if ('InsertLog' == channel) {
+            var docs = JSON.parse(message),
+                parsers = mainevent.requireModule('parsers/parsers');
 
-            var parsers = mainevent.requireModule('parsers/parsers');
             parsers.addPreviewContext(docs, function(docs) {
               socket.emit('TimelineUpdate', docs);
             });
-          } else {
-            socket.emit('TimelineUpdate', docs);
           }
-        }
-      };
-
-      var checkForUpdates = function () {
-        if (!options.newestEventId || !options.newestEventTime) {
-          // Client never sent the ID for some reason -- don't stop the updates.
-          return;
-        }
-
-        var mongodb = mainevent.requireModule('mongodb').createInstance();
-        mongodb.getTimelineUpdates(
-          options.newestEventId,
-          options.newestEventTime,
-          options.searchArgs,
-          sendUpdates
-        );
-      };
-
-      updateInterval = setInterval(checkForUpdates, intervalDelay);
+        });
+      }
     });
 
     socket.on('disconnect', function () {
-      if (updateInterval) {
-        clearInterval(updateInterval);
-      }
+      redis.client.unsubscribe();
+      redis.end();
+      redis = null;
     });
   };
 });
