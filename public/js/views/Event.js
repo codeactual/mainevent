@@ -142,8 +142,8 @@ define([
 
       var view = this;
       dust.render(
-        // ex. 'event_nginx_access'
-        'event_' + this.model.attributes.parser,
+        // ex. 'NginxAccessEvent'
+        this.model.attributes.parser + 'Event',
         context,
         function(err, out) {
           view.$el.html(out);

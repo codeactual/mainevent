@@ -52,7 +52,7 @@ _.each(fs.readdirSync(baseDir), function(parser) {
 
   _.each(fs.readdirSync(parserDir), function(template) {
     // Ex. 'JsonPreview'.
-    var templateName = parser + template;
+    var templateName = path.basename(parser + template, '.html');
 
     // Append the compiled template.
     fs.writeSync(
