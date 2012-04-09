@@ -87,7 +87,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
 
       // Use parser's template.
       } else {
-        // Use parser module's preview function, e.g. for parsers/json.js.
+        // Use parser module's preview function.
         log.preview = parser.getPreview(context);
 
         if (_.isNull(log.preview)) {

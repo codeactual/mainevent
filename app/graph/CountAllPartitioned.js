@@ -115,7 +115,7 @@ var runJob = function(lastId) {
             log('started job with parser %s, interval %d', parser, interval);
           }
 
-          // Ex. graph:CountAllPartitioned:json:3600000
+          // Ex. graph:CountAllPartitioned:Json:3600000
           var jobStart = (new Date()).getTime(),
               query = {parser: parser},
               jobLastId = null;
@@ -126,7 +126,7 @@ var runJob = function(lastId) {
           }
 
           job.updateOptions({
-            // Ex. 'json', 'json_3600000'
+            // Ex. 'Json', 'Json_3600000'
             suffix: _.compact([parser, interval]).join('_'),
             // Ex. 'hour'
             partition: date.partitions[date.bestFitInterval(interval)],
@@ -148,7 +148,7 @@ var runJob = function(lastId) {
             // Collect the changeset for upsert().
             _.each(results, function(result, key) {
 
-              // Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'
+              // Ex. 'graph:CountAllPartitioned:Json:3600000:result:2012-02'
               var member = job.buildHashKey(key),
                   score = (new Date(key)).getTime();
 

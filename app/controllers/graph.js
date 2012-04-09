@@ -1,7 +1,7 @@
 /**
  * Read pre-generated graph data from Redis.
  *
- * Ex. graph/<name>?time-gte=<timestamp>&time-lte=<timestamp>&parser=json&partition=hour
+ * Ex. graph/<name>?time-gte=<timestamp>&time-lte=<timestamp>&parser=Json&partition=hour
  */
 
 define([], function() {

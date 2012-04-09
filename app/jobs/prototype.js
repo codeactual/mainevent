@@ -203,7 +203,7 @@ Job.prototype.buildKey = function() {
 /**
  * Build the key of the sorted set which indexes this job's results.
  *
- * Ex. 'graph:CountAllPartitioned:json:3600000'.
+ * Ex. 'graph:CountAllPartitioned:Json:3600000'.
  *
  * @return {String}
  */
@@ -214,7 +214,7 @@ Job.prototype.buildSortedSetKey = function() {
 /**
  * Build the key of hash which holds a specific map reduce result.
  *
- * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
+ * Ex. 'graph:CountAllPartitioned:Json:3600000:result:2012-02'.
  *
  * @param resultId {String} Ex. '2012-02'.
  * @return {String}
@@ -226,7 +226,7 @@ Job.prototype.buildHashKey = function(resultId) {
 /**
  * Return just the result ID from buildHashKey() string.
  *
- * @param hashKey {String} Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
+ * @param hashKey {String} Ex. 'graph:CountAllPartitioned:Json:3600000:result:2012-02'.
  * @return {String} Ex. '2012-02'.
  */
 Job.prototype.extractResultKey = function(hashKey) {
@@ -238,7 +238,7 @@ Job.prototype.extractResultKey = function(hashKey) {
 /**
  * Build the key of hash which holds a specific map reduce result.
  *
- * Ex. 'graph:CountAllPartitioned:json:3600000:result:2012-02'.
+ * Ex. 'graph:CountAllPartitioned:Json:3600000:result:2012-02'.
  *
  * @return {String}
  */

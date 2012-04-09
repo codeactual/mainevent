@@ -13,7 +13,7 @@ var testutil = require(__dirname + '/modules/testutil.js'),
  *
  * @param test {Object} Instance injected into the calling case function.
  * @param log {String} Log line.
- * @param parser {String} Ex. 'nginx_access'.
+ * @param parser {String} Ex. 'NginxAccess'.
  * @param expected {Object} Attributes from parse result.
  */
 var assertParseValid = function(test, log, parser, expected) {
@@ -31,7 +31,7 @@ exports.testNginxAccess = function(test) {
   assertParseValid(
     test,
     '127.0.0.1 - www [12/Feb/2012:09:03:31 +0000] "GET /timeline HTTP/1.1" 502 166 "http://www.referer.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"',
-    'nginx_access',
+    'NginxAccess',
     {
       host: '127.0.0.1',
       user: 'www',
@@ -51,7 +51,7 @@ exports.testNginxError = function(test) {
   assertParseValid(
     test,
     '2012/02/12 09:03:31 [error] 16939#0: *491 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: mainevent, request: "GET /timeline HTTP/1.1", upstream: "fastcgi://unix:/usr/var/run/php-fpm.sock:", host: "mainevent"',
-    'nginx_error',
+    'NginxError',
     {
       time: '2012/02/12 09:03:31',
       level: 'error',
@@ -69,7 +69,7 @@ exports.testNginxError = function(test) {
   assertParseValid(
     test,
     '2012/02/05 00:26:21 [error] 18242#0: *1 access forbidden by rule, client: 127.0.0.1, server: mainevent, request: "GET /.htaccess HTTP/1.1", host: "mainevent"',
-    'nginx_error',
+    'NginxError',
     {
       time: '2012/02/05 00:26:21',
       level: 'error',
@@ -86,7 +86,7 @@ exports.testNginxError = function(test) {
   assertParseValid(
     test,
     '2012/02/05 00:25:54 [emerg] 18108#0: invalid number of arguments in "server_tokens" directive in /path/to/config:9',
-    'nginx_error',
+    'NginxError',
     {
       time: '2012/02/05 00:25:54',
       level: 'emerg',
@@ -102,7 +102,7 @@ exports.testSymfonyEvent = function(test) {
   assertParseValid(
     test,
     '[2012-02-12 09:03:31] event.DEBUG: Notified event "kernel.response" to listener "Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse". [] []',
-    'symfony',
+    'Symfony',
     {
       time: '2012-02-12 09:03:31',
       type: 'event',
@@ -119,7 +119,7 @@ exports.testSymfonyUncaughtException = function(test) {
   assertParseValid(
     test,
     '[2012-02-10 10:24:17] request.CRITICAL: Twig_Error_Runtime: Variable "rows" does not exist in "MaineventTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception) at /var/dev/mainevent/app/cache/dev/classes.php line 8024 [] []',
-    'symfony',
+    'Symfony',
     {
       time: '2012-02-10 10:24:17',
       type: 'request',
@@ -138,14 +138,14 @@ exports.testPhpNotice = function(test) {
   assertParseValid(
     test,
     '[14-Feb-2012 06:38:38 UTC] PHP Notice:  Undefined variable: b in /tmp/errormaker.php on line 2',
-    'php',
+    'Php',
     {
       time: '14-Feb-2012 06:38:38 UTC',
       level: 'Notice',
       message: 'Undefined variable: b',
       file: '/tmp/errormaker.php',
       line: '2',
-      parser_subtype: 'builtin'
+      parser_subtype: 'BuiltIn'
     }
   );
   test.done();
@@ -155,11 +155,11 @@ exports.testPhpUserDefined = function(test) {
   assertParseValid(
     test,
     '[14-Feb-2012 06:38:38 UTC] something terrible happened',
-    'php',
+    'Php',
     {
       time: '14-Feb-2012 06:38:38 UTC',
       message: 'something terrible happened',
-      parser_subtype: 'userdef'
+      parser_subtype: 'UserDefined'
     }
   );
   test.done();
@@ -169,7 +169,7 @@ exports.testSyslog = function(test) {
   assertParseValid(
     test,
     'Mar  5 21:36:00 mainevent kernel: [186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1',
-    'syslog',
+    'Syslog',
     {
       time: 'Mar  5 21:36:00',
       host: 'mainevent',
@@ -185,7 +185,7 @@ exports.testJson = function(test) {
   assertParseValid(
     test,
     '{"time":"14-Feb-2012 06:38:38 UTC","message":"something good"}',
-    'json',
+    'Json',
     {
       time: '14-Feb-2012 06:38:38 UTC',
       message: 'something good'
@@ -196,8 +196,8 @@ exports.testJson = function(test) {
 
 exports.testUnparsableLine = function(test) {
   var time = Math.round((new Date()).getTime());
-  var source = {parser: 'php', tags: ['a', 'b']};
-  var parser = parsers.createInstance('php');
+  var source = {parser: 'Php', tags: ['a', 'b']};
+  var parser = parsers.createInstance('Php');
   var line = testutil.getRandHash();  // Only for verification lookup.
   test.expect(3);
   parsers.parseAndInsert(mongodb, {source: source, lines: line}, function() {
@@ -211,9 +211,9 @@ exports.testUnparsableLine = function(test) {
 };
 
 exports.testGetPreviewTemplate = function(test) {
-  var log = {parser: 'php', parser_subtype: 'userdef'};
+  var log = {parser: 'Php', parser_subtype: 'userdef'};
   test.equal(parsers.getPreviewTemplate(log), 'preview_php_userdef');
-  log = {parser: 'json'};
+  log = {parser: 'Json'};
   test.equal(parsers.getPreviewTemplate(log), 'preview_json');
   test.done();
 };
@@ -227,7 +227,7 @@ exports.testGetPreviewFromFunction = function(test) {
   var logs = [{
     time: 'Tue Feb 21 10:44:23 UTC',
     message: message,
-    parser: 'json'
+    parser: 'Json'
   }];
 
   test.expect(3);
@@ -248,7 +248,7 @@ exports.testGetPreviewFromFunction = function(test) {
 exports.testGetPreviewFromTemplate = function(test) {
   // Example row from DB.
   var logs = [{
-    parser: 'php',
+    parser: 'Php',
     parser_subtype: 'userdef',
     time: 'Tue Feb 21 10:44:23 UTC',
     message: 'foo'
@@ -267,8 +267,8 @@ exports.testGetPreviewFromTemplate = function(test) {
 };
 
 exports.testCustomTimeAttr = function(test) {
-  var source = {parser: 'json', timeAttr: 'logtime'};
-  var parser = parsers.createInstance('json');
+  var source = {parser: 'Json', timeAttr: 'logtime'};
+  var parser = parsers.createInstance('Json');
   var expected = {
     logtime: '3/12/2012 09:03:31 UTC',
     message: 'shutdown succeeded',
@@ -288,8 +288,8 @@ exports.testCustomTimeAttr = function(test) {
 };
 
 exports.testCustomPreviewAttr = function(test) {
-  var source = {parser: 'json', previewAttr: ['role']};
-  var parser = parsers.createInstance('json');
+  var source = {parser: 'Json', previewAttr: ['role']};
+  var parser = parsers.createInstance('Json');
   var expected = {
     time: '14-Feb-2012 06:38:38 UTC',
     role: 'db-slave',
@@ -310,35 +310,35 @@ exports.testCustomPreviewAttr = function(test) {
 };
 
 exports.testNginxAccessExtractTime = function(test) {
-  var parser = parsers.createInstance('nginx_access');
+  var parser = parsers.createInstance('NginxAccess');
   var date = '12/Mar/2012:09:03:31 +0000';
   test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testNginxErrorExtractTime = function(test) {
-  var parser = parsers.createInstance('nginx_error');
+  var parser = parsers.createInstance('NginxError');
   var date = '2012/03/12 09:03:31';
   test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testPhpExtractTime = function(test) {
-  var parser = parsers.createInstance('php');
+  var parser = parsers.createInstance('Php');
   var date = '12-Mar-2012 09:03:31 UTC';
   test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testSymfonyExtractTime = function(test) {
-  var parser = parsers.createInstance('symfony');
+  var parser = parsers.createInstance('Symfony');
   var date = '2012-03-12 09:03:31';
   test.equal(parser.extractTime(date), 1331543011000);
   test.done();
 };
 
 exports.testSyslogExtractTimeFromCurrentYear = function(test) {
-  var parser = parsers.createInstance('syslog');
+  var parser = parsers.createInstance('Syslog');
   var date = 'Mar  12 09:03:31';
   var now = new Date('3/13/2012 00:00:00');
   test.equal(parser.extractTime(date, now), 1331543011000);
@@ -346,7 +346,7 @@ exports.testSyslogExtractTimeFromCurrentYear = function(test) {
 }
 
 exports.testSyslogExtractTimeFromPriorYear = function(test) {
-  var parser = parsers.createInstance('syslog');
+  var parser = parsers.createInstance('Syslog');
   var date = 'Dec  31 23:03:31';
   var now = new Date('1/01/2012 00:00:00');
   test.equal(parser.extractTime(date, now), 1325372611000);
@@ -354,8 +354,8 @@ exports.testSyslogExtractTimeFromPriorYear = function(test) {
 };
 
 exports.testDirectTimeExtraction = function(test) {
-  var source = {parser: 'json', timeAttr: 't'};
-  var parser = parsers.createInstance('json');
+  var source = {parser: 'Json', timeAttr: 't'};
+  var parser = parsers.createInstance('Json');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: 1331543011, message: "something happened", run: run};
   test.expect(2);
@@ -369,8 +369,8 @@ exports.testDirectTimeExtraction = function(test) {
 };
 
 exports.testDirectTimeParse = function(test) {
-  var source = {parser: 'json', timeAttr: 't'};
-  var parser = parsers.createInstance('json');
+  var source = {parser: 'Json', timeAttr: 't'};
+  var parser = parsers.createInstance('Json');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var log = {t: "3/12/2012 09:03:31", message: "something happened", run: run};
   test.expect(2);
@@ -384,8 +384,8 @@ exports.testDirectTimeParse = function(test) {
 };
 
 exports.testExtractedTimeInsertion = function(test) {
-  var source = {parser: 'php'};
-  var parser = parsers.createInstance('php');
+  var source = {parser: 'Php'};
+  var parser = parsers.createInstance('Php');
   var run = testutil.getRandHash();  // Only for verification lookup.
   var line = '[12-Mar-2012 09:03:31 UTC] ' + run;
 
@@ -401,8 +401,8 @@ exports.testExtractedTimeInsertion = function(test) {
 
 exports.testUnparsableTime = function(test) {
   var time = Math.round((new Date()).getTime());
-  var source = {parser: 'php', tags: ['a', 'b']};
-  var parser = parsers.createInstance('php');
+  var source = {parser: 'Php', tags: ['a', 'b']};
+  var parser = parsers.createInstance('Php');
   var message = testutil.getRandHash();  // Only for verification lookup.
   var line = '[invalid time] ' + message;
   test.expect(3);

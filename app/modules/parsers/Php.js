@@ -15,12 +15,12 @@ PhpParser.prototype.parse = function(log) {
                                {
     names: ['time', 'level', 'message', 'file', 'line'],
     regex : /^\[([^\]]+)\] PHP ([^:]+):\s+(?:(.*) in )(\/.*) on line (\d+)$/,
-    subtype: 'builtin'
+    subtype: 'BuiltIn'
   },
   {
     names: ['time', 'message'],
     regex : /^\[([^\]]*)\]\s+(.*)$/,
-    subtype: 'userdef'
+    subtype: 'UserDefined'
   }
   ]);
 };

@@ -5,7 +5,7 @@ exports.createInstance = function() {
 };
 
 var JsonParser = function() {
-  Parser.call(this, 'json');
+  Parser.call(this, 'Json');
 };
 
 mainevent.shared.Lang.inheritPrototype(JsonParser, Parser);

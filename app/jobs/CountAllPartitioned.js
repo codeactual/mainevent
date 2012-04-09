@@ -139,9 +139,9 @@ Job.extend(CountAllPartitioned, {
   /**
    * See prototype in prototype.js for additional notes.
    *
-   * @param parser {String} Ex. 'json'.
+   * @param parser {String} Ex. 'Json'.
    * @param interval {Number} Ex. 3600000.
-   * @return {String} 'graph:CountAllPartitioned:json:3600000'
+   * @return {String} 'graph:CountAllPartitioned:Json:3600000'
    */
   buildSortedSetKey: function() {
     var fields = this.getKeyFields(),
