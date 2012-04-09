@@ -328,3 +328,23 @@ exports.dataTypes = {
     });
   }
 };
+
+exports.events = {
+
+  testEmitInsertLog: function(test) {
+    test.expect(4);
+
+    var run = testutil.getRandHash(),  // Only for verification lookup.
+        expected = [{run: run, parser: 'json', time: '3/12/2012 11:00:00'}];
+
+    mongodb.on('InsertLog', function(actual) {
+      test.equal(actual.length, 1);
+      test.equal(actual[0].run, expected[0].run);
+      test.equal(actual[0].parser, expected[0].parser);
+      test.equal(actual[0].time, expected[0].time);
+      test.done();
+    });
+
+    mongodb.insertLog(expected);
+  }
+};

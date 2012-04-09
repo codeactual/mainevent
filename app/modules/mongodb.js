@@ -6,13 +6,17 @@
 
 var mongodb = require('mongodb'),
     BSON = mongodb.BSONPure,
-    config = mainevent.getConfig().mongodb;
+    config = mainevent.getConfig().mongodb,
+    EventEmitter = require('events').EventEmitter;
 
 exports.createInstance = function() {
   return new MongoDb();
 };
 
 var MongoDb = function() {};
+
+// Ex. allow insertLog() to trigger secondary serializations.
+_.extend(MongoDb.prototype, EventEmitter.prototype);
 
 // Db instance.
 MongoDb.prototype.link = null;
@@ -190,6 +194,9 @@ MongoDb.prototype.dbClose = function(err, callback) {
  */
 MongoDb.prototype.insertLog = function(logs, callback, bulk) {
   var mongo = this;
+
+  callback = callback || function() {};
+
   this.dbConnectAndOpen(callback, function(err, db) {
     mongo.dbCollection(db, mongo.collections.eventCollection, callback, function(err, collection) {
       var docs = [];
@@ -205,6 +212,12 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
         if (!bulk) {
           mongo.dbClose();
         }
+
+        if (!err) {
+          // Trigger other serializations, ex. Redis.
+          mongo.emit('InsertLog', _.clone(docs));
+        }
+
         callback(err, docs);
       });
     });
