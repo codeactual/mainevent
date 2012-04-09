@@ -1,7 +1,7 @@
 define([
     'views/TimelineSearch',
-    'views/DashboardMainGraph'
-  ], function(TimelineSearch, DashboardMainGraph) {
+    'views/CountAllPartitioned'
+  ], function(TimelineSearch, CountAllPartitioned) {
 
   'use strict';
 
@@ -191,7 +191,7 @@ define([
         null,
         function(err, out) {
           view.$el.html(out);
-          view.renderMainGraph();
+          view.renderCountAllPartitioned();
 
           var parser = $('#dashboard-header-grid .parser'),
               timeInterval = $('#dashboard-header-grid .time-interval');
@@ -211,7 +211,7 @@ define([
     /**
      * Create the sub-view for the "main" (largest/most prominent) graph.
      */
-    renderMainGraph: function() {
+    renderCountAllPartitioned: function() {
       // Graph arguments came from drop-down changes.
       if (this.options.dashArgs['dd']) {
         // Avoid having 'dd' used as a query condition.
@@ -232,7 +232,7 @@ define([
         this.toggleDropDowns();
       }
 
-      this.subViews.mainGraph = new DashboardMainGraph({el: $('#dashboard-main-graph')});
+      this.subViews.mainGraph = new CountAllPartitioned({el: $('#dashboard-main-graph')});
 
       // Reuse the change event so the arguments pass through the same logic
       // as do changes originating from drop-downs or search modal.
