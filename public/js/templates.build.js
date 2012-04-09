@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Compile all dust.js templates.
 */

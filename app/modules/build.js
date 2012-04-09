@@ -10,7 +10,7 @@ var log = mainevent.createUtilLogger('build');
  * Build public-build/ static directory.
  */
 exports.staticDir = function() {
-  require('child_process').spawn(__dirname + '/../../public/build');
+  require('child_process').spawn(__dirname + '/../../public/build.js');
 }
 
 /**
