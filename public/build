@@ -16,6 +16,9 @@ MODE=$1
 rm -rf $BUILD_TMP
 mkdir $BUILD_TMP
 
+# Compile dust.js templates.
+/usr/bin/env node $SOURCE/js/templates.build.js
+
 # Compress app JS.
 cp -a $SOURCE/js $BUILD_TMP/js-compressed
 if [ "$MODE" == "prod" ]; then
@@ -50,4 +53,8 @@ if [ -d "$BUILD" ]; then
   mv $BUILD $BUILD_OLD
 fi;
 mv $BUILD_TMP $BUILD
+
+# Clean up.
+rm -f $BUILD/js/app.build.js
+rm -f $BUILD/js/templates.build.js
 rm -rf $BUILD_OLD

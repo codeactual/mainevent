@@ -20,7 +20,6 @@ var express = require('express'),
     io = require('socket.io').listen(app),
     build = mainevent.requireModule('build');
 
-build.compileViews();
 build.staticDir();
 build.mongoDbIndexes();
 
