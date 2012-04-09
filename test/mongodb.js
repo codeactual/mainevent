@@ -418,7 +418,7 @@ exports.events = {
 
     redis.client.on('message', function(channel, actual) {
       actual = JSON.parse(actual);
-      if (actual[0].run == expected[0].run) {
+      if (channel == 'InsertLog' && actual[0].run == expected[0].run) {
         redis.client.unsubscribe();
         test.equal(actual[0].parser, expected[0].parser);
         test.equal(actual[0].time, '2012-03-12T11:00:00.000Z');
