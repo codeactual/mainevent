@@ -21,16 +21,18 @@ define([], function() {
         redis = mainevent.requireModule('redis').createInstance();
 
         redis.connect();
-        redis.client.subscribe('InsertLog');
-        redis.client.on('message', function(channel, message) {
-          if ('InsertLog' == channel) {
-            var docs = JSON.parse(message),
-                parsers = mainevent.requireModule('parsers/parsers');
+        redis.client.on('ready', function() {
+          redis.client.subscribe('InsertLog');
+          redis.client.on('message', function(channel, message) {
+            if ('InsertLog' == channel) {
+              var docs = JSON.parse(message),
+              parsers = mainevent.requireModule('parsers/parsers');
 
-            parsers.addPreviewContext(docs, function(docs) {
-              socket.emit('TimelineUpdate', docs);
-            });
-          }
+              parsers.addPreviewContext(docs, function(docs) {
+                socket.emit('TimelineUpdate', docs);
+              });
+            }
+          });
         });
       }
     });
