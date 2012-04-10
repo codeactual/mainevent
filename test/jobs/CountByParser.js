@@ -21,18 +21,18 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-      source: {parser: 'json'},
+      source: {parser: 'Json'},
       lines: ['{"time":"3/12/2012 09:00:00","message":"' + run + '"}']
     },
     {
-      source: {parser: 'php'},
+      source: {parser: 'Php'},
       lines: [
         '[12-Mar-2012 10:00:00 UTC] ' + run,
         '[12-Mar-2012 11:00:00 UTC] ' + run
       ]
     }
     ];
-    var expected = {php: {count: 2}, json: {count: 1}};
+    var expected = {Php: {count: 2}, Json: {count: 1}};
     job.verifyJob(
       test,
       this.job,

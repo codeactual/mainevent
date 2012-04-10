@@ -21,7 +21,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
           '{"time":"04/13/2010 10:00:15","message":"' + run + '"}',
@@ -54,7 +54,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
           '{"time":"04/13/2009 10:00:15","message":"' + run + '"}',
@@ -88,7 +88,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
           '{"time":"03/13/2009 10:00:15","message":"' + run + '"}',
@@ -121,7 +121,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
           '{"time":"03/12/2009 10:00:15","message":"' + run + '"}',
@@ -154,7 +154,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:00:05","message":"' + run + '"}',
           '{"time":"03/12/2009 09:05:15","message":"' + run + '"}',
@@ -187,7 +187,7 @@ exports.job = {
     var run = testutil.getRandHash();
     var logs = [
       {
-        source: {parser: 'json'},
+        source: {parser: 'Json'},
         lines: [
           '{"time":"03/12/2009 09:05:05","message":"' + run + '"}',
           '{"time":"03/12/2009 09:05:20","message":"' + run + '"}',
@@ -232,23 +232,23 @@ exports.job = {
   },
 
   testBuildSortedSetKey: function(test) {
-    this.job.updateKeyFields({parser: 'json'});
+    this.job.updateKeyFields({parser: 'Json'});
     this.job.updateOptions({partition: 'hour'});
 
     test.equal(
-      this.job.buildSortedSetKey('json', 'hour'),
-      this.namespace + ':CountAllPartitioned:json:hour'
+      this.job.buildSortedSetKey('Json', 'hour'),
+      this.namespace + ':CountAllPartitioned:Json:hour'
     );
     test.done();
   },
 
   testBuildHashKey: function(test) {
-    this.job.updateKeyFields({parser: 'json'});
+    this.job.updateKeyFields({parser: 'Json'});
     this.job.updateOptions({partition: 'hour'});
 
     test.equal(
       this.job.buildHashKey('2012-02'),
-      this.namespace + ':CountAllPartitioned:json:hour:result:2012-02'
+      this.namespace + ':CountAllPartitioned:Json:hour:result:2012-02'
     );
     test.done();
   }
