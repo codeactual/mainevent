@@ -1,5 +1,7 @@
 'use strict';
 
+var templatesDir = require('fs').readFileSync(mainevent.requireModule('build').getTemplatesPath());
+
 /**
  * Return a named parser.
  *
@@ -55,9 +57,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
   var updatedLogs = [];
 
   var updateLogFromTemplate = function(name, log, context, callback) {
-    dust.loadSource(
-      require('fs').readFileSync(mainevent.requireModule('build').getTemplatesPath())
-    );
+    dust.loadSource(templatesDir);
     dust.render(
       name,
       context,
