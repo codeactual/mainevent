@@ -110,8 +110,14 @@
    * Seed initial `tail` set based on config/app.js 'sources' list.
    */
   var startAllMonitors = function() {
-    // Avoid EventEmitter mem leak false alarms about > 10.
-    process.setMaxListeners(config.sources.length);
+    var maxListeners = config.sources.length;
+
+    if (program.test) {   // Tests add 'message' and 'exit' listeners.
+      maxListeners += 2;
+    }
+
+    // Avoid EventEmitter mem leak false alarms about count > 10.
+    process.setMaxListeners(maxListeners);
 
     _.each(config.sources, function(source) {
       (new Monitor(source)).start();
