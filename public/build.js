@@ -8,18 +8,17 @@ require(__dirname + '/../app/modules/mainevent');
 
 var _ = require('underscore'),
     fs = require('fs'),
-    program = require('commander');
-
-program
-  .option('-p, --prod')
-  .parse(process.argv);
-
-var exec = require('child_process').exec,
+    program = require('commander'),
+    exec = require('child_process').exec,
     APP = __dirname + '/..',
     SOURCE = APP + '/public',
     BUILD = APP + '/static',
     BUILD_OLD = APP + '/static-old',
     BUILD_TMP = APP + '/static-tmp';
+
+program
+  .option('-p, --prod')
+  .parse(process.argv);
 
 exec('pgrep -f "node.*public/build.js" | wc -w', null, function(code, stdout) {
   if (stdout.toString().trim() != '2') {
