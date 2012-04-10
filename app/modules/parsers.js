@@ -81,8 +81,8 @@ exports.buildPreviewTemplateContext = function(logs, onAllDone) {
 
       // Use parser's template.
       } else {
-        // Use parser module's preview function.
-        log.preview = parser.getPreview(context);
+        // Let the parser define its own preview text.
+        log.preview = parser.buildPreviewText(context);
 
         if (_.isNull(log.preview)) {
           updateLogFromTemplate(

@@ -126,7 +126,7 @@ Parser.prototype.buildTemplateContext = function(template, log) {
  * @param log {Object} Parsed key/value pairs from the database.
  * @return {String} Exact 'preview' attribute buildTemplateContext() adds to each log object.
  */
-Parser.prototype.getPreview = function(parsed) {
+Parser.prototype.buildPreviewText = function(parsed) {
   return null;
 };
 

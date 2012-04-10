@@ -28,7 +28,7 @@ exports.JsonParser = extend({name: 'Json'}, {
     return log;
   },
 
-  getPreview: function(parsed) {
+  buildPreviewText: function(parsed) {
     var preview = [];
     _.each(parsed, function(value, key) {
       preview.push(key + '=' + value);
