@@ -157,4 +157,15 @@ Parser.prototype.extractTime = function(date) {
   }
 };
 
+/**
+ * Convenience wrapper around mainevent.shared.Lang.extend().
+ *
+ * - Curries the super class argument.
+ */
+exports.extend = function() {
+  var args = Array.prototype.slice.call(arguments);
+  args.unshift(Parser);
+  return mainevent.shared.Lang.extend.apply(null, args);
+};
+
 exports.Parser = Parser;

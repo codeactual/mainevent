@@ -4,7 +4,6 @@ require(__dirname + '/../modules/mainevent');
 
 exports.extend = function(subType, props) {
   mainevent.shared.Lang.inheritPrototype(subType, Job);
-  subType.prototype.__super__ = Job;
   _.extend(subType.prototype, props);
 };
 

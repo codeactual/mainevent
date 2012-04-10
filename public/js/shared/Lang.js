@@ -58,6 +58,25 @@ define([], function() {
       var prototype = Lang.object(superType.prototype);
       prototype.constructor = subType;
       subType.prototype = prototype;
+      subType.prototype.__super__ = superType;
+    },
+
+    /**
+     * Wrapper for simple/common-case extension.
+     *
+     * @param superType {Object}
+     * @param instance {Object} Extension's instance properties/overrides.
+     * @param proto {Object} Extension's prototype properties/overrides.
+     * @return {Function} Extension class.
+    */
+    extend: function(superType, instance, proto) {
+      var extension = function() {
+        this.__super__.apply(this, arguments);
+        _.extend(this, instance);
+      };
+      Lang.inheritPrototype(extension, superType);
+      _.extend(extension.prototype, proto);
+      return extension;
     }
   };
 });
