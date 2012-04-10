@@ -5,7 +5,7 @@ define([], function() {
   return function(req, res) {
     var config = mainevent.getConfig(),
         parsers = mainevent.requireModule('parsers'),
-        parserNames = Object.keys(parsers.getConfiguredParsers()).sort();
+        parserNames = parsers.getConfiguredParsers();
 
     // Serve the backbone.js MVC app.
     res.render('index.html', {

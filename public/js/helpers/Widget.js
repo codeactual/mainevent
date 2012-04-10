@@ -68,8 +68,8 @@ define([], function() {
       if (_.isUndefined(includeAny) || includeAny) {
         select.append('<option value="">Any Event Type</option>');
       }
-      _.each(mainevent.parsers, function(name) {
-        select.append('<option value="' + name + '">' + name + '</option>');
+      _.each(mainevent.parsers, function(humanName, name) {
+        select.append('<option value="' + name + '">' + humanName + '</option>');
       });
     },
 
