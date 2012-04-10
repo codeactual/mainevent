@@ -21,7 +21,7 @@
     .option('-v, --verbose')
     .parse(process.argv);
 
-  require(__dirname + '/modules/mainevent.js');
+  require(__dirname + '/../app/modules/mainevent.js');
   var spawn = require('child_process').spawn,
       config = mainevent.getConfig(program.config),
       parsers = mainevent.requireModule('parsers'),

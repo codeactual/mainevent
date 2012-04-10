@@ -22,7 +22,7 @@ app.register('.html', {
 app.use(express.static(__dirname + '/../public'));
 app.use(express.static(__dirname + '/../test/browser'));
 
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/../app/views');
 app.set('view options', {layout: false});
 
 app.get('/', function(req, res) {

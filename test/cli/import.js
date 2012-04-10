@@ -5,10 +5,10 @@
 'use strict';
 
 var fs = require('fs'),
-    testutil = require(__dirname + '/modules/testutil.js'),
+    testutil = require(__dirname + '/../modules/testutil.js'),
     spawn = require('child_process').spawn,
     mongodb = mainevent.requireModule('mongodb').createInstance(),
-    testConfigFile = __dirname + '/fixtures/tail-config.js',
+    testConfigFile = __dirname + '/../fixtures/tail-config.js',
     testConfig = mainevent.getConfig(testConfigFile),
     source = testConfig.sources[0];
 
@@ -25,7 +25,7 @@ exports.testImport = function(test) {
   fs.closeSync(fd);
 
   // Import it w/ all options.
-  var tailJs = spawn(__dirname + '/../app/import.js', [
+  var tailJs = spawn(__dirname + '/../../bin/import.js', [
     '--path', source.path,
     '--parser', source.parser,
     '--tags', source.tags.join(','),

@@ -5,11 +5,12 @@
 'use strict';
 
 var fs = require('fs'),
-    testutil = require(__dirname + '/modules/testutil.js'),
+    testutil = require(__dirname + '/../modules/testutil.js'),
     fork = require('child_process').fork,
     exec = require('child_process').exec,
+    tailJsFile = __dirname + '/../../bin/tail.js',
     mongodb = mainevent.requireModule('mongodb').createInstance(),
-    testConfigFile = __dirname + '/fixtures/tail-config.js',
+    testConfigFile = __dirname + '/../fixtures/tail-config.js',
     testConfig = mainevent.getConfig(testConfigFile),
     path = testConfig.sources[0].path;
 
@@ -19,7 +20,7 @@ exports.testMonitoring = function(test) {
       fd = fs.openSync(path, 'a');
 
   // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(__dirname + '/../app/tail.js', [
+  var tailJs = fork(tailJsFile, [
     '--quiet',
     '--config', testConfigFile,
     '--test', 1
@@ -52,7 +53,7 @@ exports.testAutoRestart = function(test) {
   test.expect(2);
 
   // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(__dirname + '/../app/tail.js', [
+  var tailJs = fork(tailJsFile, [
     '--quiet',
     '--config', testConfigFile,
     '--test', 1
@@ -87,14 +88,13 @@ exports.testAutoRestart = function(test) {
 exports.testMonitorCleanup = function(test) {
   var run = testutil.getRandHash(),
       log = JSON.stringify({path: path, run: run}),
-      tailJsBaseCmd = __dirname + '/../app/tail.js',
-      pgrepTailJs = 'pgrep -f "' + tailJsBaseCmd + ' --quiet --config ' + testutil + ' --test 1"',
+      pgrepTailJs = 'pgrep -f "' + tailJsFile + ' --quiet --config ' + testutil + ' --test 1"',
       pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
 
   test.expect(2);
 
   // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(__dirname + '/../app/tail.js', [
+  var tailJs = fork(tailJsFile, [
     '--quiet',
     '--config', testConfigFile,
     '--test', 1

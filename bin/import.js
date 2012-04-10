@@ -35,7 +35,7 @@
     process.exit(1);
   }
 
-  require(__dirname + '/modules/mainevent.js');
+  require(__dirname + '/../app/modules/mainevent.js');
 
   var lazy = require('lazy');
   new lazy(require("fs").createReadStream(source.path))

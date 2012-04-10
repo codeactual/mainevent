@@ -13,7 +13,7 @@
 
 'use strict';
 
-require(__dirname + '/modules/mainevent.js');
+require(__dirname + '/../app/modules/mainevent.js');
 
 var express = require('express'),
     app = express.createServer(),
@@ -36,12 +36,12 @@ app.register('.html', {
 app.use(express.static(__dirname + '/../static'));
 
 // Prepended to relative paths given to res.render().
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/../app/views');
 app.set('view options', {layout: false});
 
 // All non-API requests go to Backbone.js + pushState.
 app.get(/^((?!\/(api|js|css|img|socket.io)\/).)*$/, function(req, res) {
-  requirejs([__dirname + '/controllers/index.js'], function(controller) {
+  requirejs([__dirname + '/../app/controllers/index.js'], function(controller) {
     controller(req, res);
   });
 });
@@ -54,7 +54,7 @@ var routes = {
 };
 _.each(routes, function(controller, route) {
   app.get(route, function(req, res) {
-    requirejs([__dirname + '/controllers/' + controller + '.js'], function(controller) {
+    requirejs([__dirname + '/../app/controllers/' + controller + '.js'], function(controller) {
       controller(req, res);
     });
   });
@@ -62,7 +62,7 @@ _.each(routes, function(controller, route) {
 
 // Load all socket controllers under app/sockets/.
 io.sockets.on('connection', function (socket) {
-  var dir = __dirname + '/sockets',
+  var dir = __dirname + '/../app/sockets',
       fs = require('fs');
   fs.readdir(dir, function(err, files) {
     _.each(files, function(socketController) {
