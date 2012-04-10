@@ -64,6 +64,8 @@ define([], function() {
     /**
      * Wrapper for simple/common-case extension.
      *
+     * - Based on backbone.js private extend() function.
+     *
      * @param superType {Object}
      * @param instance {Object} Extension's instance properties/overrides.
      * @param proto {Object} Extension's prototype properties/overrides.
