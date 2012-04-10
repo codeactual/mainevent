@@ -19,6 +19,9 @@ define([], function() {
       } else if (docs.length) {
         // Augment each document object with preview text for the view table.
         mainevent.requireModule('parsers').buildPreviewTemplateContext(docs, function(updated) {
+          _.each(updated, function(doc, index) {
+            updated[index] = _.pick(doc, ['_id', 'time', 'preview']);
+          });
           res.send({info: info, results: updated});
         });
       } else {
