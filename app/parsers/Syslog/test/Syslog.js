@@ -5,7 +5,7 @@ exports.Syslog = {
   setUp: function(callback) { testutil.setUp.apply(this, arguments); },
   tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
-  testSyslog: function(test) {
+  testParse: function(test) {
     testutil.assertParseValid(
       test,
       'Mar  5 21:36:00 mainevent kernel: [186333.803057] HDMI hot plug event: Pin=3 Presence_Detect=0 ELD_Valid=1',

@@ -5,7 +5,7 @@ exports.Symfony = {
   setUp: function(callback) { testutil.setUp.apply(this, arguments); },
   tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
-  testSymfonyEvent: function(test) {
+  testParseEvent: function(test) {
     testutil.assertParseValid(
       test,
       '[2012-02-12 09:03:31] event.DEBUG: Notified event "kernel.response" to listener "Symfony\Bundle\SecurityBundle\EventListener\ResponseListener::onKernelResponse". [] []',
@@ -22,7 +22,7 @@ exports.Symfony = {
     test.done();
   },
 
-  testSymfonyUncaughtException: function(test) {
+  testParseUncaughtException: function(test) {
     testutil.assertParseValid(
       test,
       '[2012-02-10 10:24:17] request.CRITICAL: Twig_Error_Runtime: Variable "rows" does not exist in "MaineventTimelineBundle:Default:index.html.twig" at line 4 (uncaught exception) at /var/dev/mainevent/app/cache/dev/classes.php line 8024 [] []',

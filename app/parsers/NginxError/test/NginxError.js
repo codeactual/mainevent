@@ -5,7 +5,7 @@ exports.NginxError = {
   setUp: function(callback) { testutil.setUp.apply(this, arguments); },
   tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
-  testNginxError: function(test) {
+  testParse: function(test) {
     testutil.assertParseValid(
       test,
       '2012/02/12 09:03:31 [error] 16939#0: *491 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: mainevent, request: "GET /timeline HTTP/1.1", upstream: "fastcgi://unix:/usr/var/run/php-fpm.sock:", host: "mainevent"',

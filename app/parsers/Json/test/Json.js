@@ -5,7 +5,7 @@ exports.Json = {
   setUp: function(callback) { testutil.setUp.apply(this, arguments); },
   tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
-  testJson: function(test) {
+  testParse: function(test) {
     testutil.assertParseValid(
       test,
       '{"time":"14-Feb-2012 06:38:38 UTC","message":"something good"}',
@@ -18,7 +18,7 @@ exports.Json = {
     test.done();
   },
 
-  testGetPreviewFromFunction: function(test) {
+  testBuildPreviewText: function(test) {
     // Expand JSON beyond preview truncation.
     var message = '';
     _(10).times(function() { message += '0123456789'; });

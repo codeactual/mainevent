@@ -5,7 +5,7 @@ exports.Php = {
   setUp: function(callback) { testutil.setUp.apply(this, arguments); },
   tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
-  testPhpNotice: function(test) {
+  testParseBuiltIn: function(test) {
     testutil.assertParseValid(
       test,
       '[14-Feb-2012 06:38:38 UTC] PHP Notice:  Undefined variable: b in /tmp/errormaker.php on line 2',
@@ -22,7 +22,7 @@ exports.Php = {
     test.done();
   },
 
-  testPhpUserDefined: function(test) {
+  testParseUserDefined: function(test) {
     testutil.assertParseValid(
       test,
       '[14-Feb-2012 06:38:38 UTC] something terrible happened',
@@ -36,7 +36,7 @@ exports.Php = {
     test.done();
   },
 
-  testGetPreviewFromTemplate: function(test) {
+  testBuildPreviewTemplateContext: function(test) {
     // Example row from DB.
     var logs = [{
       parser: 'Php',
