@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new NginxAccessParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var NginxAccessParser = function() {
-  Parser.call(this, 'nginx_access');
+  Parser.apply(this, arguments);
+
+  this.name = 'NginxAccess';
 };
 
 mainevent.shared.Lang.inheritPrototype(NginxAccessParser, Parser);
@@ -55,3 +55,5 @@ NginxAccessParser.prototype.extractTime = function(date) {
   );
   return Date.parse(parsable);
 };
+
+exports.NginxAccessParser = NginxAccessParser;

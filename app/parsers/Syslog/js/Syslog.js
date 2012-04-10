@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new SyslogParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var SyslogParser = function() {
-  Parser.call(this, 'syslog');
+  Parser.apply(this, arguments);
+
+  this.name = 'Syslog';
 };
 
 mainevent.shared.Lang.inheritPrototype(SyslogParser, Parser);
@@ -59,3 +59,5 @@ SyslogParser.prototype.extractTime = function(date, now) {
   }
   return parsed;
 };
+
+exports.SyslogParser = SyslogParser;

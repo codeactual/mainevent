@@ -1,8 +1,6 @@
 'use strict';
 
-GLOBAL.Parser = function(name) {
-  this.name = name;
-};
+var Parser = function(name) {};
 
 /**
  * Parse each line according to its source parser.
@@ -158,3 +156,5 @@ Parser.prototype.extractTime = function(date) {
     return Date.parse(date);
   }
 };
+
+exports.Parser = Parser;

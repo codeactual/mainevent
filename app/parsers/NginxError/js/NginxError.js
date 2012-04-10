@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new NginxErrorParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var NginxErrorParser = function() {
-  Parser.call(this, 'nginx_error');
+  Parser.apply(this, arguments);
+
+  this.name = 'NginxError';
 };
 
 mainevent.shared.Lang.inheritPrototype(NginxErrorParser, Parser);
@@ -48,3 +48,5 @@ NginxErrorParser.prototype.addPreviewContext = function(log) {
 NginxErrorParser.prototype.extractTime = function(date) {
   return Date.parse(date);
 };
+
+exports.NginxErrorParser = NginxErrorParser;

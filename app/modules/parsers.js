@@ -1,8 +1,5 @@
 'use strict';
 
-// Load GLOBAL.Parser.
-require(__dirname + '/../parsers/prototype.js');
-
 /**
  * Return a named parser.
  *
@@ -10,7 +7,8 @@ require(__dirname + '/../parsers/prototype.js');
  * @return {Object} Copy of a cached parser module.
  */
 exports.createInstance = function(name) {
-  return require(util.format('%s/../parsers/%s/js/%s', __dirname, name, name)).createInstance();
+  var classFile = util.format('%s/../parsers/%s/js/%s', __dirname, name, name);
+  return new (require(classFile)[name + 'Parser'])();
 };
 
 /**

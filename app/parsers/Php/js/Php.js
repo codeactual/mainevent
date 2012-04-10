@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new PhpParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var PhpParser = function() {
-  Parser.call(this, 'php');
+  Parser.apply(this, arguments);
+
+  this.name = 'Php';
 };
 
 mainevent.shared.Lang.inheritPrototype(PhpParser, Parser);
@@ -50,3 +50,5 @@ PhpParser.prototype.extractTime = function(date) {
   );
   return Date.parse(parsable);
 };
+
+exports.PhpParser = PhpParser;

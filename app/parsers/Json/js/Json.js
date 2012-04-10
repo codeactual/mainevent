@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new JsonParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var JsonParser = function() {
-  Parser.call(this, 'Json');
+  Parser.apply(this, arguments);
+
+  this.name = 'Json';
 };
 
 mainevent.shared.Lang.inheritPrototype(JsonParser, Parser);
@@ -37,3 +37,5 @@ JsonParser.prototype.getPreview = function(parsed) {
   });
   return preview.join(', ');
 };
+
+exports.JsonParser = JsonParser;

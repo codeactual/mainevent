@@ -1,11 +1,11 @@
 'use strict';
 
-exports.createInstance = function() {
-  return new SymfonyParser();
-};
+var Parser = require(__dirname + '/../../prototype.js').Parser;
 
 var SymfonyParser = function() {
-  Parser.call(this, 'symfony');
+  Parser.apply(this, arguments);
+
+  this.name = 'Symfony';
 };
 
 mainevent.shared.Lang.inheritPrototype(SymfonyParser, Parser);
@@ -40,3 +40,5 @@ SymfonyParser.prototype.addPreviewContext = function(log) {
 SymfonyParser.prototype.extractTime = function(date) {
   return Date.parse(date.replace(/-/, '/'));
 };
+
+exports.SymfonyParser = SymfonyParser;
