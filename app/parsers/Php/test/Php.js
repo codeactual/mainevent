@@ -59,8 +59,8 @@ exports.Php = {
 
   testExtractTime: function(test) {
     var parser = testutil.parsers.createInstance('Php'),
-        date = '12-Mar-2012 09:03:31 UTC';
-    test.equal(parser.extractTime(date), 1331543011000);
+        log = {time: '12-Mar-2012 09:03:31 UTC'};
+    test.equal(parser.extractTime(log), 1331543011000);
     test.done();
   }
 };

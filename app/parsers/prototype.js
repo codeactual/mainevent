@@ -24,7 +24,7 @@ Parser.prototype.parseLines = function(source, lines) {
         delete log[source.timeAttr];
       }
 
-      log.time = parser.extractTime(log.time);
+      log.time = parser.extractTime(_.clone(log));
 
       // Fallback to the current time.
       if (isNaN(log.time)) {
@@ -133,18 +133,18 @@ Parser.prototype.getPreview = function(parsed) {
 /**
  * Convert a date/time string into a millisecond-based timestamp.
  *
- * @param date {String} Ex. '12/Mar/2012:09:03:31 +0000'
+ * @param log {Object} Ex. log.time: '12/Mar/2012:09:03:31 +0000'
  * @return {Number} Milliseconds since UNIX epoch.
  */
-Parser.prototype.extractTime = function(date) {
+Parser.prototype.extractTime = function(log) {
   // No custom extraction, try direct parsing/extraction.
-  if (_.isNumber(date)) {
-    if (date < 10000000000) {
-      date *= 1000;
+  if (_.isNumber(log.time)) {
+    if (log.time < 10000000000) {
+      log.time *= 1000;
     }
-    return (new Date(date)).getTime();
+    return (new Date(log.time)).getTime();
   } else {
-    return Date.parse(date);
+    return Date.parse(log.time);
   }
 };
 

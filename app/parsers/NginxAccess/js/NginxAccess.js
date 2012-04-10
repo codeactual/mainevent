@@ -30,8 +30,8 @@ exports.NginxAccessParser = extend({name: 'NginxAccess'}, {
       return log;
   },
 
-  extractTime: function(date) {
-    var matches = date.match(/(\d+)\/([A-Za-z]+)\/(\d{4}):(\d{2}:\d{2}:\d{2} \+\d{4})/);
+  extractTime: function(log) {
+    var matches = log.time.match(/(\d+)\/([A-Za-z]+)\/(\d{4}):(\d{2}:\d{2}:\d{2} \+\d{4})/);
     if (!matches) {
       return NaN;
     }

@@ -22,13 +22,16 @@ exports.SyslogParser = extend({name: 'Syslog'}, {
     return log;
   },
 
-  extractTime: function(date, now) {
+  /**
+   * @param now {Object} (Parser-specific, Test-only) Date instance.
+   */
+  extractTime: function(log, now) {
     // For unit testing.
     if (undefined === now) {
       now = new Date();
     }
 
-    var matches = date.match(/([A-Za-z]+)\s+(\d+) (\d{2}:\d{2}:\d{2})/);
+    var matches = log.time.match(/([A-Za-z]+)\s+(\d+) (\d{2}:\d{2}:\d{2})/);
     if (!matches) {
       return NaN;
     }

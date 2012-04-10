@@ -43,7 +43,7 @@ exports.NginxErrorParser = extend({name: 'NginxError'}, {
     return log;
   },
 
-  extractTime: function(date) {
-    return Date.parse(date);
+  extractTime: function(log) {
+    return Date.parse(log.time);
   }
 });

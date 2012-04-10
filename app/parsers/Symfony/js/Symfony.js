@@ -35,7 +35,7 @@ exports.SymfonyParser = extend({name: 'Symfony'}, {
     return log;
   },
 
-  extractTime: function(date) {
-    return Date.parse(date.replace(/-/, '/'));
+  extractTime: function(log) {
+    return Date.parse(log.time.replace(/-/, '/'));
   }
 });
