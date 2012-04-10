@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.SymfonyParser = extend({name: 'Symfony'}, {
+exports.SymfonyParser = extend({name: 'Symfony', humanName: 'Symfony'}, {
 
   parse: function(log) {
     return this.candidateCapture(log, [

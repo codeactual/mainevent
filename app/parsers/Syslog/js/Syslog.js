@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.SyslogParser = extend({name: 'Syslog'}, {
+exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
 
   parse: function(log) {
     return this.namedCapture(

@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.NginxAccessParser = extend({name: 'NginxAccess'}, {
+exports.NginxAccessParser = extend({name: 'NginxAccess', humanName: 'nginx access'}, {
 
   parse: function(log) {
     return this.namedCapture(

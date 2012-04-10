@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.JsonParser = extend({name: 'Json'}, {
+exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
 
   parse: function(log) {
     return JSON.parse(log);

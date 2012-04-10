@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.PhpParser = extend({name: 'Php'}, {
+exports.PhpParser = extend({name: 'Php', humanName: 'PHP'}, {
 
   parse: function(log) {
     return this.candidateCapture(log, [

@@ -2,7 +2,7 @@
 
 var extend = require(__dirname + '/../../prototype.js').extend;
 
-exports.NginxErrorParser = extend({name: 'NginxError'}, {
+exports.NginxErrorParser = extend({name: 'NginxError', humanName: 'nginx error'}, {
 
   parse: function(log) {
     return this.candidateCapture(log, [

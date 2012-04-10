@@ -44,7 +44,7 @@ var date = mainevent.shared.Date,
 if (program.parser) {
   var parserNames = [program.parser];
 } else {
-  var parserNames = mainevent.requireModule('parsers').getConfiguredParsers();
+  var parserNames = Object.keys(mainevent.requireModule('parsers').getConfiguredParsers());
 }
 if (program.interval) {
   var intervals = [program.interval];
