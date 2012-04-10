@@ -103,14 +103,15 @@ exports.buildPreviewTemplateContext = function(logs, onAllDone) {
 /**
  * Get all parsers selected in app/config.js.
  *
- * @return {Array}
+ * @return {Object} Keys: internal name, Values: humanized names.
  */
 exports.getConfiguredParsers = function() {
   var parsers = {};
   _.each(mainevent.getConfig().sources, function(source) {
-    parsers[source.parser] = 1;
+    var parser = exports.createInstance(source.parser);
+    parsers[source.parser] = parser.humanName || parser.name;
   });
-  return _.keys(parsers);
+  return parsers;
 };
 
 /**
