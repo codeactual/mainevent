@@ -270,12 +270,14 @@ MongoDb.prototype.getLog = function(id, callback) {
  * - {Array} Result set.
  * - {Object} Additional result details.
  *   'nextPage' {Boolean} True if additional documents exist.
+ * @param options {Object} find() options.
  */
-MongoDb.prototype.getTimeline = function(params, callback) {
+MongoDb.prototype.getTimeline = function(params, callback, options) {
   var mongodb = this;
   mongodb.dbConnectAndOpen(callback, function(err, db) {
     mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
-      var options = mongodb.extractSortOptions(params);
+      options = options || {};
+      _.extend(options, mongodb.extractSortOptions(params));
       mongodb.extractFilterOptions(params);
       collection.find(params, options).toArray(function(err, docs) {
         if (err) { mongodb.dbClose(err, callback); return; }
