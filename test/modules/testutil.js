@@ -36,3 +36,16 @@ exports.getTestMongoDb = function() {
 
   return mainevent.requireModule('mongodb').createInstance(instanceConfig);
 };
+
+// Pre-package new instances of common dependencies.
+exports.setUp = function(callback) {
+  this.mongodb = exports.getTestMongoDb();
+  this.parsers = mainevent.requireModule('parsers');
+  callback();
+};
+
+exports.tearDown = function(callback) {
+  delete this.mongodb;
+  delete this.parsers;
+  callback();
+};

@@ -5,19 +5,8 @@
 'use strict';
 
 var testutil = require(__dirname + '/modules/testutil.js'),
-    parsers = mainevent.requireModule('parsers'),
     config = mainevent.getConfig().mongodb,
     strtotime = mainevent.shared.Date.strtotime;
-
-var setUp = function(callback) {
-  this.mongodb = testutil.getTestMongoDb();
-  callback();
-};
-
-var tearDown = function(callback) {
-  delete this.mongodb;
-  callback();
-};
 
 /**
  * Assertion helper for $gte, $gt, $lt, $lte, $ne search filters.
@@ -28,18 +17,18 @@ var tearDown = function(callback) {
  * @param params {Array} getTimeline() filters.
  * @param expected {Array} Expected getTimeline() results (order-sensitive).
 */
-var verifyTimelineResults = function(test, mongodb, logs, params, expected) {
-  var source = {parser: 'json'},
-  parser = parsers.createInstance('json'),
-  lines = [];
+var verifyTimelineResults = function(test, testcase, logs, params, expected) {
+  var source = {parser: 'Json'},
+      parser = testcase.parsers.createInstance('Json'),
+      lines = [];
 
   _.each(logs, function(log) {
     lines.push(JSON.stringify(log));
   });
 
   test.expect(1);
-  parsers.parseAndInsert(mongodb, {source: source, lines: lines}, function() {
-    mongodb.getTimeline(params, function(err, docs) {
+  testcase.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: lines}, function() {
+    testcase.mongodb.getTimeline(params, function(err, docs) {
       var actual = [];
       _.each(expected, function(time, index) {
         actual.push(docs[index].time);
@@ -52,8 +41,8 @@ var verifyTimelineResults = function(test, mongodb, logs, params, expected) {
 
 exports.timeline = {
 
-  setUp: function(callback) { setUp.apply(this, arguments); },
-  tearDown: function(callback) { tearDown.apply(this, arguments); },
+  setUp: function(callback) { testutil.setUp.apply(this, arguments); },
+  tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
   testGetTimelineGte: function(test) {
     var run = testutil.getRandHash();  // Only for verification lookup.
@@ -64,7 +53,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {run: run, 'time-gte': strtotime('3/12/2012 10:00:00')},
       [
@@ -83,7 +72,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {run: run, 'time-gt': strtotime('3/12/2012 10:00:00')},
       [
@@ -101,7 +90,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {run: run, 'time-lte': strtotime('3/12/2012 10:00:00')},
       [
@@ -120,7 +109,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {run: run, 'time-lt': strtotime('3/12/2012 10:00:00')},
       [
@@ -138,7 +127,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')},
       [
@@ -157,7 +146,7 @@ exports.timeline = {
     ];
     verifyTimelineResults(
       test,
-      this.mongodb,
+      this,
       logs,
       {
         run: run,
@@ -172,8 +161,8 @@ exports.timeline = {
 
   testPrevPageDetection: function(test) {
     var testcase = this,
-        source = {parser: 'json'},
-        parser = parsers.createInstance('json'),
+        source = {parser: 'Json'},
+        parser = this.parsers.createInstance('Json'),
         run = testutil.getRandHash(),  // Only for verification lookup.
         logs = [
           {time: "3/12/2012 09:00:00", run: run},
@@ -187,7 +176,7 @@ exports.timeline = {
     });
 
     test.expect(4);
-    parsers.parseAndInsert(testcase.mongodb, {source: source, lines: lines}, function() {
+    this.parsers.parseAndInsert(this.mongodb, {source: source, lines: lines}, function() {
 
       // Expect no next page.
       var params = {run: run};
@@ -208,8 +197,8 @@ exports.timeline = {
 
   testNextPageDetection: function(test) {
     var testcase = this,
-        source = {parser: 'json'},
-        parser = parsers.createInstance('json'),
+        source = {parser: 'Json'},
+        parser = this.parsers.createInstance('Json'),
         run = testutil.getRandHash(),  // Only for verification lookup.
         logs = [
           {time: "3/12/2012 09:00:00", run: run},
@@ -223,7 +212,7 @@ exports.timeline = {
     });
 
     test.expect(4);
-    parsers.parseAndInsert(testcase.mongodb, {source: source, lines: lines}, function() {
+    this.parsers.parseAndInsert(this.mongodb, {source: source, lines: lines}, function() {
 
       // Expect no next page.
       var params = {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')};
@@ -245,8 +234,8 @@ exports.timeline = {
 
 exports.dataTypes = {
 
-  setUp: function(callback) { setUp.apply(this, arguments); },
-  tearDown: function(callback) { tearDown.apply(this, arguments); },
+  setUp: function(callback) { testutil.setUp.apply(this, arguments); },
+  tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
   testParseObjectId: function(test) {
     var id = '4f72b1a766408a452b000003';
@@ -332,7 +321,7 @@ exports.dataTypes = {
         run = testutil.getRandHash(),  // Only for verification lookup.
         logs = [{
           run: run,
-          parser: 'json',
+          parser: 'Json',
           time: '3/12/2012 11:00:00',
           num0: '300',
           num1: '300.31',
@@ -341,7 +330,7 @@ exports.dataTypes = {
           notNum1: '300d'
         }];
 
-    testcase.mongodb.insertLog(logs, function(err) {
+    this.mongodb.insertLog(logs, function(err) {
       testcase.mongodb.getTimeline({run: run}, function(err, docs, info) {
         test.strictEqual(docs[0].num0, 300);
         test.strictEqual(docs[0].num1, 300.31);
@@ -356,17 +345,17 @@ exports.dataTypes = {
 
 exports.events = {
 
-  setUp: function(callback) { setUp.apply(this, arguments); },
-  tearDown: function(callback) { tearDown.apply(this, arguments); },
+  setUp: function(callback) { testutil.setUp.apply(this, arguments); },
+  tearDown: function(callback) { testutil.tearDown.apply(this, arguments); },
 
   testEmitInsertLog: function(test) {
     test.expect(4);
 
     var testcase = this,
         run = testutil.getRandHash(),  // Only for verification lookup.
-        expected = [{run: run, parser: 'json', time: '3/12/2012 11:00:00'}];
+        expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00'}];
 
-    testcase.mongodb.on('InsertLog', function(actual) {
+    this.mongodb.on('InsertLog', function(actual) {
       test.equal(actual.length, 1);
       test.equal(actual[0].run, expected[0].run);
       test.equal(actual[0].parser, expected[0].parser);
@@ -374,7 +363,7 @@ exports.events = {
       test.done();
     });
 
-    testcase.mongodb.insertLog(expected);
+    this.mongodb.insertLog(expected);
   },
 
   testAttachConfiguredListeners: function(test) {
@@ -383,7 +372,7 @@ exports.events = {
     var testcase = this,
         instanceConfig = _.clone(config),
         run = testutil.getRandHash(),  // Only for verification lookup.
-        expected = [{run: run, parser: 'json', time: '3/12/2012 11:00:00'}];
+        expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00'}];
 
     // Only use one listener which will process.emit() the logs it received.
     instanceConfig.listeners = [{
@@ -410,7 +399,7 @@ exports.events = {
 
     var testcase = this,
         run = testutil.getRandHash(),  // Only for verification lookup.
-        expected = [{run: run, parser: 'json', time: '3/12/2012 11:00:00'}],
+        expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00'}],
         redis = mainevent.requireModule('redis').createInstance(),
         mongodb = mainevent.requireModule('mongodb').createInstance();
 
