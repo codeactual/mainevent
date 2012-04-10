@@ -27,7 +27,11 @@ exports.NginxErrorParser = extend({name: 'NginxError'}, {
     ]);
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
+    if ('full' == template) {
+      return log;
+    }
+
     if (log.level) {
       switch (log.level) {
         case 'debug': log.__levelClass = 'info'; break;

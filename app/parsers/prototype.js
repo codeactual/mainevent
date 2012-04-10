@@ -106,15 +106,15 @@ Parser.prototype.parse = function(log) {
 };
 
 /**
- * Augment the context object sent to the preview template.
+ * Augment the context object sent to templates.
  *
- * - Used by addPreviewContext() in the parsers.js module to augment a list of objects.
- * - Used to assist either getPreview() or template-based preview building.
- *
+ * @param template {String}
+ * - 'preview': Augment/modify 'log' for use in its parser's preview template.
+ * - 'full': Augment/modify 'log' for use in the full-view template for /event/:id pages.
  * @param log {Object} Parsed key/value pairs from the database.
  * @return {Object} Augmented input.
  */
-Parser.prototype.addPreviewContext = function(log) {
+Parser.prototype.buildTemplateContext = function(template, log) {
   return log;
 };
 
@@ -124,19 +124,10 @@ Parser.prototype.addPreviewContext = function(log) {
  * - Alternative to using a preview template.
  *
  * @param log {Object} Parsed key/value pairs from the database.
- * @return {String} Exact 'preview' attribute addPreviewContext() adds to each log object.
+ * @return {String} Exact 'preview' attribute buildTemplateContext() adds to each log object.
  */
 Parser.prototype.getPreview = function(parsed) {
   return null;
-};
-
-/**
- * Augment/modify a log object for display based on its parser subtype.
- *
- * @param log {Object} Describes a parsed log line.
- */
-Parser.prototype.decorateFullContext = function(log) {
-  return log;
 };
 
 /**

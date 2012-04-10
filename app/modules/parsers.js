@@ -52,7 +52,7 @@ exports.getPreviewTemplate = function(log) {
  * @param log {Array} List of objects describing parsed log lines.
  * @param onAllDone {Function} Called after all previews have been added.
  */
-exports.addPreviewContext = function(logs, onAllDone) {
+exports.buildPreviewTemplateContext = function(logs, onAllDone) {
   var dust = require('dust');
   var updatedLogs = [];
 
@@ -73,7 +73,7 @@ exports.addPreviewContext = function(logs, onAllDone) {
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);
-      var context = parser.addPreviewContext(log);
+      var context = parser.buildTemplateContext('preview', log);
 
       // 'log' does not have a predictable structure.
       if (log.__parse_error) {

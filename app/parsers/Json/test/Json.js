@@ -31,7 +31,7 @@ exports.Json = {
     }];
 
     test.expect(3);
-    testutil.parsers.addPreviewContext(logs, function(actual) {
+    testutil.parsers.buildPreviewTemplateContext(logs, function(actual) {
       test.equal(actual[0].time, logs[0].time);
       test.equal(actual[0].message, logs[0].message);
       test.equal(

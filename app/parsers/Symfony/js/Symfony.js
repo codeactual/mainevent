@@ -19,7 +19,11 @@ exports.SymfonyParser = extend({name: 'Symfony'}, {
     ]);
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
+    if ('full' == template) {
+      return log;
+    }
+
     if (log.level) {
       switch (log.level) {
         case 'DEBUG': log.__levelClass = 'default'; break;

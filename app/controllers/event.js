@@ -31,7 +31,7 @@ define([], function() {
         });
         res.send({__list: list, parser: doc.parser});
       } else {
-        doc = parsers.createInstance(doc.parser).decorateFullContext(doc);
+        doc = parsers.createInstance(doc.parser).buildTemplateContext('full', doc);
         res.send(doc);
       }
     });

@@ -8,7 +8,11 @@ exports.JsonParser = extend({name: 'Json'}, {
     return JSON.parse(log);
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
+    if ('full' == template) {
+      return log;
+    }
+
     // Only use keys selected in config.js 'previewAttr' lists.
     if (log.previewAttr) {
       log.previewAttr = _.isArray(log.previewAttr) ? log.previewAttr : [log.previewAttr];

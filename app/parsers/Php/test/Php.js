@@ -49,7 +49,7 @@ exports.Php = {
     expected[0].preview = 'foo';
 
     test.expect(5);
-    testutil.parsers.addPreviewContext(logs, function(actual) {
+    testutil.parsers.buildPreviewTemplateContext(logs, function(actual) {
       _.each(_.keys(expected[0]), function(key) {
         test.equal(actual[0][key], expected[0][key]);
       });

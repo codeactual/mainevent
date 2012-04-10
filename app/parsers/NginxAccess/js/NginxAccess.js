@@ -13,7 +13,7 @@ exports.NginxAccessParser = extend({name: 'NginxAccess'}, {
     );
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
     if (log.code) {
       switch (log.code.toString()[0]) {
         case '2': log.__codeClass = 'success'; break;
@@ -28,10 +28,6 @@ exports.NginxAccessParser = extend({name: 'NginxAccess'}, {
       log.__refererMin = log.referer.replace(/^http(s)?:\/\//, '');
     }
       return log;
-  },
-
-  decorateFullContext: function(log) {
-    return this.addPreviewContext(log);
   },
 
   extractTime: function(date) {

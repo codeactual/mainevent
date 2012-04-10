@@ -28,7 +28,7 @@ define([], function() {
               var docs = JSON.parse(message),
               parsers = mainevent.requireModule('parsers');
 
-              parsers.addPreviewContext(docs, function(docs) {
+              parsers.buildPreviewTemplateContext(docs, function(docs) {
                 socket.emit('TimelineUpdate', docs);
               });
             }

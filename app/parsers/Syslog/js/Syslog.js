@@ -13,7 +13,11 @@ exports.SyslogParser = extend({name: 'Syslog'}, {
     );
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
+    if ('full' == template) {
+      return log;
+    }
+
     delete log.pid;
     return log;
   },

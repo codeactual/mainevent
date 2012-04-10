@@ -51,7 +51,7 @@ exports.parsers = {
     test.expect(1);
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function() {
       testcase.mongodb.getTimeline({run: expected.run}, function(err, docs) {
-        testcase.parsers.addPreviewContext(docs, function(actual) {
+        testcase.parsers.buildPreviewTemplateContext(docs, function(actual) {
           test.equal(actual[0].preview, 'role=db-slave');
           test.done();
         });

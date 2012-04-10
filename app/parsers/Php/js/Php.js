@@ -19,7 +19,11 @@ exports.PhpParser = extend({name: 'Php'}, {
     ]);
   },
 
-  addPreviewContext: function(log) {
+  buildTemplateContext: function(template, log) {
+    if ('full' == template) {
+      return log;
+    }
+
     if (log.level) {
       switch (log.level) {
         case 'Warning': log.__levelClass = 'warning'; break;
