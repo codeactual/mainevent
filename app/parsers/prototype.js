@@ -1,6 +1,6 @@
 'use strict';
 
-var Parser = function(name) {};
+var Parser = function() {};
 
 /**
  * Parse each line according to its source parser.
