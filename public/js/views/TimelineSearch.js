@@ -20,7 +20,7 @@ define([], function() {
       var view = this,
           modal = this.$('.modal-body'),
           parser = this.$('.parser'),
-          coreArgNames = ['parser'];
+          coreArgSelectors = ['.parser'];
 
       this.$('.modal-header > h4').text(this.options.title);
 
@@ -40,13 +40,13 @@ define([], function() {
           input.datetimepicker({});
         });
 
-        coreArgNames.push('time-gte', 'time-lte');
+        coreArgSelectors.push('#time-gte', '#time-lte');
       } else {
         $('.any-time').remove();
       }
 
       if (this.options.acceptSortOptions) {
-        coreArgNames.push('sort-attr', 'sort-dir');
+        coreArgSelectors.push('#sort-attr', '#sort-dir');
       } else {
         $('.sort-option').remove();
       }
@@ -61,13 +61,14 @@ define([], function() {
       // Apply core attributes (e.g. 'parser') that are already represented
       // by drop-downs or other widgets. Remove them from view.options.searchArgs
       // so they are not redundantly represented as 'x = y' conditions below.
-      _.each(coreArgNames, function(name) {
+      _.each(coreArgSelectors, function(selector) {
+        var name = selector.substr(1);
         if (_.has(view.options.searchArgs, name)) {
           var value = view.options.searchArgs[name];
           if (('time-gte' == name || 'time-lte' == name)) {
             value = moment(parseInt(value, 10)).format(view.datetimePickerFormat);
           }
-          view.$('#' + name).val(value);
+          view.$(selector).val(value);
           delete view.options.searchArgs[name];
         }
       });
