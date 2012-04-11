@@ -207,7 +207,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk, attempt) {
   callback = callback || function() {};
 
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.event, callback, function(err, collection) {
       var docs = [];
       logs = _.isArray(logs) ? logs : [logs];
 
@@ -256,7 +256,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk, attempt) {
 MongoDb.prototype.getLog = function(id, callback) {
   var mongodb = this;
   this.dbConnectAndOpen(callback, function(err, db) {
-    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.event, callback, function(err, collection) {
       collection.findOne({_id: new BSON.ObjectID(id)}, function(err, doc) {
         if (err) { mongodb.dbClose(err, callback); return; }
         mongodb.dbClose();
@@ -290,7 +290,7 @@ MongoDb.prototype.getLog = function(id, callback) {
 MongoDb.prototype.getTimeline = function(params, callback, options) {
   var mongodb = this;
   mongodb.dbConnectAndOpen(callback, function(err, db) {
-    mongodb.dbCollection(db, mongodb.collections.eventCollection, callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.event, callback, function(err, collection) {
       options = options || {};
       _.extend(options, mongodb.extractSortOptions(params));
       mongodb.extractFilterOptions(params);
@@ -349,7 +349,7 @@ MongoDb.prototype.mapReduce = function(job) {
   mongodb.dbConnectAndOpen(job.callback, function(err, db) {
     job.options = job.options || {};
     job.options.out = job.options.out || {replace: collectionName};
-    mongodb.dbCollection(db, mongodb.collections.eventCollection, job.callback, function(err, collection) {
+    mongodb.dbCollection(db, mongodb.collections.event, job.callback, function(err, collection) {
       if (job.options.query) {
         mongodb.extractFilterOptions(job.options.query);
 

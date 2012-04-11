@@ -146,7 +146,7 @@ exports.testInsertRetry = function(test) {
 
   // Verify the entire burst was saved.
   tailJs.on('exit', function(code) {
-    mongodb.getCollectionCursor(testConfig.mongodb.collections.eventCollection, {run: run}, {}, function(cursor) {
+    mongodb.getCollectionCursor(testConfig.mongodb.collections.event, {run: run}, {}, function(cursor) {
       cursor.count(function(err, count) {
         mongodb.dbClose();
         test.equal(count, lines.length);

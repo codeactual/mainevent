@@ -19,13 +19,13 @@ exports.read = function () {
       host: '127.0.0.1',
       port: 27017,
       collections: {
-        eventCollection: 'mycollection'
+        event: 'mycollection'
       },
       maxResultSize: 100,
       maxInsertAttempt: 5,
       indexes: [
         {
-          collection: 'eventCollection', // Do not modify this name.
+          collection: 'event', // Do not modify this name.
           definitions: [
             {
               fieldset: {time: -1,_id: -1}, // Timeline search.
