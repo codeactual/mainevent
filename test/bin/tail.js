@@ -15,16 +15,17 @@ var fs = require('fs'),
     path = testConfig.sources[0].path;
 
 exports.testMonitoring = function(test) {
+  test.expect(1);
+
   var run = testutil.getRandHash(),
       log = JSON.stringify({path: path, run: run}),
-      fd = fs.openSync(path, 'a');
-
-  // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(tailJsFile, [
-    '--quiet',
-    '--config', testConfigFile,
-    '--test', 1
-  ], {env: process.env});
+      fd = fs.openSync(path, 'a'),
+      // -t will enable test mode and force exit after 1 line.
+      tailJs = fork(tailJsFile, [
+        '--quiet',
+        '--config', testConfigFile,
+        '--test', 1
+      ], {env: process.env});
 
   tailJs.on('exit', function(code) {
     mongodb.getTimeline({run: run}, function(err, docs) {
@@ -36,7 +37,6 @@ exports.testMonitoring = function(test) {
   // Wait until we know tail.js has started watching 'path' to add a line.
   tailJs.on('message', function(message) {
     if ('MONITORS_STARTED' == message) {
-      test.expect(1);
       fs.writeSync(fd, log);
       fs.closeSync(fd);
     }
@@ -46,18 +46,17 @@ exports.testMonitoring = function(test) {
 };
 
 exports.testAutoRestart = function(test) {
-  var run = testutil.getRandHash(),
-      log = JSON.stringify({path: path, run: run}),
-      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
-
   test.expect(2);
 
-  // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(tailJsFile, [
-    '--quiet',
-    '--config', testConfigFile,
-    '--test', 1
-  ], {env: process.env});
+  var run = testutil.getRandHash(),
+      log = JSON.stringify({path: path, run: run}),
+      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"',
+      // -t will enable test mode and force exit after 1 line.
+      tailJs = fork(tailJsFile, [
+        '--quiet',
+        '--config', testConfigFile,
+        '--test', 1
+      ], {env: process.env});
 
   tailJs.on('message', function(message) {
     // Wait until we know tail.js has started watching 'path' to add a line.
@@ -86,19 +85,18 @@ exports.testAutoRestart = function(test) {
 };
 
 exports.testMonitorCleanup = function(test) {
+  test.expect(2);
+
   var run = testutil.getRandHash(),
       log = JSON.stringify({path: path, run: run}),
       pgrepTailJs = 'pgrep -f "' + tailJsFile + ' --quiet --config ' + testutil + ' --test 1"',
-      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"';
-
-  test.expect(2);
-
-  // -t will enable test mode and force exit after 1 line.
-  var tailJs = fork(tailJsFile, [
-    '--quiet',
-    '--config', testConfigFile,
-    '--test', 1
-  ], {env: process.env});
+      pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + path + '"',
+      // -t will enable test mode and force exit after 1 line.
+      tailJs = fork(tailJsFile, [
+        '--quiet',
+        '--config', testConfigFile,
+        '--test', 1
+      ], {env: process.env});
 
   tailJs.on('message', function(message) {
     // Wait until we know tail.js has started watching 'path' to add a line.
