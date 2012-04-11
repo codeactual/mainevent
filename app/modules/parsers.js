@@ -21,8 +21,9 @@ exports.createInstance = function(name) {
  * - source {Object} Source properties from config.js
  * - lines {Array|String} Unparsed line(s).
  * @param callback {Function} Fires after success/error.
+ * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
  */
-exports.parseAndInsert = function(mongodb, sourceLines, callback) {
+exports.parseAndInsert = function(mongodb, sourceLines, callback, bulk) {
   var lines = [];
   _.each(_.isArray(sourceLines) ? sourceLines : [sourceLines], function(sl) {
     var parser = exports.createInstance(sl.source.parser);
@@ -31,9 +32,8 @@ exports.parseAndInsert = function(mongodb, sourceLines, callback) {
   });
 
   mongodb.insertLog(lines, function() {
-    mongodb.dbClose();
     (callback || function() {})();
-  });
+  }, bulk);
 };
 
 /**

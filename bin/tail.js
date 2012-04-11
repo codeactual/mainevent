@@ -65,13 +65,13 @@
         monitor.log('data=[%s] length={%d]', data.toString(), lines.length);
       }
 
-      var sourceLines = {source: monitor.source, lines: lines};
+      var sourceLines = {source: monitor.source, lines: lines}, bulk = true;
       parsers.parseAndInsert(monitor.mongodb, sourceLines, function() {
         // Support maximum line count for --test.
         if (program.test > 0 && lineCount >= program.test) {
           process.exit();
         }
-      });
+      }, bulk);
     });
 
     this.tail.on('exit', function(code, signal) {
@@ -89,6 +89,7 @@
     var killTail = function() {
       process.removeListener('END_MONITOR', killTail);
       if (monitor.tail) {
+        monitor.mongodb.dbClose();
         monitor.log('killing pid %d ...', monitor.tail.pid);
         monitor.tail.kill('SIGKILL');
         monitor.log('killed');
