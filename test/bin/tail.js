@@ -117,3 +117,53 @@ exports.testMonitorCleanup = function(test) {
 
   tailJs.send('START_TEST');
 };
+
+/**
+ * Before adding retries to insertLog(), bursts of concurrent writes would
+ * trigger connection loss result in "TypeError: Cannot read property
+ * 'arbiterOnly' of undefined".
+ *
+ * Here `tail` will receive the burst in chunks that trigger independent
+ * stdout events and subsequent insert() calls.
+ */
+exports.testInsertRetry = function(test) {
+  test.expect(1);
+
+  var run = testutil.getRandHash(),
+      lines = [],
+      size = 200,
+      fd = fs.openSync(path, 'a'),
+      // -t will enable test mode and force exit after 1 line.
+      tailJs = fork(tailJsFile, [
+        '--quiet',
+        '--config', testConfigFile,
+        '--test', size
+      ], {env: process.env});
+
+  _(size).times(function() {
+    lines.push(JSON.stringify({path: path, run: run}) + "\n");
+  });
+
+  // Verify the entire burst was saved.
+  tailJs.on('exit', function(code) {
+    mongodb.getCollectionCursor(testConfig.mongodb.collections.eventCollection, {run: run}, {}, function(cursor) {
+      cursor.count(function(err, count) {
+        mongodb.dbClose();
+        test.equal(count, lines.length);
+        test.done();
+      });
+    });
+  });
+
+  // Wait until we know tail.js has started watching 'path' to add lines.
+  tailJs.on('message', function(message) {
+    if ('MONITORS_STARTED' == message) {
+      _.each(lines, function(line) {
+        fs.writeSync(fd, line);
+      });
+      fs.closeSync(fd);
+    }
+  });
+
+  tailJs.send('START_TEST');
+};

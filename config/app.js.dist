@@ -22,6 +22,7 @@ exports.read = function () {
         eventCollection: 'mycollection'
       },
       maxResultSize: 100,
+      maxInsertAttempt: 5,
       indexes: [
         {
           collection: 'eventCollection', // Do not modify this name.

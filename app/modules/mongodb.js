@@ -199,8 +199,9 @@ MongoDb.prototype.dbClose = function(err, callback) {
  * @param logs {Array|Object} Output from a parser module's parse() function.
  * @param callback {Function} Receives insert() results.
  * @param bulk {Boolean} (Optional, Default: false) If true, auto-close connection.
+ * @param attempt {Number} Prior attempts.
  */
-MongoDb.prototype.insertLog = function(logs, callback, bulk) {
+MongoDb.prototype.insertLog = function(logs, callback, bulk, attempt) {
   var mongodb = this;
 
   callback = callback || function() {};
@@ -216,18 +217,32 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
         docs.push(log);
       });
 
-      collection.insert(docs, {safe: true}, function(err, docs) {
-        if (!err) {
-          // Trigger other serializations, ex. Redis.
-          mongodb.emit('InsertLog', _.clone(docs));
-        }
+      try {
+        collection.insert(docs, {safe: true}, function(err, docs) {
+          if (!err) {
+            // Trigger other serializations, ex. Redis.
+            mongodb.emit('InsertLog', _.clone(docs));
+          }
 
-        if (!bulk) {
-          mongodb.dbClose();
-        }
+          if (!bulk) {
+            mongodb.dbClose();
+          }
 
-        callback(err, docs);
-      });
+          callback(err, docs);
+        });
+      } catch (e) {
+        if (e.toString().match(/Cannot read property 'arbiterOnly' of undefined/)) {
+          attempt = attempt || 0;
+          if (attempt < config.maxInsertAttempt) {
+            mongodb.link = null;
+            mongodb.dbConnectAndOpen(callback, function(err, db) {
+              mongodb.insertLog(logs, callback, bulk, ++attempt);
+            });
+          }
+        } else {
+          throw e;
+        }
+      }
     });
   });
 };
