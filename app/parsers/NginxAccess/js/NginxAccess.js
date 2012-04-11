@@ -5,12 +5,9 @@ var extend = require(__dirname + '/../../prototype.js').extend;
 exports.NginxAccessParser = extend({name: 'NginxAccess', humanName: 'nginx access'}, {
 
   parse: function(log) {
-    return this.namedCapture(
-      log,
-      ['host', 'user', 'time', 'method', 'path', 'code', 'size', 'referer', 'agent'],
-      // From fluentd-0.10.9/lib/fluent/parser.rb:
-      /^([^ ]*) [^ ]* ([^ ]*) \[([^\]]*)\] "(\S+)(?: +([^ ]*) +\S*)?" ([^ ]*) ([^ ]*)(?: "([^\"]*)" "([^\"]*)")?$/
-    );
+    // From fluentd-0.10.9/lib/fluent/parser.rb:
+    var pattern = XRegExp('^(?<host>[^ ]*) [^ ]+ (?<user>[^ ]+) \\[(?<time>[^\\]]+)\\] "(?<method>\\S+) (?<path>[^ ]+) \\S+ (?<code>[^ ]+) (?<size>[^ ]+) ("(?<referer>[^\\"]+)")? ("(?<agent>[^\\"]+)")?');
+    return mainevent.shared.XRegExp.namedCaptureMatch(log, pattern);
   },
 
   buildTemplateContext: function(template, log) {

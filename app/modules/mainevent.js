@@ -9,6 +9,7 @@
 
 GLOBAL._ = require('underscore');
 GLOBAL.util = require('util');
+GLOBAL.XRegExp = require(__dirname + '/../../public/js/xregexp.js').XRegExp;
 
 GLOBAL.requirejs = require('requirejs');
 requirejs.config({
@@ -109,6 +110,7 @@ _.sha1 = function(value) {
   return sha1.digest('hex');
 };
 
+requirejs('shared/XRegExp');
 requirejs('shared/Async');
 requirejs('shared/Date');
 requirejs('shared/Lang');
