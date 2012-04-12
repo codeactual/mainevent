@@ -6,16 +6,14 @@ exports.SymfonyParser = extend({name: 'Symfony', humanName: 'Symfony'}, {
 
   parse: function(log) {
     return this.candidateCapture(log, [
-                                 {
-      'names': ['time', 'type', 'level', 'event', 'listener'],
-      'regex' : /^\[([^\]]+)\] ([^\.]+)\.([^:]+): Notified event "([^\"]*)" to listener "([^\"]*)"/,
-      subtype: 'event'
-    },
-    {
-      'names': ['time', 'type', 'level', 'class', 'message', 'file', 'line'],
-      'regex' : /^\[([^\]]*)\] ([^\.]+)\.([^:]+): ([^:]+):(?: (.*) at )(?:(\/.*) line )(\d+)/,
-      subtype: 'uncaught_exception'
-    }
+      {
+        'regex' : '^\\[(?<time>[^\\]]+)\\] (?<type>[^\\.]+)\\.(?<level>[^:]+): Notified event "(?<event>[^\\"]+)" to listener "(?<listener>[^\\"]+)"',
+        subtype: 'event'
+      },
+      {
+        'regex' : '^\\[(?<time>[^\\]]+)\\] (?<type>[^\\.]+)\\.(?<level>[^:]+): (?<class>[^:]+): (?<message>.*) at (?<file>\\/.*) line (?<line>\\d+)',
+        subtype: 'uncaught_exception'
+      }
     ]);
   },
 

@@ -6,16 +6,14 @@ exports.PhpParser = extend({name: 'Php', humanName: 'PHP'}, {
 
   parse: function(log) {
     return this.candidateCapture(log, [
-                                 {
-      names: ['time', 'level', 'message', 'file', 'line'],
-      regex : /^\[([^\]]+)\] PHP ([^:]+):\s+(?:(.*) in )(\/.*) on line (\d+)$/,
-      subtype: 'BuiltIn'
-    },
-    {
-      names: ['time', 'message'],
-      regex : /^\[([^\]]*)\]\s+(.*)$/,
-      subtype: 'UserDefined'
-    }
+      {
+        regex : '^\\[(?<time>[^\\]]+)\\] PHP (?<level>[^:]+):\\s+(?<message>.*) in (?<file>\\/.*) on line (?<line>\\d+)$',
+        subtype: 'BuiltIn'
+      },
+      {
+        regex : '^\\[(?<time>[^\\]]*)\\]\\s+(?<message>.*)$',
+        subtype: 'UserDefined'
+      }
     ]);
   },
 
