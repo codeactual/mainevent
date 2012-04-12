@@ -216,7 +216,7 @@ define([], function() {
           args[key] = $(input[1]).val();
 
           if (-1 != view.csvFields.indexOf(key)) {
-            args[key] = args[key].split(',');
+            args[key] = _.map(args[key].split(','), function(s) { return s.trim(); });
           }
         }
       });
