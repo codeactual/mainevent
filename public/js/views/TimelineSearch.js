@@ -75,6 +75,9 @@ define([], function() {
           return;
         }
 
+        // Previously submitted array values.
+        key = key.replace(/\[\]$/, '');
+
         // Reuse markup for the 1st pair.
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;
         $('input:nth-child(1)', condPair).val(key);
@@ -182,7 +185,7 @@ define([], function() {
      * @return {Object}
      */
     getSearchArgs: function() {
-      var args = {};
+      var args = {}, view = this;
 
       args['parser'] = this.$('.parser').val();
       args['interval'] = this.$('.time-interval').val();
@@ -211,6 +214,10 @@ define([], function() {
         } else {
           // Ex. args['code'] = 302
           args[key] = $(input[1]).val();
+
+          if (-1 != view.csvFields.indexOf(key)) {
+            args[key] = args[key].split(',');
+          }
         }
       });
 
