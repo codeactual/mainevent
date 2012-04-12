@@ -17,7 +17,7 @@ Parser.prototype.parseLines = function(source, lines) {
     var log = parser.parse(line);
 
     // Parse succeeded.
-    if (_.size(log)) {
+    if (log && _.size(log)) {
       // Use a source-specific attribute for the canonical 'time' attribute.
       if (source.timeAttr && log[source.timeAttr]) {
         log.time = log[source.timeAttr];
