@@ -24,13 +24,6 @@ define([], function() {
 
       this.$('.modal-header > h4').text(this.options.title);
 
-      // Auto-expand the 'x = y' <input> rows.
-      $(this.el).delegate('.condition-pair:last-child', 'focus', function(event) {
-        if (!$(event.target).hasClass('btn-danger')) {
-          view.addConditionRow();
-        }
-      });
-
       if (this.options.acceptAnyTime) {
         $('#time-gte,#time-lte').each(function() {
           var input = $(this);
@@ -99,7 +92,8 @@ define([], function() {
       'submit': 'submit',
       'change .time-interval': 'applyPresetTime',
       'click #time-interval-clear': 'onTimeIntervalClear',
-      'click .condition-pair .btn-danger': 'onConditionRowRemove'
+      'click .condition-pair .btn-danger': 'onConditionRowRemove',
+      'focus .condition-pair:last-child': 'onLastConditionPairFocus'
     },
 
     /**
@@ -137,6 +131,13 @@ define([], function() {
         $(event.currentTarget).parent().remove();
       } else {
         $(event.currentTarget).parent().find('input,select').val('');
+      }
+    },
+
+    onLastConditionPairFocus: function(event) {
+      // Auto-expand the 'x = y' <input> rows.
+      if (!$(event.target).hasClass('btn-danger')) {
+        this.addConditionRow();
       }
     },
 
