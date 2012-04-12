@@ -6,6 +6,7 @@ define([], function() {
    * Displays the search box modal.
    */
   return Backbone.View.extend({
+    csvFields: ['tags'],
     datetimePickerFormat: 'MM/DD/YYYY HH:mm:ss',
 
     initialize: function(options) {
@@ -93,7 +94,8 @@ define([], function() {
       'change .time-interval': 'applyPresetTime',
       'click #time-interval-clear': 'onTimeIntervalClear',
       'click .condition-pair .btn-danger': 'onConditionRowRemove',
-      'focus .condition-pair:last-child': 'onLastConditionPairFocus'
+      'focus .condition-pair:last-child': 'onLastConditionPairFocus',
+      'change .condition-pair input:nth-child(1)': 'onConditionNameChange'
     },
 
     /**
@@ -138,6 +140,28 @@ define([], function() {
       // Auto-expand the 'x = y' <input> rows.
       if (!$(event.target).hasClass('btn-danger')) {
         this.addConditionRow();
+      }
+    },
+
+    onConditionNameChange: function(event) {
+      var currentTarget = $(event.currentTarget),
+          nameVal = currentTarget.val(),
+          valueEl = currentTarget.parent().find('input:nth-child(3)');
+
+      if (-1 != this.csvFields.indexOf(nameVal)) {
+        // Don't recreate if flagged -- re-enable.
+        if (valueEl.data('tooltipSet')) {
+          valueEl.tooltip('enable');
+        } else {
+          valueEl.tooltip({
+            placement: 'bottom',
+            title: 'Accepts comma-separated values.',
+            trigger: 'focus'
+          });
+          valueEl.data('tooltipSet', true);
+        }
+      } else {
+        valueEl.tooltip('disable');
       }
     },
 

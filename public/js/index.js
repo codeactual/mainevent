@@ -14,6 +14,7 @@ require([
   'order!backbone',
   'order!backbone/View',
   'order!bootstrap-modal',
+  'order!bootstrap-tooltip',
   'order!moment',
   'order!clientsiiide',
   'order!templates',
