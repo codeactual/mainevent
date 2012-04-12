@@ -65,9 +65,11 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
     if (this.onClose){
       this.onClose();
     }
-    _.each(this.subViews, function(view) {
-      if (view) {
-        view.close();
+    var view = this;
+    _.each(this.subViews, function(subView, name) {
+      if (subView) {
+        subView.close();
+        view.subViews[name] = null;
       }
     });
   };
