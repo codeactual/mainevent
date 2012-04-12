@@ -57,6 +57,7 @@ var steps = [
     var commands = ['cp -a ' + SOURCE + '/js ' + BUILD_TMP + '/js-compressed'];
 
     if (program.prod) {
+      // Only compress internal scripts.
       commands.push('find ' + BUILD_TMP + '/js-compressed -regex ".*\\(index\\|\\(backbone\\|collections\\|controllers\\|helpers\\|models\\|observers\\|shared\\|views\\)\\/\\).*js" -exec java -jar ' + SOURCE + '/yuicompressor.jar -o {} {} \\;');
     }
 
