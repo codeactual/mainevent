@@ -8,7 +8,7 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
     return this.namedCapture(
       log,
       // From fluentd-0.10.9/lib/fluent/parser.rb:
-      '^(?<time>[^ ]+ \\s+[^ ]+ [^ ]+) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\\/\\.\\-]*)(?<pid>\\[([0-9]+)\\])?[^\\:]*\\: *(?<message>.*)$'
+      '^(?<time>[^ ]+\\s+[^ ]+ [^ ]+) (?<host>[^ ]*) (?<ident>[^:\\]]+)(\\[(?<pid>[0-9]+)\\])?: (?<message>.*)$'
     );
   },
 
