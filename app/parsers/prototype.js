@@ -58,20 +58,11 @@ Parser.prototype.parseLines = function(source, lines) {
  * Apply a list of potential named capture regexes. First match wins.
  *
  * @param subject {String} Log line.
- * @param names {Array} Capture names, ex. 'time' or 'host'.
- * @param regex {RegExp} Pattern to capture all parts in 'names'.
+ * @param pattern {String} XRegExp pattern.
  * @return {Object} Captured properties.
  */
-Parser.prototype.namedCapture = function(subject, names, regex) {
-  var captures = {};
-  var matches = subject.match(regex);
-  if (matches) {
-    matches.shift();
-    for (var n in names) {
-      captures[names[n]] = matches[n];
-    }
-  }
-  return captures;
+Parser.prototype.namedCapture = function(subject, pattern) {
+  return mainevent.shared.XRegExp.namedCaptureMatch(subject, XRegExp(pattern));
 };
 
 /**
