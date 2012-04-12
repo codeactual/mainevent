@@ -107,7 +107,7 @@ MongoDb.prototype.extractSortOptions = function(params) {
  *
  * @param params {Object} Modified in-place with extracted options.
  */
-MongoDb.prototype.extractFilterOptions = function(params) {
+MongoDb.prototype.filterQuery = function(params) {
   _.each(params, function(value, key) {
     var matches = null;
     if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
@@ -125,6 +125,8 @@ MongoDb.prototype.extractFilterOptions = function(params) {
       _.each(value, function(v, comparison) {
         value[comparison] = new BSON.ObjectID(v.toString());
       });
+    } else if (_.isArray(value)) {
+      params[key] = {$all: value};
     }
   });
 };
@@ -292,7 +294,7 @@ MongoDb.prototype.getTimeline = function(params, callback, options) {
     mongodb.dbCollection(db, mongodb.collections.event, callback, function(err, collection) {
       options = options || {};
       _.extend(options, mongodb.extractSortOptions(params));
-      mongodb.extractFilterOptions(params);
+      mongodb.filterQuery(params);
       collection.find(params, options).toArray(function(err, docs) {
         if (err) { mongodb.dbClose(err, callback); return; }
         mongodb.dbClose();
@@ -350,7 +352,7 @@ MongoDb.prototype.mapReduce = function(job) {
     job.options.out = job.options.out || {replace: collectionName};
     mongodb.dbCollection(db, mongodb.collections.event, job.callback, function(err, collection) {
       if (job.options.query) {
-        mongodb.extractFilterOptions(job.options.query);
+        mongodb.filterQuery(job.options.query);
 
         // Hack to remove any sort options from repurposed search forms.
         mongodb.extractSortOptions(job.options.query);

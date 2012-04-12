@@ -10,7 +10,7 @@ define([], function() {
     }
 
     _.each(req.query, function(value, key) {
-      req.query[key] = decodeURIComponent(value);
+      req.query[key] = _.isArray(value) ? value : decodeURIComponent(value);
     });
 
     mongodb.getTimeline(req.query, function(err, docs, info) {
