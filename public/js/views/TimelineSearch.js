@@ -76,7 +76,7 @@ define([], function() {
         }
 
         // Previously submitted array values.
-        key = key.replace(/\[\]$/, '');
+        value = _.isArray(value) ? value.join(',') : value;
 
         // Reuse markup for the 1st pair.
         var condPair = condCount++ ? condPairModel.clone() : condPairModel;

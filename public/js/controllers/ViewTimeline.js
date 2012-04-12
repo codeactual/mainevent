@@ -26,12 +26,21 @@ define(['views/Timeline'], function(view) {
         // Ex. 'limit=10'. Push key/value pairs into searchArgs.
         var assign_part = part.split('=');
         if (2 == assign_part.length) {
+          var key = assign_part[0].replace(/\[\]$/, ''),
+              value = assign_part[1];
           // Collect all options, ex. 'limit=10'.
-          if (_.has(searchArgs, assign_part[0])) {
-            searchArgs[assign_part[0]] = assign_part[1];
+          if (_.has(searchArgs, key)) {
+            searchArgs[key] = value;
           // Collect all conditions, ex. 'parser='php'.
           } else {
-            searchArgs.conditions[assign_part[0]] = assign_part[1];
+            if (_.has(searchArgs.conditions, key)) {
+              if (!_.isArray(searchArgs.conditions[key])) {
+                searchArgs.conditions[key] = [searchArgs.conditions[key]];
+              }
+              searchArgs.conditions[key].push(value);
+            } else {
+              searchArgs.conditions[key] = value;
+            }
           }
         }
       });
