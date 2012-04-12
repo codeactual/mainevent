@@ -7,16 +7,6 @@ define([], function() {
   return Backbone.View.extend({
 
     /**
-     * Object retrieved by fetchJobResult().
-     */
-    data: null,
-
-    /**
-     * Defined during render().
-     */
-    jqplotId: null,
-
-    /**
      * Callback for window resize events.
      */
     resizeGraph: null,
@@ -56,9 +46,7 @@ define([], function() {
         // Replace dashboard settings with submitted args.
         view.options.dashArgs = changed.query;
 
-        view.fetchGraphPoints(function() {
-          view.render.call(view);
-        });
+        view.fetchAndRenderPoints();
 
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
@@ -68,9 +56,7 @@ define([], function() {
         // Merge changed args with current.
         view.options.dashArgs = _.extend(view.options.dashArgs, changed);
 
-        view.fetchGraphPoints(function() {
-          view.render.call(view);
-        });
+        view.fetchAndRenderPoints();
 
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
@@ -83,7 +69,7 @@ define([], function() {
      * Run the graph data job with an ad-hoc query, ex. total JSON events
      * between timestamp X and Y with the condition 'code > 200'.
      */
-    fetchGraphPoints: function(callback) {
+    fetchAndRenderPoints: function() {
       var dashArgs = _.clone(this.options.dashArgs),
           date = mainevent.shared.Date,
           span = dashArgs['time-lte'] - dashArgs['time-gte'];
@@ -100,35 +86,32 @@ define([], function() {
       $.ajax(
         url, {
           success: function(data) {
-            view.data = data;
-            data = null;
-            callback();
+            view.render(_.clone(data));
           }
         }
       );
     },
 
-    render: function() {
+    render: function(data) {
       // Use convention-based IDs so markup can just hold positional containers.
-      this.jqplotId = this.el.id + '-canvas';
+      var jqplotId = this.el.id + '-canvas',
+          defaultAxes = {
+            xaxis: {
+              renderer: $.jqplot.DateAxisRenderer
+            }
+          };
 
-      var view = this;
-          view.$el.empty();
-          view.$el.append($('<div>').attr('id', view.jqplotId));
+      // Remove existing graph.
+      this.$el.empty();
+      this.$el.append($('<div>').attr('id', jqplotId));
 
-      var defaultAxes = {
-        xaxis: {
-          renderer: $.jqplot.DateAxisRenderer
-        }
-      };
-
-      if (_.size(this.data)) {
+      if (_.size(data)) {
         var graphData = [];
-        _.each(this.data, function(result, time) {
+        _.each(data, function(result, time) {
           graphData.push([time, result.count]);
         });
 
-        var axes = Graph.adjustAxes(view.$el, graphData, defaultAxes),
+        var axes = Graph.adjustAxes(this.$el, graphData, defaultAxes),
             title =
               mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-gte'], 10))
               + ' &mdash; ' +  mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-lte'], 10));
@@ -140,7 +123,7 @@ define([], function() {
 
       try {
         $.jqplot(
-          view.jqplotId,
+          jqplotId,
           [graphData],
           {
             title: title,
