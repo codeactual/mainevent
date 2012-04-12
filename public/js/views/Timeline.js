@@ -15,9 +15,6 @@ define([
    * fetches the result set based on router options passed via initialize().
    */
   return Backbone.View.extend({
-    // Track the most recent event seen by initial fetch() and automatic updates.
-    newestEventId: null,
-    newestEventTime: null,
 
     // socket.io connection.
     socket: null,
@@ -116,7 +113,7 @@ define([
       this.setPref('autoUpdate', !this.getPref('autoUpdate'));
 
       if (this.prefs.autoUpdate) {
-        this.startTimelineUpdate(this.newestEventId, this.newestEventTime);
+        this.startTimelineUpdate();
       } else {
         this.closeSocket();
       }
@@ -324,8 +321,6 @@ define([
      */
     startTimelineUpdate: function(initialId, initialTime) {
       var view = this;
-      view.newestEventId = initialId;
-      view.newestEventTime = initialTime;
 
       if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
         return;
@@ -335,16 +330,12 @@ define([
         event: {
           connect: function() {
             // Start/restart automatic updates.
-            view.socket.emit('StartTimelineUpdate', {
-              newestEventId: view.newestEventId,
-              newestEventTime: view.newestEventTime,
-              searchArgs: view.options.searchArgs
-            });
+            view.socket.emit('StartTimelineUpdate');
           }
         }
       });
 
-      // Update the view with events fresher than newestEventId.
+      // Update the view with latest event.
       this.socket.on('TimelineUpdate', function(data) {
         view.onTimelineUpdate.call(view, data);
       });
@@ -360,9 +351,6 @@ define([
       if (!data || !data.length) {
         return;
       }
-
-      // Advance the manual cursor.
-      this.newestEventId = data[0]._id;
 
       // Un-highlight any past updates.
       $('.timeline-update').removeClass('timeline-update');
