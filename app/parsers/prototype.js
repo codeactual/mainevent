@@ -58,27 +58,25 @@ Parser.prototype.parseLines = function(source, lines) {
  * Apply a list of potential named capture regexes. First match wins.
  *
  * @param subject {String} Log line.
- * @param pattern {String} XRegExp pattern.
+ * @param regex {String} XRegExp pattern.
  * @return {Object} Captured properties.
  */
-Parser.prototype.namedCapture = function(subject, pattern) {
-  return mainevent.shared.XRegExp.namedCaptureMatch(subject, XRegExp(pattern));
+Parser.prototype.namedCapture = function(subject, regex) {
+  return mainevent.shared.XRegExp.namedCaptureMatch(subject, XRegExp(regex));
 };
 
 /**
  * Apply a list of potential named capture regexes. First match wins.
  *
  * @param subject {String} Log line.
- * @param candidates {Array} Objects, each describing a potential pattern match.
- *   - names {Array} Capture names, ex. 'time' or 'host'.
- *   - regex {RegExp} Pattern to capture all parts in 'names'.
- * @return {Object}
+ * @param candidates {Array} Potential pattern in XRegExp format.
+ * @return {Object} Capture properties; otherwise empty object.
  */
 Parser.prototype.candidateCapture = function(subject, candidates) {
   var captured = {};
   for (var c in candidates) {
-    captured = this.namedCapture(subject, candidates[c].names, candidates[c].regex);
-    if (_.size(captured)) {
+    captured = this.namedCapture(subject, candidates[c].regex);
+    if (captured && _.size(captured)) {
       captured.parser_subtype = candidates[c].subtype;
       break;
     }

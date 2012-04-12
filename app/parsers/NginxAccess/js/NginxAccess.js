@@ -6,7 +6,7 @@ exports.NginxAccessParser = extend({name: 'NginxAccess', humanName: 'nginx acces
 
   parse: function(log) {
     // From fluentd-0.10.9/lib/fluent/parser.rb:
-    return this.namedCapture(log, '^(?<host>[^ ]*) [^ ]+ (?<user>[^ ]+) \\[(?<time>[^\\]]+)\\] "(?<method>\\S+) (?<path>[^ ]+) \\S+ (?<code>[^ ]+) (?<size>[^ ]+) ("(?<referer>[^\\"]+)")? ("(?<agent>[^\\"]+)")?');
+    return this.namedCapture(log, '^(?<host>[^ ]*) [^ ]+ (?<user>[^ ]+) \\[(?<time>[^\\]]+)\\] "(?<method>\\S+) (?<path>[^ ]+) \\S+ (?<code>[^ ]+) (?<size>[^ ]+) ("(?<referer>[^\\"]+)")? ("(?<agent>[^\\"]+)")?$');
   },
 
   buildTemplateContext: function(template, log) {
