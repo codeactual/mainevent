@@ -8,6 +8,7 @@ require(__dirname + '/../app/modules/mainevent');
 
 var _ = require('underscore'),
     fs = require('fs'),
+    path = require('path'),
     program = require('commander'),
     exec = require('child_process').exec,
     APP = __dirname + '/..',
@@ -93,10 +94,11 @@ var steps = [
 
       // Ex. 'app/parsers/Json/css'.
       var cssDir = baseDir + '/' + parser + '/css';
-
-      _.each(fs.readdirSync(cssDir), function(template) {
-        files.push(cssDir + '/' + template);
-      });
+      if (path.existsSync(cssDir)) {
+        _.each(fs.readdirSync(cssDir), function(template) {
+          files.push(cssDir + '/' + template);
+        });
+      }
     });
 
     commands.push('cat ' + files.join(' ') + ' > ' + BUILD_TMP + '/css/all.css');
