@@ -23,7 +23,7 @@ exports.NginxAccessParser = extend({name: 'NginxAccess', humanName: 'nginx acces
       log.referer = '-' == log.referer ? '' : log.referer;
       log.__refererMin = log.referer.replace(/^http(s)?:\/\//, '');
     }
-      return log;
+    return log;
   },
 
   extractTime: function(log) {
