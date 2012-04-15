@@ -46,7 +46,7 @@ define([], function() {
         // Replace dashboard settings with submitted args.
         view.options.dashArgs = changed.query;
 
-        view.fetchAndRenderPoints();
+        view.renderPointsFromAdhocJob();
 
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
@@ -56,7 +56,7 @@ define([], function() {
         // Merge changed args with current.
         view.options.dashArgs = _.extend(view.options.dashArgs, changed);
 
-        view.fetchAndRenderPoints();
+        view.renderPointsFromCache();
 
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
@@ -66,10 +66,37 @@ define([], function() {
     },
 
     /**
-     * Run the graph data job with an ad-hoc query, ex. total JSON events
-     * between timestamp X and Y with the condition 'code > 200'.
+     * Run the MapReduce job for this graph, ex. total JSON events
+     * between timestamp X and Y with the condition 'code > 200',
+     * and render the results.
      */
-    fetchAndRenderPoints: function() {
+    renderPointsFromAdhocJob: function() {
+      var dashArgs = _.clone(this.options.dashArgs),
+          date = mainevent.shared.Date,
+          span = dashArgs['time-lte'] - dashArgs['time-gte'];
+
+      dashArgs.partition = date.partitions[date.bestFitInterval(span)];
+
+      var view = this,
+          url = this.buildUrl(
+            '/api/job/CountAllPartitioned',
+            dashArgs,
+            false
+          );
+
+      $.ajax(
+        url, {
+          success: function(data) {
+            view.render(_.clone(data));
+          }
+        }
+      );
+    },
+
+    /**
+     * Render the graph from data points cached by a background process.
+     */
+    renderPointsFromCache: function() {
       var dashArgs = _.clone(this.options.dashArgs),
           date = mainevent.shared.Date,
           span = dashArgs['time-lte'] - dashArgs['time-gte'];
