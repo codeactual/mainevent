@@ -5,7 +5,16 @@ var extend = require(__dirname + '/../../prototype.js').extend;
 exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
 
   parse: function(log) {
-    return JSON.parse(log);
+    try {
+      var parsed = JSON.parse(log);
+    } catch (e) {
+      if (e.toString.match(/Unexpected end of input/)) {
+        return null; // Treat as general parse error.
+      } else {
+        throw e;
+      }
+    }
+    return parsed;
   },
 
   buildTemplateContext: function(template, log) {
