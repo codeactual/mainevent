@@ -235,12 +235,16 @@ define(['views/KeyboardShortcuts'], function(KeyboardShortcuts) {
    * @return {String}
    */
   Backbone.View.prototype.buildUrl = function(base, args, pushState) {
-    _.each(args, function(value, key) {
-      if (!key.toString().length || !value.toString().length || _.isNaN(value)) {
-        delete args[key];
-      }
-    });
-    args = $.param(args);
+    if (args) {
+      _.each(args, function(value, key) {
+        if (_.isUndefined(value) || !key.toString().length || !value.toString().length || _.isNaN(value)) {
+          delete args[key];
+        }
+      });
+      args = $.param(args);
+    } else {
+      args = '';
+    }
     baseSuffix = _.isUndefined(pushState) || pushState ? '/' : '?';
     return base + (args.length ? baseSuffix + args : '');
   };
