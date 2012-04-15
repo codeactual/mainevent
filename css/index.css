@@ -29,6 +29,7 @@ div.row-fluid > h2 {
   z-index: 2000;
 }
 #screenshot-carousel {
+  border: solid 1px #efefef;
   margin: 18px auto 18px auto;
   max-width: 870px;
 }
