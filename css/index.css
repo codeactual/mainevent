@@ -1,0 +1,33 @@
+body {
+  padding-bottom: 400px; /* Ensure nav/scrollspy reaches the last section. */
+  padding-top: 60px;
+}
+code, pre {
+  font-size: 14px;
+}
+h1, h2 {
+  font-weight: 300;
+}
+section {
+  margin-bottom: 36px;
+}
+div.row-fluid > h2 {
+  margin-bottom: 18px;
+}
+.tagline h1 {
+  font-size: 40px;
+  font-weight: 300;
+  margin: 18px 0 36px 0;
+  text-align: center;
+}
+#fork-me-banner {
+  border: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2000;
+}
+#screenshot-carousel {
+  margin: 18px auto 18px auto;
+  max-width: 870px;
+}
