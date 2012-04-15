@@ -117,9 +117,12 @@ define([
         this.searchModal.modal('show');
       } else {
         mainevent.helpers.Event.on('TimelineSearchSubmit', this.onSearchSubmit, this);
+        var searchArgs = _.clone(this.options.dashArgs);
+        delete searchArgs['time-lte'];
+        delete searchArgs['time-gte'];
         this.subViews.search = new TimelineSearch({
           el: this.searchModal,
-          searchArgs: {},
+          searchArgs: searchArgs,
           title: 'Create From Search',
           acceptAnyTime: false,
           acceptSortOptions: false
