@@ -61,7 +61,11 @@ define([], function() {
         // Save a history point but don't trigger the router.
         var dashArgs = _.clone(view.options.dashArgs);
         dashArgs['dd'] = 1; // Indicate change came from drop-downs, not search.
-        view.navigate('dashboard', dashArgs, {trigger: false});
+
+        // Don't re-navigate after opening /dashboard.
+        if (!_.isEqual(view.options.defaultDashArgs, changed)) {
+          view.navigate('dashboard', dashArgs, {trigger: false});
+        }
       }
     },
 

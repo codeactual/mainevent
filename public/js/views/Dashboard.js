@@ -235,11 +235,14 @@ define([
         this.toggleDropDowns();
       }
 
-      this.subViews.mainGraph = new CountAllPartitioned({el: $('#dashboard-main-graph')});
+      this.subViews.mainGraph = new CountAllPartitioned({
+        el: $('#dashboard-main-graph'),
+        defaultDashArgs: this.options.defaultDashArgs
+      });
 
       // Reuse the change event so the arguments pass through the same logic
       // as do changes originating from drop-downs or search modal.
-      mainevent.helpers.Event.trigger('DashboardArgsChange', initialDashArgs);
+      mainevent.helpers.Event.trigger('DashboardArgsChange', _.clone(initialDashArgs));
     }
   });
 });
