@@ -50,6 +50,7 @@ app.get(/^((?!\/(api|js|css|img|socket.io)\/).)*$/, function(req, res) {
 var routes = {
   '/api/event/:id': 'event',
   '/api/graph/:name': 'graph',
+  '/api/job/:name': 'job',
   '/api/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {
