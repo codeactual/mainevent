@@ -9,7 +9,8 @@ h1, h2 {
   font-weight: 300;
 }
 section {
-  margin-bottom: 36px;
+  padding-top: 36px;
+  padding-bottom: 36px;
 }
 div.row-fluid > h2 {
   margin-bottom: 18px;
