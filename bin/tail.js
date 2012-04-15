@@ -23,6 +23,7 @@
 
   require(__dirname + '/../app/modules/mainevent.js');
   var spawn = require('child_process').spawn,
+      exec = require('child_process').exec,
       config = mainevent.getConfig(program.config),
       parsers = mainevent.requireModule('parsers'),
       procLog = mainevent.createUtilLogger('tail.js');
@@ -45,6 +46,48 @@
 
     // MongoDB instance.
     this.mongodb = mainevent.requireModule('mongodb').createInstance();
+
+    // For use in spawn() or exec().
+    this.tailArgs = ['--bytes=0', '-F', this.source.path];
+    if (program.test) {
+      this.tailArgs.push('-v');  // Header output will trigger MONITORS_STARTED.
+    }
+
+    // Remote `tail` PID.
+    this.remotePid = null;
+  };
+
+  /**
+   * Build an SSH command argument list.
+   *
+   * - For use with spawn() or exec().
+   *
+   * @param cmdArgs {Array} Remote command arguments.
+   * @return {Array}
+   */
+  Monitor.prototype.buildSshCmd = function(cmdArgs) {
+    return [
+      '-t',
+      '-p', this.source.sshPort,
+      '-i', this.source.sshKey,
+      this.source.sshUser + '@' + this.source.sshHost,
+    ].concat(cmdArgs);
+  };
+
+  /**
+   * Run `pgrep` to save the remote monitor's PID.
+   */
+  Monitor.prototype.saveRemotePid = function(callback) {
+    callback = callback || function() {};
+    var cmd = this.buildSshCmd(['\'pgrep -f "^tail ' + this.tailArgs.join(' ') + '"\'']),
+        monitor = this;
+    exec('ssh ' + cmd.join(' '), {}, function(code, stdout) {
+      monitor.remotePid = parseInt(stdout.toString(), 10);
+      if (program.verbose) {
+        monitor.log('remote pid %d', monitor.remotePid);
+      };
+      callback();
+    });
   };
 
   /**
@@ -53,21 +96,13 @@
   Monitor.prototype.start = function() {
     this.log('spawning tail');
 
-    var tailArgs = ['tail', '--bytes=0', '-F', this.source.path];
-    if (program.test) {
-      tailArgs.push('-v');  // Use header output to trigger MONITORS_STARTED event.
-    }
-
     if (this.source.sshKey) {
-      var sshArgs = [
-        '-t',
-        '-p', this.source.sshPort,
-        '-i', this.source.sshKey,
-        this.source.sshUser + '@' + this.source.sshHost,
-      ];
-      this.tail = spawn('ssh', sshArgs.concat(tailArgs));
+      this.tail = spawn('ssh', this.buildSshCmd(['tail'].concat(this.tailArgs)));
+      if (!program.test) {
+        this.saveRemotePid();
+      }
     } else {
-      this.tail = spawn('tail', tailArgs);
+      this.tail = spawn('tail', this.tailArgs);
     }
 
     var monitor = this;
@@ -77,7 +112,13 @@
 
       // Use -v header output to detect tail readiness (for remote invocation).
       if (program.test && data.match(/^==>/)) {
-        process.send('MONITORS_STARTED');
+        if (monitor.source.sshKey) {
+          monitor.saveRemotePid(function() {
+            process.send('MONITORS_STARTED');
+          });
+        } else {
+          process.send('MONITORS_STARTED');
+        }
         return;
       }
 
@@ -113,10 +154,16 @@
       process.removeListener('END_MONITOR', killTail);
       if (monitor.tail) {
         monitor.mongodb.dbClose();
-        monitor.log('killing pid %d ...', monitor.tail.pid);
         monitor.tail.kill('SIGKILL');
-        monitor.log('killed');
+        monitor.log('killed local pid %d ...', monitor.tail.pid);
         monitor.tail = null;
+
+        monitor.log('killing remote pid %d ...', monitor.remotePid);
+        if (monitor.remotePid) { // Manually kill -- `ssh -t` approach hasn't worked.
+          spawn('ssh', monitor.buildSshCmd(['kill -9 ' + monitor.remotePid]));
+          monitor.log('killed remote pid %d ...', monitor.remotePid);
+          monitor.remotePid = null;
+        }
       }
 
       if (program.test) {
@@ -127,7 +174,7 @@
     };
     process.on('END_MONITOR', killTail);
 
-    this.log('pid %d', this.tail.pid);
+    this.log('local pid %d', this.tail.pid);
   };
 
   /**

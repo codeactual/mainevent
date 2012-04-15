@@ -10,7 +10,8 @@ var fs = require('fs'),
     fork = require('child_process').fork,
     exec = require('child_process').exec,
     tailJsFile = __dirname + '/../../bin/tail.js',
-    mongodb = mainevent.requireModule('mongodb').createInstance();
+    mongodb = mainevent.requireModule('mongodb').createInstance(),
+    pgrepTailCmdFormat = 'pgrep -f "^tail --bytes=0 -F %s -v"';
 
 exports.core = {
 
@@ -58,7 +59,7 @@ exports.core = {
     var testcase = this,
         run = testutil.getRandHash(),
         log = JSON.stringify({path: this.path, run: run}),
-        pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + this.path + '"',
+        pgrepTailCmd = util.format(pgrepTailCmdFormat, this.path),
         // -t will enable test mode and force exit after 1 line.
         tailJs = fork(tailJsFile, [
           '--quiet',
@@ -98,7 +99,7 @@ exports.core = {
     var run = testutil.getRandHash(),
         log = JSON.stringify({path: this.path, run: run}),
         pgrepTailJs = 'pgrep -f "' + tailJsFile + ' --quiet --config ' + testutil + ' --test 1"',
-        pgrepTailCmd = 'pgrep -f "tail --bytes=0 -F ' + this.path + '"',
+        pgrepTailCmd = util.format(pgrepTailCmdFormat, this.path),
         // -t will enable test mode and force exit after 1 line.
         tailJs = fork(tailJsFile, [
           '--quiet',
@@ -116,8 +117,8 @@ exports.core = {
 
       // Wait until we know tail.js should have restarted `tail`.
       } else if ('MONITORS_ENDED' == message) {
-        exec(pgrepTailJs, [], function(code, stdout, stderr) {
-          test.equal(stdout.toString(), '');
+        exec(pgrepTailJs, [], function(error) {
+         test.equal(error.code, 1); // 'No processes matched.'
           test.done();
         });
       }
@@ -190,20 +191,29 @@ exports.ssh = {
   },
 
   testRemoteSource: function(test) {
-    var run = testutil.getRandHash(),
-       log = JSON.stringify({path: this.path, run: run}),
-       fd = fs.openSync(this.path, 'a'),
-       // -t will enable test mode and force exit after 1 line.
-       tailJs = fork(tailJsFile, [
-         '--quiet',
-         '--config', this.configFile,
-         '--test', 1
-       ], {env: process.env});
+    test.expect(2);
 
+    var run = testutil.getRandHash(),
+        log = JSON.stringify({path: this.path, run: run}),
+        fd = fs.openSync(this.path, 'a'),
+        pgrepTailCmd = util.format(pgrepTailCmdFormat, this.path),
+        // -t will enable test mode and force exit after 1 line.
+        tailJs = fork(tailJsFile, [
+          '--quiet',
+          '--config', this.configFile,
+          '--test', 1
+        ], {env: process.env});
+
+   // Verify remote `tail` output was processed.
    tailJs.on('exit', function(code) {
      mongodb.getTimeline({run: run}, function(err, docs) {
        test.equal(docs[0].run, run);
-       test.done();
+
+       // Verify remote `tail` was killed.
+       exec(pgrepTailCmd, [], function(error) {
+         test.equal(error.code, 1); // 'No processes matched.'
+         test.done();
+       });
      });
    });
 
