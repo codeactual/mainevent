@@ -18,7 +18,7 @@ title: index
     <![endif]-->
     <link rel="shortcut icon" href="img/favicon.ico">
   </head>
-  <body data-spy="scroll">
+  <body>
     <a href="http://github.com/codeactual/mainevent"><img id="fork-me-banner" src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
     <div id="navbar" class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -138,16 +138,32 @@ title: index
       </section>
       <section id="extension-example">
         <div class="row-fluid">
-          <h2>Extension Example</h2>
-          <script src="https://gist.github.com/2381268.js"> </script>
-          <script src="https://gist.github.com/2390263.js"> </script>
-          <script src="https://gist.github.com/2390249.js"> </script>
+          <h2>Extension Example: nginx access logs</h2>
+          <ul class="nav nav-pills">
+            <li class="active"><a href="#parser-js" data-toggle="pill">Javascript</a></li>
+            <li><a href="#parser-preview" data-toggle="pill">Timeline Preview HTML</a></li>
+            <li><a href="#parser-event" data-toggle="pill">Event HTML</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="parser-js">
+              <h3><a href="https://github.com/codeactual/mainevent/blob/master/app/parsers/NginxAccess/js/NginxAccess.js">NginxAccess.js</a> (<a href="https://github.com/codeactual/mainevent/blob/master/app/parsers/NginxAccess/test/NginxAccess.js">View Tests</a>)</h3>
+              <script src="https://gist.github.com/2381268.js"> </script>
+            </div>
+            <div class="tab-pane" id="parser-preview">
+              <h3><a href="https://github.com/codeactual/mainevent/blob/master/app/parsers/NginxAccess/templates/Preview.html">Preview.html</a></h3>
+              <script src="https://gist.github.com/2390263.js"> </script>
+              <h3>Produces timeline cells like:</h3>
+              <img src="img/parser-preview.png" alt="Parser Preview HTML Rendered">
+            </div>
+            <div class="tab-pane" id="parser-event">
+              <h3><a href="https://github.com/codeactual/mainevent/blob/master/app/parsers/NginxAccess/templates/Event.html">Event.html</a></h3>
+              <script src="https://gist.github.com/2390249.js"> </script>
+              <h3>Produces an event table like:</h3>
+              <img src="img/parser-event.png" alt="Parser Event HTML Rendered">
+            </div>
+          </div>
         </div>
       </section>
-      <hr>
-      <footer>
-        <p>&copy; Company 2012</p>
-      </footer>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>

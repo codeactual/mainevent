@@ -1,18 +1,17 @@
 body {
-  padding-bottom: 400px; /* Ensure nav/scrollspy reaches the last section. */
   padding-top: 60px;
 }
 code, pre {
   font-size: 14px;
 }
-h1, h2 {
+h1, h2, h3 {
   font-weight: 300;
 }
 section {
   padding-top: 36px;
   padding-bottom: 36px;
 }
-div.row-fluid > h2 {
+h2, h3 {
   margin-bottom: 18px;
 }
 .tagline h1 {
@@ -32,4 +31,9 @@ div.row-fluid > h2 {
   border: solid 1px #efefef;
   margin: 18px auto 18px auto;
   max-width: 870px;
+}
+#extension-example img,
+#extension-example script {
+  margin-left: auto;
+  margin-right: auto;
 }
