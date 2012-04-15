@@ -6,10 +6,11 @@ define([], function() {
 
   return Backbone.View.extend({
 
-    /**
-     * Callback for window resize events.
-     */
+    //Callback for window resize events.
     resizeGraph: null,
+
+    // Holds the most recent graph points.
+    resizeCache: null,
 
     initialize: function(options) {
       this.options.dashArgs = options.dashArgs || {};
@@ -21,14 +22,18 @@ define([], function() {
        */
       var view = this;
       this.resizeGraph = _.debounce(function() {
-        view.render();
+        if (view.resizeCache) {
+          view.render(view.resizeCache, true);
+        }
       }, 300),
       $(window).on('resize', view.resizeGraph);
     },
 
     onClose: function() {
       $(window).off('resize', this.resizeGraph);
+      delete this.resizeGraph;
       mainevent.helpers.Event.off('DashboardArgsChange', this.onArgsChange);
+      delete this.resizeCache;
     },
 
     /**
@@ -123,8 +128,7 @@ define([], function() {
       );
     },
 
-    render: function(data) {
-      // Use convention-based IDs so markup can just hold positional containers.
+    render: function(data, forResize) {
       var jqplotId = this.el.id + '-canvas',
           defaultAxes = {
             xaxis: {
@@ -169,6 +173,10 @@ define([], function() {
             }
           }
         );
+
+        if (!forResize) {
+          this.resizeCache = _.clone(data);
+        }
       } catch (e) {
         if (e.message != 'No data to plot.') {
           console.log(e);
