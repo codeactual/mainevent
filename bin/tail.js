@@ -53,16 +53,39 @@
   Monitor.prototype.start = function() {
     this.log('spawning tail');
 
-    this.tail = spawn('tail', ['--bytes=0', '-F', this.source.path]);
+    var tailArgs = ['tail', '--bytes=0', '-F', this.source.path];
+    if (program.test) {
+      tailArgs.push('-v');  // Use header output to trigger MONITORS_STARTED event.
+    }
+
+    if (this.source.sshKey) {
+      var sshArgs = [
+        '-t',
+        '-p', this.source.sshPort,
+        '-i', this.source.sshKey,
+        this.source.sshUser + '@' + this.source.sshHost,
+      ];
+      this.tail = spawn('ssh', sshArgs.concat(tailArgs));
+    } else {
+      this.tail = spawn('tail', tailArgs);
+    }
 
     var monitor = this;
 
     this.tail.stdout.on('data', function(data) {
-      var lines = parsers.splitString(data.toString());
+      data = data.toString();
+
+      // Use -v header output to detect tail readiness (for remote invocation).
+      if (program.test && data.match(/^==>/)) {
+        process.send('MONITORS_STARTED');
+        return;
+      }
+
+      var lines = parsers.splitString(data);
       lineCount += lines.length;
 
       if (program.verbose) {
-        monitor.log('data=[%s] length={%d]', data.toString(), lines.length);
+        monitor.log('data=[%s] length={%d]', data, lines.length);
       }
 
       var sourceLines = {source: monitor.source, lines: lines}, bulk = true;
@@ -150,7 +173,6 @@
     process.on('message', function(message) {
       if ('START_TEST' == message) {
         startAllMonitors();
-        process.send('MONITORS_STARTED');
       }
     });
   // Normal mode -- start immediately.

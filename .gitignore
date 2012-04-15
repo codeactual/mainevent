@@ -4,3 +4,4 @@ public/js/bootstrap-modal-full.js
 public/js/backbone-full.js
 public/js/templates.js
 static
+test/fixtures/tail-config-remote.js
