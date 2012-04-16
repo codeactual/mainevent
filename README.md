@@ -1,6 +1,6 @@
 # [mainevent](http://codeactual.github.com/mainevent)
 
-mainevent provides a suite of tools to gain insight into your log files.
+mainevent provides a suite of tools to gain insight into log files.
 
 * Collect, parse and store log updates from local and SSH-accessible log files.
 * Easily write new parser modules for any file format.
@@ -59,7 +59,7 @@ RequireJS configuration for client-side dependencies.
 
 `$ bin/tail.js`
 
-Spawns `tail` instances for each source described in `[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)`.
+Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
 
 #### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
 
@@ -79,7 +79,7 @@ Serves the YUI Test runner page, `app/view/test.html` and `test/browser/*.js` te
 
 ### Create a new parser for an unsupported log format
 
-Each parser lives in a separate directory under `[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)` which holds its JS, CSS, templates and tests.
+Each parser lives in a separate directory under <code>[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)</code> which holds its JS, CSS, templates and tests.
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
