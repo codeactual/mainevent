@@ -18,7 +18,7 @@ var _ = require('underscore'),
     BUILD_TMP = APP + '/static-tmp';
 
 program
-  .option('-p, --prod')
+  .option('-p, --prod', 'Compress JS/CSS')
   .parse(process.argv);
 
 exec('pgrep -f "node.*public/build.js" | wc -w', null, function(code, stdout) {
