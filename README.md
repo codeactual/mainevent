@@ -29,7 +29,7 @@ All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/
   * `parse(log)`: Accepts a log line string, returns an object of parsed fields.
 * Optional
   * `buildTemplateContext(template, log)`: Modify the context object sent to dust.js based on the type of template. Currently there are two types: `preview` and `event`. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) to see them in action.
-  * `buildPreviewText(log)`: Skip defining a preview template and just build and return the preview string manually.
+  * `buildPreviewText(log)`: Build the preview string manually (rather than using on a preview template).
   * `extractTime(log)`: The default implementation will detect millisecond/second timestamps and `Date.parse()`-able strings in `log.time` values. For incompatible formats, define this function to extract the millisecond timestamp manually.
 * Utilities
   * `namedCapture(subject, regex)`: Wrapper around [XRegExp](https://github.com/slevithan/XRegExp) named capture expression handling.
