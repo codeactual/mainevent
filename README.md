@@ -17,62 +17,6 @@ mainevent provides a suite of tools to gain insight into log files.
 * Produce dashboard data and graphs specific to your insight needs.
 * Filter and replicate real-time updates into additional systems for specialized processing or alerting.
 
-## Components
-
-### Frontend
-
-#### [mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)
-
-`$ bin/mainevent_server.js`
-
-Has three responsibilities:
-
-1. `/` serves the [backbone.js](http://documentcloud.github.com/backbone/) MVC app via [express.js](http://expressjs.com/).
-1. `/api` serves JSON data including graph points, event objects and timeline pages via [express.js](http://expressjs.com/).
-1. `/socket.io` serves real-time timelime updates.
-
-Triggers <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code> on startup to build the `static/` directory.
-
-#### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
-
-`$ public/build.js [--prod]`
-
-* Combines and compresses (`--prod`) JS/CSS files located in <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code>.
-* Relies on <code>[public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)</code> for [RequireJS](http://requirejs.org/) configuration.
-* Triggers <code>[public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)</code> to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
-
-Outputs all files into `static/`.
-
-#### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
-
-Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/views/](https://github.com/codeactual/mainevent/blob/master/app/views/)</code> and <code>[app/parsers/*/templates/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>.
-
-#### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
-
-[RequireJS](http://requirejs.org/) configuration for client-side dependencies.
-
-### Background
-
-#### [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)
-
-`$ bin/tail.js`
-
-Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
-
-#### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
-
-`$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
-
-Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
-
-### Testing
-
-#### [test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
-
-`$ bin/test.js`
-
-Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code> and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> test cases.
-
 ## How To
 
 ### Create a new parser for an unsupported log format
@@ -141,6 +85,62 @@ Notes about the main properties:
   * Add additional indexes if needed. Future versions may automate that process based on metrics.
 * `redis`
   * `host`/`port`/`options`: Passed to `createClient()` in [node_redis](https://github.com/mranney/node_redis).
+
+## Main Components
+
+### Frontend
+
+#### [mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)
+
+`$ bin/mainevent_server.js`
+
+Has three responsibilities:
+
+1. `/` serves the [backbone.js](http://documentcloud.github.com/backbone/) MVC app via [express.js](http://expressjs.com/).
+1. `/api` serves JSON data including graph points, event objects and timeline pages via [express.js](http://expressjs.com/).
+1. `/socket.io` serves real-time timelime updates.
+
+Triggers <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code> on startup to build the `static/` directory.
+
+#### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
+
+`$ public/build.js [--prod]`
+
+* Combines and compresses (`--prod`) JS/CSS files located in <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code>.
+* Relies on <code>[public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)</code> for [RequireJS](http://requirejs.org/) configuration.
+* Triggers <code>[public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)</code> to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
+
+Outputs all files into `static/`.
+
+#### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
+
+Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/views/](https://github.com/codeactual/mainevent/blob/master/app/views/)</code> and <code>[app/parsers/*/templates/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>.
+
+#### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
+
+[RequireJS](http://requirejs.org/) configuration for client-side dependencies.
+
+### Background
+
+#### [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)
+
+`$ bin/tail.js`
+
+Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
+
+#### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
+
+`$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
+
+Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
+
+### Testing
+
+#### [test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
+
+`$ bin/test.js`
+
+Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code> and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> test cases.
 
 ## File Layout Notes
 
