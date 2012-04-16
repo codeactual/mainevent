@@ -1,4 +1,3 @@
-
 # [mainevent](http://codeactual.github.com/mainevent)
 
 mainevent provides a suite of tools to gain insight into your log files.
@@ -178,12 +177,9 @@ Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Exampl
 
 `$ nodeunit test/redis.js`
 
-### Components
+Run all tests found under `app/parsers` and `test/`.
 
-* `app/parsers/testutil.js`: TODO
-* `test/modules/testutil.js`: TODO
-* `test/modules/job.js`: TODO
-* `$test/all.js`: Runs all tests found under `app/parsers` and `test/`.
+`$ test/all.js`
 
 Client-side tests under `test/browser` rely on YUI Test. `bin/test.js` will serve the runner page.
 
@@ -197,13 +193,20 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 
 ### Server-side
 
-* InsertLog: TODO
+* `InsertLog`
+  * Triggered in `app/modules/mongodb.js` in `insertLog()`.
+  * Callbacks receive the array of document objects.
+  * [Example listener](https://github.com/codeactual/mainevent/blob/master/app/modules/redis/InsertLogPubSub.js).
 
 ### Client-side
 
-* LinkClick: TODO
-* DataFetchError: TODO
-* ContentPreRender: TODO
+* LinkClick
+  * Triggered in [public/js/helpers/Event.js](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/Event.js) on any link with a relative `href`.
+* CritFetchError
+  * Triggered when a view cannot fetch data critical to its presentation, ex. the event view cannot retrieve the object describing the event.
+  * Callbacks receive the `response` object from `$.ajax`.
+* ContentPreRender
+  * Triggered in [public/js/index.js](https://github.com/codeactual/mainevent/blob/master/public/js/index.js) before the [content.html](https://github.com/codeactual/mainevent/blob/master/app/views/content.html) template is rendered.
 
 ### Bundled dependencies and their licenses
 
