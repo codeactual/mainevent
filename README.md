@@ -1,3 +1,4 @@
+
 # [mainevent](http://codeactual.github.com/mainevent)
 
 mainevent provides a suite of tools to gain insight into your log files.
@@ -145,34 +146,31 @@ Notes about the main properties:
 * redis
   * host/port/options: Passed to createClient() in [node_redis](https://github.com/mranney/node_redis).
 
-## File Layout
+## File Layout Notes
 
-* `app` : TODO
-  * `controllers`: TODO
-  * `graphs`: TODO
-  * `jobs`: TODO
-  * `modules`: TODO
-  * `parsers`: TODO
-  * `sockets`: TODO
-  * `views`: TODO
-* `bin`: TODO
-* `config`: TODO
-* `public`: TODO
-  * `backbone`: TODO
-  * `collections`: TODO
-  * `controllers`: TODO
-  * `helpers`: TODO
-  * `models`: TODO
-  * `observers`: TODO
-  * `shared`: TODO
-  * `views`: TODO
-* `static`: TODO
-* `test`: TODO
-  * `bin`: TODO
-  * `browser`: TODO
-  * `fixtures`: TODO
-  * `jobs`: TODO
-  * `modules`: TODO
+* `app` : Holds most server-side modules and classes.
+  * `controllers`: Handlers for express.js routes defined in `bin/mainevent_server.js`.
+  * `graphs`: Background scripts which run at intervals to cache point data in Redis.
+  * `jobs`: Classes used by `graphs` scripts which define the MapReduce logic.
+  * `modules`: Covers MongoDB, Redis, static builds and global objects like `mainevent`.
+  * `parsers`: Self-contained parser modules, their prototype, and a test utility module.
+  * `sockets`: Like `controllers` except for socket messages rather than routes.
+  * `views`: All non-parser dust.js templates.
+* `bin`: All HTTP servers and background processes like `tail.js`.
+* `public`
+  * js
+    * `backbone`: Additions to backbone.js prototypes like `Backbone.View.prototype`.
+    * `collections`: backbone.js collections.
+    * `controllers`: Handlers for backbone.js routes.
+    * `helpers`: Ex. `mainevent.helpers.Socket` for creating new socket.io connections.
+    * `models`: backbone.js models.
+    * `observers`: Global listeners of custom events like `ContentPreRender`.
+    * `shared`: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
+    * `views`: backbone.js views.
+* `static`: JS/CSS/images from `public/` processed by `public/build.js`.
+* `test`
+  * `browser`: Client-side tests processed by app/views/test.html.
+  * `modules`: Test helpers.
 
 ## Testing
 
