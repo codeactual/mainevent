@@ -45,7 +45,7 @@ Outputs all files into `static/`.
 
 #### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
 
-Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in `app/views` and `app/parsers/*/templates`.
+Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in [app/views](https://github.com/codeactual/mainevent/blob/master/app/views/) and [app/parsers/*/templates](https://github.com/codeactual/mainevent/blob/master/app/parsers/).
 
 #### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
 
@@ -144,29 +144,29 @@ Notes about the main properties:
 
 ## File Layout Notes
 
-* `app` : Holds most server-side modules and classes.
-  * `controllers`: Handlers for [express.js](http://expressjs.com/) routes defined in `bin/mainevent_server.js`.
-  * `graphs`: Background scripts which run at intervals to cache point data in Redis.
-  * `jobs`: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
-  * `modules`: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
-  * `parsers`: Self-contained parser modules, their prototype, and a test utility module.
-  * `sockets`: Like `controllers` except for socket messages rather than routes.
-  * `views`: All non-parser [dust.js](http://akdubya.github.com/dustjs/) templates.
-* `bin`: All HTTP servers and background processes like `tail.js`.
-* `public`
-  * `js`
-    * `backbone`: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
-    * `collections`: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
-    * `controllers`: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
-    * `helpers`: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
-    * `models`: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
-    * `observers`: Global listeners of custom events like `ContentPreRender`.
-    * `shared`: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
-    * `views`: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
+* `[app](https://github.com/codeactual/mainevent/blob/master/app/)` : Holds most server-side modules and classes.
+  * `[controllers](https://github.com/codeactual/mainevent/blob/master/app/controllers/)`: Handlers for [express.js](http://expressjs.com/) routes defined in `bin/mainevent_server.js`.
+  * `[graphs](https://github.com/codeactual/mainevent/blob/master/app/graphs/)`: Background scripts which run at intervals to cache point data in Redis.
+  * `[jobs](https://github.com/codeactual/mainevent/blob/master/app/jobs/)`: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
+  * `[modules](https://github.com/codeactual/mainevent/blob/master/app/modules/)`: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
+  * `[parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers/)`: Self-contained parser modules, their prototype, and a test utility module.
+  * `[sockets](https://github.com/codeactual/mainevent/blob/master/app/sockets/)`: Like `controllers` except for socket messages rather than routes.
+  * `[views](https://github.com/codeactual/mainevent/blob/master/app/views/)`: All non-parser [dust.js](http://akdubya.github.com/dustjs/) templates.
+* `[bin](https://github.com/codeactual/mainevent/blob/master/bin/)`: All HTTP servers and background processes like [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js).
+* `[public](https://github.com/codeactual/mainevent/blob/master/public/)`
+  * `[js](https://github.com/codeactual/mainevent/blob/master/public/js/)`
+    * `[backbone](https://github.com/codeactual/mainevent/blob/master/public/js/backbone/)`: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
+    * `[collections](https://github.com/codeactual/mainevent/blob/master/public/js/collections/)`: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
+    * `[controllers](https://github.com/codeactual/mainevent/blob/master/public/js/controllers/)`: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
+    * `[helpers](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/)`: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
+    * `[models](https://github.com/codeactual/mainevent/blob/master/public/js/models/)`: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
+    * `[observers](https://github.com/codeactual/mainevent/blob/master/public/js/observers/)`: Global listeners of custom events like `ContentPreRender`.
+    * `[shared](https://github.com/codeactual/mainevent/blob/master/public/js/shared/)`: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
+    * `[views](https://github.com/codeactual/mainevent/blob/master/public/js/views/)`: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
 * `static`: JS/CSS/images from [public/](https://github.com/codeactual/mainevent/blob/master/public/) processed by [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js).
-* `test`
-  * `browser`: Client-side tests processed by [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html).
-  * `modules`: Test helpers.
+* `[test]((https://github.com/codeactual/mainevent/blob/master/test/)`
+  * `[browser]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)`: Client-side tests processed by [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html).
+  * `[modules]((https://github.com/codeactual/mainevent/blob/master/test/modules/)`: Test helpers.
 
 ## Testing
 
@@ -174,7 +174,7 @@ Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Exampl
 
 `$ nodeunit test/redis.js`
 
-Run all tests found under `app/parsers` and `test/`.
+Run all tests found under [app/parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers) and [test/](https://github.com/codeactual/mainevent/blob/master/test/).
 
 `$ test/all.js`
 
@@ -191,7 +191,7 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 ### Server-side
 
 * `InsertLog`
-  * Triggered in `app/modules/mongodb.js` in `insertLog()`.
+  * Triggered in [app/modules/mongodb.js](https://github.com/codeactual/mainevent/blob/master/app/modules/mongodb.js) in `insertLog()`.
   * Callbacks receive the array of document objects.
   * [Example listener](https://github.com/codeactual/mainevent/blob/master/app/modules/redis/InsertLogPubSub.js).
 
@@ -201,7 +201,7 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
   * Triggered in [public/js/helpers/Event.js](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/Event.js) on any link with a relative `href`.
 * CritFetchError
   * Triggered when a view cannot fetch data critical to its presentation, ex. the event view cannot retrieve the object describing the event.
-  * Callbacks receive the `response` object from `$.ajax`.
+  * Callbacks receive the `response` object from [$.ajax](http://api.jquery.com/jQuery.ajax/).
 * ContentPreRender
   * Triggered in [public/js/index.js](https://github.com/codeactual/mainevent/blob/master/public/js/index.js) before the [content.html](https://github.com/codeactual/mainevent/blob/master/app/views/content.html) template is rendered.
 
