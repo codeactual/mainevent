@@ -31,15 +31,15 @@ Has three responsibilities:
 1. `/api` serves JSON data including graph points, event objects and timeline pages via [express.js](http://expressjs.com/).
 1. `/socket.io` serves real-time timelime updates.
 
-Triggers `public/build.js` on startup to build the `static/` directory.
+Triggers [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js) on startup to build the `static/` directory.
 
 #### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
 
 `$ public/build.js [--prod]`
 
-* Combines and compresses (`--prod`) JS/CSS files located in `public/`.
-* Relies on `public/js/app.build.js` for [RequireJS](http://requirejs.org/) configuration.
-* Triggers `public/js/templates.build.js` to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
+* Combines and compresses (`--prod`) JS/CSS files located in [public/](https://github.com/codeactual/mainevent/blob/master/public/).
+* Relies on [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js) for [RequireJS](http://requirejs.org/) configuration.
+* Triggers [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js) to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
 
 Outputs all files into `static/`.
 
@@ -63,7 +63,7 @@ Spawns `tail` instances for each source described in [config/app.js](https://git
 
 `$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
 
-Like `tail.js` except it processes the entire file. (The file does not need to be described in `config/app.js`.)
+Like [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js) except it processes the entire file. (The file does not need to be described in [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist).)
 
 ### Testing
 
@@ -71,7 +71,7 @@ Like `tail.js` except it processes the entire file. (The file does not need to b
 
 `$ bin/test.js`
 
-Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, `app/view/test.html` and `test/browser/*.js` test cases.
+Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html) and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/) test cases.
 
 ## How To
 
@@ -163,9 +163,9 @@ Notes about the main properties:
     * `observers`: Global listeners of custom events like `ContentPreRender`.
     * `shared`: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
     * `views`: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
-* `static`: JS/CSS/images from `public/` processed by `public/build.js`.
+* `static`: JS/CSS/images from [public/](https://github.com/codeactual/mainevent/blob/master/public/) processed by [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js).
 * `test`
-  * `browser`: Client-side tests processed by app/views/test.html.
+  * `browser`: Client-side tests processed by [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html).
   * `modules`: Test helpers.
 
 ## Testing
@@ -178,7 +178,7 @@ Run all tests found under `app/parsers` and `test/`.
 
 `$ test/all.js`
 
-Client-side tests under `test/browser` rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). `bin/test.js` will serve the runner page.
+Client-side tests under [test/browser](https://github.com/codeactual/mainevent/blob/master/test/browser/) rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). [bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js) will serve the runner page.
 
 ### Remote Logs
 
