@@ -37,15 +37,15 @@ Triggers [public/build.js](https://github.com/codeactual/mainevent/blob/master/p
 
 `$ public/build.js [--prod]`
 
-* Combines and compresses (`--prod`) JS/CSS files located in [public/](https://github.com/codeactual/mainevent/blob/master/public/).
-* Relies on [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js) for [RequireJS](http://requirejs.org/) configuration.
-* Triggers [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js) to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
+* Combines and compresses (`--prod`) JS/CSS files located in <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code>.
+* Relies on <code>[public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)</code> for [RequireJS](http://requirejs.org/) configuration.
+* Triggers <code>[public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)</code> to compile [dust.js](http://akdubya.github.com/dustjs/) templates.
 
 Outputs all files into `static/`.
 
 #### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
 
-Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in [app/views](https://github.com/codeactual/mainevent/blob/master/app/views/) and [app/parsers/*/templates](https://github.com/codeactual/mainevent/blob/master/app/parsers/).
+Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/views](https://github.com/codeactual/mainevent/blob/master/app/views/)</code> and <code>[app/parsers/*/templates](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>.
 
 #### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
 
@@ -57,13 +57,13 @@ Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in [app/views](h
 
 `$ bin/tail.js`
 
-Spawns `tail` instances for each source described in [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist).
+Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
 
 #### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
 
 `$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
 
-Like [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js) except it processes the entire file. (The file does not need to be described in [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist).)
+Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
 
 ### Testing
 
@@ -71,13 +71,13 @@ Like [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js) 
 
 `$ bin/test.js`
 
-Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html) and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/) test cases.
+Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code> and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> test cases.
 
 ## How To
 
 ### Create a new parser for an unsupported log format
 
-Each parser lives in a separate directory under [app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers) which holds its JS, CSS, templates and tests.
+Each parser lives in a separate directory under <code>[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)</code> which holds its JS, CSS, templates and tests.
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
@@ -91,7 +91,7 @@ All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/
   * `namedCapture(subject, regex)`: Wrapper around [XRegExp](https://github.com/slevithan/XRegExp) named capture expression handling.
   * `candidateCapture(subject, candidates)`: Wrapper around `namedCapture` that lets you define multiple potential patterns and the first match wins.
 
-See [app/parsers/prototype.js](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) for more interface details.
+See <code>[app/parsers/prototype.js](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js)</code> for more interface details.
 
 Extending the base class is a simple one-call process via a [backbone.js](http://documentcloud.github.com/backbone/)-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under [app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers).
 
@@ -99,7 +99,7 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
 
 1. Create a module that exports an `on(logs)` function that receives an array of one or more log objects.
 2. Perform any non-native tasks you need.
-3. Find the [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist) section that looks like:
+3. Find the <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code> section that looks like:
 
 ```javascript
 {
@@ -145,14 +145,14 @@ Notes about the main properties:
 ## File Layout Notes
 
 * <code>[app](https://github.com/codeactual/mainevent/blob/master/app/)</code> : Holds most server-side modules and classes.
-  * <code>[controllers](https://github.com/codeactual/mainevent/blob/master/app/controllers/)</code>: Handlers for [express.js](http://expressjs.com/) routes defined in `bin/mainevent_server.js`.
+  * <code>[controllers](https://github.com/codeactual/mainevent/blob/master/app/controllers/)</code>: Handlers for [express.js](http://expressjs.com/) routes defined in <code>[bin/mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)</code>.
   * <code>[graphs](https://github.com/codeactual/mainevent/blob/master/app/graphs/)</code>: Background scripts which run at intervals to cache point data in Redis.
   * <code>[jobs](https://github.com/codeactual/mainevent/blob/master/app/jobs/)</code>: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
   * <code>[modules](https://github.com/codeactual/mainevent/blob/master/app/modules/)</code>: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
   * <code>[parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>: Self-contained parser modules, their prototype, and a test utility module.
   * <code>[sockets](https://github.com/codeactual/mainevent/blob/master/app/sockets/)</code>: Like `controllers` except for socket messages rather than routes.
   * <code>[views](https://github.com/codeactual/mainevent/blob/master/app/views/)</code>: All non-parser [dust.js](http://akdubya.github.com/dustjs/) templates.
-* <code>[bin](https://github.com/codeactual/mainevent/blob/master/bin/)</code>: All HTTP servers and background processes like [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js).
+* <code>[bin](https://github.com/codeactual/mainevent/blob/master/bin/)</code>: All HTTP servers and background processes like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code>.
 * <code>[public](https://github.com/codeactual/mainevent/blob/master/public/)</code>
   * <code>[js](https://github.com/codeactual/mainevent/blob/master/public/js/)</code>
     * <code>[backbone](https://github.com/codeactual/mainevent/blob/master/public/js/backbone/)</code>: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
@@ -163,9 +163,9 @@ Notes about the main properties:
     * <code>[observers](https://github.com/codeactual/mainevent/blob/master/public/js/observers/)</code>: Global listeners of custom events like `ContentPreRender`.
     * <code>[shared](https://github.com/codeactual/mainevent/blob/master/public/js/shared/)</code>: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
     * <code>[views](https://github.com/codeactual/mainevent/blob/master/public/js/views/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
-* <code>static</code>: JS/CSS/images from [public/](https://github.com/codeactual/mainevent/blob/master/public/) processed by [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js).
+* <code>static</code>: JS/CSS/images from <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code> processed by <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code>.
 * <code>[test]((https://github.com/codeactual/mainevent/blob/master/test/)</code>
-  * <code>[browser]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by [app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html).
+  * <code>[browser]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code>.
   * <code>[modules]((https://github.com/codeactual/mainevent/blob/master/test/modules/)</code>: Test helpers.
 
 ## Testing
@@ -174,11 +174,11 @@ Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Exampl
 
 `$ nodeunit test/redis.js`
 
-Run all tests found under [app/parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers) and [test/](https://github.com/codeactual/mainevent/blob/master/test/).
+Run all tests found under <code>[app/parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers)</code> and <code>[test/](https://github.com/codeactual/mainevent/blob/master/test/)</code>.
 
 `$ test/all.js`
 
-Client-side tests under [test/browser](https://github.com/codeactual/mainevent/blob/master/test/browser/) rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). [bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js) will serve the runner page.
+Client-side tests under <code>[test/browser](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)</code> will serve the runner page.
 
 ### Remote Logs
 
@@ -191,19 +191,19 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 ### Server-side
 
 * `InsertLog`
-  * Triggered in [app/modules/mongodb.js](https://github.com/codeactual/mainevent/blob/master/app/modules/mongodb.js) in `insertLog()`.
+  * Triggered in <code>[app/modules/mongodb.js](https://github.com/codeactual/mainevent/blob/master/app/modules/mongodb.js)</code> in `insertLog()`.
   * Callbacks receive the array of document objects.
   * [Example listener](https://github.com/codeactual/mainevent/blob/master/app/modules/redis/InsertLogPubSub.js).
 
 ### Client-side
 
 * LinkClick
-  * Triggered in [public/js/helpers/Event.js](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/Event.js) on any link with a relative `href`.
+  * Triggered in <code>[public/js/helpers/Event.js](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/Event.js)</code> on any link with a relative `href`.
 * CritFetchError
   * Triggered when a view cannot fetch data critical to its presentation, ex. the event view cannot retrieve the object describing the event.
-  * Callbacks receive the `response` object from [$.ajax](http://api.jquery.com/jQuery.ajax/).
+  * Callbacks receive the `response` object from <code>[$.ajax](http://api.jquery.com/jQuery.ajax/)</code>.
 * ContentPreRender
-  * Triggered in [public/js/index.js](https://github.com/codeactual/mainevent/blob/master/public/js/index.js) before the [content.html](https://github.com/codeactual/mainevent/blob/master/app/views/content.html) template is rendered.
+  * Triggered in <code>[public/js/index.js](https://github.com/codeactual/mainevent/blob/master/public/js/index.js)</code> before the <code>[content.html](https://github.com/codeactual/mainevent/blob/master/app/views/content.html)</code> template is rendered.
 
 ### Bundled dependencies and their licenses
 
