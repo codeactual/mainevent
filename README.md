@@ -13,7 +13,7 @@ mainevent provides a suite of tools to gain insight into log files.
 
 ## Use Cases
 
-* Search development/production environment logs, whether they're syslog, JSON, nginx or proprietary.
+* Search development/production environment logs which span a variety of formats.
 * Produce dashboard data and graphs specific to your insight needs.
 * Filter and replicate real-time updates into additional systems for specialized processing or alerting.
 
