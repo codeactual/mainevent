@@ -35,7 +35,7 @@ Triggers `public/build.js` on startup to build the `static/` directory.
 
 #### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
 
-`$ public/build.js` [--prod]
+`$ public/build.js [--prod]`
 
 * Combines and compresses (`--prod`) JS/CSS files located in `public/`.
 * Relies on `public/js/app.build.js` for RequireJS configuration.
@@ -140,7 +140,7 @@ Notes about the main properties:
   * Select a different pagination maximum in `maxResultSize` if needed.
   * Add additional indexes if needed. Future versions may automate that process based on metrics.
 * redis
-  * host/port/options: Passed to createClient() in [node_redis](https://github.com/mranney/node_redis).
+  * host/port/options: Passed to `createClient()` in [node_redis](https://github.com/mranney/node_redis).
 
 ## File Layout Notes
 
@@ -154,7 +154,7 @@ Notes about the main properties:
   * `views`: All non-parser dust.js templates.
 * `bin`: All HTTP servers and background processes like `tail.js`.
 * `public`
-  * js
+  * `js`
     * `backbone`: Additions to backbone.js prototypes like `Backbone.View.prototype`.
     * `collections`: backbone.js collections.
     * `controllers`: Handlers for backbone.js routes.
