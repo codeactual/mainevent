@@ -77,13 +77,54 @@ Serves the YUI Test runner page, `app/view/test.html` and `test/browser/*.js` te
 
 ## How To
 
-### Create a new parser module
+### Create a new parser for an unsupported log format
 
-* TODO
+Each parser lives in a separate directory under `[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)` which holds its JS, CSS, templates and tests.
+
+All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
+
+* Required
+  * `parse(log)`: Accepts a log line string, returns an object of parsed fields.
+* Optional
+  * `buildTemplateContext(template, log)`: Modify the context object sent to dust.js based on the type of template. Currently there are two types: `preview` and `event`. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) to see them in action.
+  * `buildPreviewText(log)`: Skip defining a preview template and just build and return the preview string manually.
+  * `extractTime(log)`: The default implementation will detect millisecond/second timestamps and `Date.parse()`-able strings in `log.time` values. For incompatible formats, define this function to extract the millisecond timestamp manually.
+* Utilities
+  * `namedCapture(subject, regex)`: Wrapper around [XRegExp](https://github.com/slevithan/XRegExp) named capture expression handling.
+  * `candidateCapture(subject, candidates)`: Wrapper around `namedCapture` that lets you define multiple potential patterns and the first match wins.
+
+See [app/parsers/prototype.js](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) for more interface details.
+
+Extending the base class is a simple one-call process via a backbone.js-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under `[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)`.
 
 ### Create a Pub/Sub listener for log updates
 
-* TODO
+1. Create a module that exports an `on` function that receives an array of one or more log objects.
+1. Perform any non-native tasks you need.
+1. Find the `[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)` section that looks like:
+
+```javascript
+{
+  // ...
+  mongodb: {
+    // ...
+    listeners: [
+      {
+        // Customize this event but do not remove.
+        event: 'InsertLog',
+        enabled: true,
+        subscribers: [
+          'app/modules/redis/InsertLogPubSub.js'
+        ],
+      }
+    ],
+    // ...
+  },
+  // ...
+}
+```
+
+1. Add the location of your listener module to the `subscribers` list.
 
 ## Configuration
 
