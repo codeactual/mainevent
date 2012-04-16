@@ -45,7 +45,7 @@ Outputs all files into `static/`.
 
 #### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
 
-Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/views](https://github.com/codeactual/mainevent/blob/master/app/views/)</code> and <code>[app/parsers/*/templates](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>.
+Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/views/](https://github.com/codeactual/mainevent/blob/master/app/views/)</code> and <code>[app/parsers/*/templates/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>.
 
 #### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
 
@@ -77,7 +77,7 @@ Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[
 
 ### Create a new parser for an unsupported log format
 
-Each parser lives in a separate directory under <code>[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)</code> which holds its JS, CSS, templates and tests.
+Each parser lives in a separate directory under <code>[app/parsers/](https://github.com/codeactual/mainevent/tree/master/app/parsers/)</code> which holds its JS, CSS, templates and tests.
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
@@ -93,7 +93,7 @@ All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/
 
 See <code>[app/parsers/prototype.js](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js)</code> for more interface details.
 
-Extending the base class is a simple one-call process via a [backbone.js](http://documentcloud.github.com/backbone/)-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under [app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers).
+Extending the base class is a simple one-call process via a [backbone.js](http://documentcloud.github.com/backbone/)-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under <code>[app/parsers/](https://github.com/codeactual/mainevent/tree/master/app/parsers/)</code>.
 
 ### Create a [Pub/Sub](http://redis.io/topics/pubsub) listener for log updates
 
@@ -144,29 +144,29 @@ Notes about the main properties:
 
 ## File Layout Notes
 
-* <code>[app](https://github.com/codeactual/mainevent/blob/master/app/)</code> : Holds most server-side modules and classes.
-  * <code>[controllers](https://github.com/codeactual/mainevent/blob/master/app/controllers/)</code>: Handlers for [express.js](http://expressjs.com/) routes defined in <code>[bin/mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)</code>.
-  * <code>[graphs](https://github.com/codeactual/mainevent/blob/master/app/graphs/)</code>: Background scripts which run at intervals to cache point data in Redis.
-  * <code>[jobs](https://github.com/codeactual/mainevent/blob/master/app/jobs/)</code>: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
-  * <code>[modules](https://github.com/codeactual/mainevent/blob/master/app/modules/)</code>: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
-  * <code>[parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>: Self-contained parser modules, their prototype, and a test utility module.
-  * <code>[sockets](https://github.com/codeactual/mainevent/blob/master/app/sockets/)</code>: Like `controllers` except for socket messages rather than routes.
-  * <code>[views](https://github.com/codeactual/mainevent/blob/master/app/views/)</code>: All non-parser [dust.js](http://akdubya.github.com/dustjs/) templates.
-* <code>[bin](https://github.com/codeactual/mainevent/blob/master/bin/)</code>: All HTTP servers and background processes like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code>.
-* <code>[public](https://github.com/codeactual/mainevent/blob/master/public/)</code>
-  * <code>[js](https://github.com/codeactual/mainevent/blob/master/public/js/)</code>
-    * <code>[backbone](https://github.com/codeactual/mainevent/blob/master/public/js/backbone/)</code>: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
-    * <code>[collections](https://github.com/codeactual/mainevent/blob/master/public/js/collections/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
-    * <code>[controllers](https://github.com/codeactual/mainevent/blob/master/public/js/controllers/)</code>: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
-    * <code>[helpers](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/)</code>: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
-    * <code>[models](https://github.com/codeactual/mainevent/blob/master/public/js/models/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
-    * <code>[observers](https://github.com/codeactual/mainevent/blob/master/public/js/observers/)</code>: Global listeners of custom events like `ContentPreRender`.
-    * <code>[shared](https://github.com/codeactual/mainevent/blob/master/public/js/shared/)</code>: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
-    * <code>[views](https://github.com/codeactual/mainevent/blob/master/public/js/views/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
-* <code>static</code>: JS/CSS/images from <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code> processed by <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code>.
-* <code>[test]((https://github.com/codeactual/mainevent/blob/master/test/)</code>
-  * <code>[browser]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code>.
-  * <code>[modules]((https://github.com/codeactual/mainevent/blob/master/test/modules/)</code>: Test helpers.
+* <code>[app/](https://github.com/codeactual/mainevent/blob/master/app/)</code> : Holds most server-side modules and classes.
+  * <code>[controllers/](https://github.com/codeactual/mainevent/blob/master/app/controllers/)</code>: Handlers for [express.js](http://expressjs.com/) routes defined in <code>[bin/mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)</code>.
+  * <code>[graphs/](https://github.com/codeactual/mainevent/blob/master/app/graphs/)</code>: Background scripts which run at intervals to cache point data in Redis.
+  * <code>[jobs/](https://github.com/codeactual/mainevent/blob/master/app/jobs/)</code>: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
+  * <code>[modules/](https://github.com/codeactual/mainevent/blob/master/app/modules/)</code>: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
+  * <code>[parsers/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code>: Self-contained parser modules, their prototype, and a test utility module.
+  * <code>[sockets/](https://github.com/codeactual/mainevent/blob/master/app/sockets/)</code>: Like `controllers` except for socket messages rather than routes.
+  * <code>[views/](https://github.com/codeactual/mainevent/blob/master/app/views/)</code>: All non-parser [dust.js](http://akdubya.github.com/dustjs/) templates.
+* <code>[bin/](https://github.com/codeactual/mainevent/blob/master/bin/)</code>: All HTTP servers and background processes like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code>.
+* <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code>
+  * <code>[js/](https://github.com/codeactual/mainevent/blob/master/public/js/)</code>
+    * <code>[backbone/](https://github.com/codeactual/mainevent/blob/master/public/js/backbone/)</code>: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
+    * <code>[collections/](https://github.com/codeactual/mainevent/blob/master/public/js/collections/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
+    * <code>[controllers/](https://github.com/codeactual/mainevent/blob/master/public/js/controllers/)</code>: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
+    * <code>[helpers/](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/)</code>: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
+    * <code>[models/](https://github.com/codeactual/mainevent/blob/master/public/js/models/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
+    * <code>[observers/](https://github.com/codeactual/mainevent/blob/master/public/js/observers/)</code>: Global listeners of custom events like `ContentPreRender`.
+    * <code>[shared/](https://github.com/codeactual/mainevent/blob/master/public/js/shared/)</code>: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
+    * <code>[views/](https://github.com/codeactual/mainevent/blob/master/public/js/views/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
+* <code>static/</code>: JS/CSS/images from <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code> processed by <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code>.
+* <code>[test/]((https://github.com/codeactual/mainevent/blob/master/test/)</code>
+  * <code>[browser/]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code>.
+  * <code>[modules/]((https://github.com/codeactual/mainevent/blob/master/test/modules/)</code>: Test helpers.
 
 ## Testing
 
@@ -174,11 +174,11 @@ Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Exampl
 
 `$ nodeunit test/redis.js`
 
-Run all tests found under <code>[app/parsers](https://github.com/codeactual/mainevent/blob/master/app/parsers)</code> and <code>[test/](https://github.com/codeactual/mainevent/blob/master/test/)</code>.
+Run all tests found under <code>[app/parsers/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code> and <code>[test/](https://github.com/codeactual/mainevent/blob/master/test/)</code>.
 
 `$ test/all.js`
 
-Client-side tests under <code>[test/browser](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)</code> will serve the runner page.
+Client-side tests under <code>[test/browser/](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)</code> will serve the runner page.
 
 ### Remote Logs
 
