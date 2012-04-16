@@ -31,7 +31,7 @@ Has three responsibilities:
 1. `/api` serves JSON data including graph points, event objects and timeline pages via [express.js](http://expressjs.com/).
 1. `/socket.io` serves real-time timelime updates.
 
-Triggers [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js) on startup to build the `static/` directory.
+Triggers <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code> on startup to build the `static/` directory.
 
 #### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
 
@@ -81,7 +81,7 @@ Each parser lives in a separate directory under <code>[app/parsers/](https://git
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
-* Required
+* *Required*
   * `parse(log)`: Accepts a log line string, returns an object of parsed fields.
 * Optional
   * `buildTemplateContext(template, log)`: Modify the context object sent to dust.js based on the type of template. Currently there are two types: `preview` and `event`. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) to see them in action.
@@ -129,18 +129,18 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
 
 Notes about the main properties:
 
-* sources
-  * path: Absolute path to the log file.
-  * parser: Parser class/class-file name, e.g. `Json` or `NginxAccess`.
-  * tags: (Optional) One or more tags to automatically attach to every event.
-  * timeAttr: (Optional) By default a `time` property is used for the event's timestamp. Select a different property name here.
-  * previewAttr: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
-* mongodb
-  * Customize name in `collections.event`.
+* `sources`
+  * `path`: Absolute path to the log file.
+  * `parser`: Parser class/class-file name, e.g. `Json` or `NginxAccess`.
+  * `tags`: (Optional) One or more tags to automatically attach to every event.
+  * `timeAttr`: (Optional) By default a `time` property is used for the event's timestamp. Select a different property name here.
+  * `previewAttr`: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
+* `mongodb`
+  * Customize the collection name in `collections.event`.
   * Select a different pagination maximum in `maxResultSize` if needed.
   * Add additional indexes if needed. Future versions may automate that process based on metrics.
-* redis
-  * host/port/options: Passed to `createClient()` in [node_redis](https://github.com/mranney/node_redis).
+* `redis`
+  * `host`/`port`/`options`: Passed to `createClient()` in [node_redis](https://github.com/mranney/node_redis).
 
 ## File Layout Notes
 
