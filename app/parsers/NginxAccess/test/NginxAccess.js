@@ -19,7 +19,7 @@ exports.NginxAccess = {
         code: '502',
         size: '166',
         referer: 'http://www.referer.com/',
-        agent: 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0',
+        agent: 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0'
       }
     );
     test.done();
