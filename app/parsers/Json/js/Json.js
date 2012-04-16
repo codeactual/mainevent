@@ -8,7 +8,7 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
     try {
       var parsed = JSON.parse(log);
     } catch (e) {
-      if (e.toString().match(/Unexpected end of input/)) {
+      if (e.toString().match(/Unexpected/)) {
         return null; // Treat as general parse error.
       } else {
         throw e;
