@@ -4,6 +4,10 @@ body {
 code, pre {
   font-size: 14px;
 }
+footer p {
+  text-align: center;
+  margin-bottom: inherit;
+}
 h1, h2, h3 {
   font-weight: 300;
 }
