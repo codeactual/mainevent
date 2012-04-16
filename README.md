@@ -128,7 +128,22 @@ Extending the base class is a simple one-call process via a backbone.js-like `ex
 
 ## Configuration
 
-* TODO
+`$ cp config/app.js.dist config/app.js`
+
+Notes about the main properties:
+
+* sources
+  * path: Absolute path to the log file.
+  * parser: Parser class/class-file name, e.g. `Json` or `NginxAccess`.
+  * tags: (Optional) One or more tags to automatically attach to every event.
+  * timeAttr: (Optional) By default a `time` property is used for the event's timestamp. Select a different property name here.
+  * previewAttr: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
+* mongodb
+  * Customize name in `collections.event`.
+  * Select a different pagination maximum in `maxResultSize` if needed.
+  * Add additional indexes if needed. Future versions may automate that process based on metrics.
+* redis
+  * host/port/options: Passed to createClient() in [node_redis](https://github.com/mranney/node_redis).
 
 ## File Layout
 
