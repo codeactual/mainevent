@@ -81,7 +81,7 @@ Each parser lives in a separate directory under <code>[app/parsers/](https://git
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
-* *Required*
+* **Required**
   * `parse(log)`: Accepts a log line string, returns an object of parsed fields.
 * Optional
   * `buildTemplateContext(template, log)`: Modify the context object sent to dust.js based on the type of template. Currently there are two types: `preview` and `event`. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) to see them in action.
