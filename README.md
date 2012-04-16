@@ -27,31 +27,29 @@ mainevent provides a suite of tools to gain insight into log files.
 
 Has three responsibilities:
 
-1. &nbsp;`/` serves the backbone.js MVC app.
-1. &nbsp;`/api` serves JSON data including graph points, event objects and timeline pages.
-1. &nbsp;`/socket.io` serves real-time timelime updates.
+1. `/` serves the backbone.js MVC app.
+1. `/api` serves JSON data including graph points, event objects and timeline pages.
+1. `/socket.io` serves real-time timelime updates.
 
 Triggers `public/build.js` on startup to build the `static/` directory.
 
-#### public/build.js
+#### [public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)
 
-`$ public/build.js`
+`$ public/build.js` [--prod]
 
-* Combines and compresses JS/CSS files located in `public/`.
+* Combines and compresses (`--prod`) JS/CSS files located in `public/`.
 * Relies on `public/js/app.build.js` for RequireJS configuration.
 * Triggers `public/js/templates.build.js`.
 
 Outputs all files into `static/`.
 
-#### public/js/templates.build.js
+#### [public/js/templates.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/templates.build.js)
 
 Compiles dust.js templates in `app/views` and `app/parsers/*/templates`.
 
-#### public/js/app.build.js
+#### [public/js/app.build.js](https://github.com/codeactual/mainevent/blob/master/public/js/app.build.js)
 
 RequireJS configuration for client-side dependencies.
-
-### Backend
 
 ### Background
 
@@ -59,7 +57,7 @@ RequireJS configuration for client-side dependencies.
 
 `$ bin/tail.js`
 
-Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
+Spawns `tail` instances for each source described in [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist).
 
 #### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
 
@@ -79,7 +77,7 @@ Serves the YUI Test runner page, `app/view/test.html` and `test/browser/*.js` te
 
 ### Create a new parser for an unsupported log format
 
-Each parser lives in a separate directory under <code>[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)</code> which holds its JS, CSS, templates and tests.
+Each parser lives in a separate directory under [app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers) which holds its JS, CSS, templates and tests.
 
 All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) and only need to implement a small number of interfaces.
 
@@ -101,7 +99,7 @@ Extending the base class is a simple one-call process via a backbone.js-like `ex
 
 1. Create a module that exports an `on` function that receives an array of one or more log objects.
 1. Perform any non-native tasks you need.
-1. Find the `[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)` section that looks like:
+1. Find the [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist) section that looks like:
 
 ```javascript
 {
@@ -123,7 +121,6 @@ Extending the base class is a simple one-call process via a backbone.js-like `ex
   // ...
 }
 ```
-
 1. Add the location of your listener module to the `subscribers` list.
 
 ## Configuration
