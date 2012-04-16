@@ -32,7 +32,7 @@ exports.PhpParser = extend({name: 'Php', humanName: 'PHP'}, {
   },
 
   extractTime: function(log) {
-    var matches = log.time.match(/(\d+)-([A-Za-z]+)-(\d{4}) (\d{2}:\d{2}:\d{2} [A-Z]+)/);
+    var matches = log.time.match(/^(\d+)-([A-Za-z]+)-(\d{4}) (\d{2}:\d{2}:\d{2} [A-Z]+)/);
     if (!matches) {
       return NaN;
     }

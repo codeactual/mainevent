@@ -30,7 +30,7 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
       now = new Date();
     }
 
-    var matches = log.time.match(/([A-Za-z]+)\s+(\d+) (\d{2}:\d{2}:\d{2})/);
+    var matches = log.time.match(/^([A-Za-z]+)\s+(\d+) (\d{2}:\d{2}:\d{2})/);
     if (!matches) {
       return NaN;
     }
