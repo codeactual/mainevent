@@ -93,13 +93,13 @@ All parser classes extend a [base](https://github.com/codeactual/mainevent/blob/
 
 See [app/parsers/prototype.js](https://github.com/codeactual/mainevent/blob/master/app/parsers/prototype.js) for more interface details.
 
-Extending the base class is a simple one-call process via a backbone.js-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under `[app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers)`.
+Extending the base class is a simple one-call process via a backbone.js-like `extend()` function. See the [extension example](http://codeactual.github.com/mainevent/#extension-example) for a working implementation and screenshots of the output content. Or browse any of the modules under [app/parsers](https://github.com/codeactual/mainevent/tree/master/app/parsers).
 
 ### Create a Pub/Sub listener for log updates
 
 1. Create a module that exports an `on` function that receives an array of one or more log objects.
-1. Perform any non-native tasks you need.
-1. Find the [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist) section that looks like:
+2. Perform any non-native tasks you need.
+3. Find the [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist) section that looks like:
 
 ```javascript
 {
@@ -121,7 +121,7 @@ Extending the base class is a simple one-call process via a backbone.js-like `ex
   // ...
 }
 ```
-1. Add the location of your listener module to the `subscribers` list.
+4. Add the location of your listener module to the `subscribers` list.
 
 ## Configuration
 
