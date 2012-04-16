@@ -71,7 +71,7 @@ Like `tail.js` except it processes the entire file. (The file does not need to b
 
 `$ bin/test.js`
 
-Serves the YUI Test runner page, `app/view/test.html` and `test/browser/*.js` test cases.
+Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, `app/view/test.html` and `test/browser/*.js` test cases.
 
 ## How To
 
@@ -97,7 +97,7 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
 
 ### Create a [Pub/Sub](http://redis.io/topics/pubsub) listener for log updates
 
-1. Create a module that exports an `on` function that receives an array of one or more log objects.
+1. Create a module that exports an `on(logs)` function that receives an array of one or more log objects.
 2. Perform any non-native tasks you need.
 3. Find the [config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist) section that looks like:
 
@@ -147,7 +147,7 @@ Notes about the main properties:
 * `app` : Holds most server-side modules and classes.
   * `controllers`: Handlers for [express.js](http://expressjs.com/) routes defined in `bin/mainevent_server.js`.
   * `graphs`: Background scripts which run at intervals to cache point data in Redis.
-  * `jobs`: Classes used by `graphs` scripts which define the MapReduce logic.
+  * `jobs`: Classes used by `graphs` scripts which define the [MapReduce](http://www.mongodb.org/display/DOCS/MapReduce) logic.
   * `modules`: Covers [MongoDB](http://www.mongodb.org/), [Redis](http://redis.io/), static builds and global objects like `mainevent`.
   * `parsers`: Self-contained parser modules, their prototype, and a test utility module.
   * `sockets`: Like `controllers` except for socket messages rather than routes.
@@ -156,13 +156,13 @@ Notes about the main properties:
 * `public`
   * `js`
     * `backbone`: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
-    * `collections`: [backbone.js](http://documentcloud.github.com/backbone/) collections.
+    * `collections`: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
     * `controllers`: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
     * `helpers`: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
-    * `models`: [backbone.js](http://documentcloud.github.com/backbone/) models.
+    * `models`: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
     * `observers`: Global listeners of custom events like `ContentPreRender`.
     * `shared`: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
-    * `views`: backbone.js views.
+    * `views`: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
 * `static`: JS/CSS/images from `public/` processed by `public/build.js`.
 * `test`
   * `browser`: Client-side tests processed by app/views/test.html.
@@ -207,21 +207,21 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 
 ### Bundled dependencies and their licenses
 
-* backbone.js (MIT)
-* clientsiiide (MIT)
-* dust.js (MIT)
-* Glyphicons Free (CC BY 3.0)
-* jqPlot (MIT/GPLv2)
-* jQuery (MIT/GPLv2)
-* jQuery UI (MIT/GPLv2)
-* jQuery-Timepicker-Addon (MIT/GPLv2)
-* moment.js (MIT)
-* RequireJS (MIT/New BSD)
-* socket.io (MIT)
-* Twitter Bootstrap (Apachev2)
-* underscore.js (MIT)
-* XRegExp (MIT)
-* YUI Test (BSD)
+* [backbone.js](http://documentcloud.github.com/backbone/) (MIT)
+* [clientsiiide](https://github.com/codeactual/clientsiiide) (MIT)
+* [dust.js](http://akdubya.github.com/dustjs/) (MIT)
+* [Glyphicons Free](http://glyphicons.com/) (CC BY 3.0)
+* [jqPlot](http://www.jqplot.com/) (MIT/GPLv2)
+* [jQuery](http://jquery.com/) (MIT/GPLv2)
+* [jQuery UI](http://jqueryui.com/) (MIT/GPLv2)
+* [jQuery-Timepicker-Addon](https://github.com/trentrichardson/jQuery-Timepicker-Addon) (MIT/GPLv2)
+* [moment.js](http://momentjs.com/) (MIT)
+* [RequireJS](http://requirejs.org/) (MIT/New BSD)
+* [socket.io](http://socket.io/) (MIT)
+* [Twitter Bootstrap](http://twitter.github.com/bootstrap/index.html) (Apachev2)
+* [underscore.js](http://documentcloud.github.com/underscore/) (MIT)
+* [XRegExp](https://github.com/slevithan/XRegExp) (MIT)
+* [YUI Test](http://yuilibrary.com/yui/docs/test/) (BSD)
 
 ### Copyright and license (MIT)
 
