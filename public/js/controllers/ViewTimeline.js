@@ -64,8 +64,7 @@ define(['views/Timeline'], function(view) {
     mainevent.features.timelineUpdate =
       'time' == searchArgs['sort-attr']
       && 'desc' == searchArgs['sort-dir']
-      && !_.has(searchArgs, 'skip')
-      && !_.has(searchArgs, '_id');
+      && 2 == _.size(searchArgs);
 
     return new view({searchArgs: searchArgs, el: $('#backbone-view')});
   };
