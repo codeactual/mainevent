@@ -9,7 +9,7 @@ mainevent provides a suite of tools to gain insight into your log files.
 * Write custom Pub/Sub listeners to real-time updates.
 * [more ...](http://codeactual.github.com/mainevent)
 
-![Screenshot Set](http://codeactual.github.com/mainevent/img/screenshot-set.png)
+<a href="http://codeactual.github.com/mainevent"><img alt="3-screenshot set" src="http://codeactual.github.com/mainevent/img/screenshot-set.png" /></a>
 
 ## Use Cases
 
@@ -21,7 +21,35 @@ mainevent provides a suite of tools to gain insight into your log files.
 
 ### Frontend
 
-####  [mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)
+#### [mainevent_server.js](https://github.com/codeactual/mainevent/blob/master/bin/mainevent_server.js)
+
+`$ bin/mainevent_server.js`
+
+Has three responsibilities:
+
+1. &nbsp;`/` serves the backbone.js MVC app.
+1. &nbsp;`/api` serves JSON data including graph points, event objects and timeline pages.
+1. &nbsp;`/socket.io` serves real-time timelime updates.
+
+Triggers `public/build.js` on startup to build the `static/` directory.
+
+#### public/build.js
+
+`$ public/build.js`
+
+* Combines and compresses JS/CSS files located in `public/`.
+* Relies on `public/js/app.build.js` for RequireJS configuration.
+* Triggers `public/js/templates.build.js`.
+
+Outputs all files into `static/`.
+
+#### public/js/templates.build.js
+
+Compiles dust.js templates in `app/views` and `app/parsers/*/templates`.
+
+#### public/js/app.build.js
+
+RequireJS configuration for client-side dependencies.
 
 ### Backend
 
@@ -29,85 +57,99 @@ mainevent provides a suite of tools to gain insight into your log files.
 
 #### [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)
 
-```
-$ bin/tail.js
-```
+`$ bin/tail.js`
+
+Spawns `tail` instances for each source described in `[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)`.
 
 #### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
 
-```
-$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import
-```
+`$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
+
+Like `tail.js` except it processes the entire file. (The file does not need to be described in `config/app.js`.)
 
 ### Testing
 
 #### [test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
 
-```
-$ bin/test.js
-```
+`$ bin/test.js`
+
+Serves the YUI Test runner page, `app/view/test.html` and `test/browser/*.js` test cases.
 
 ## How To
 
 ### Create a new parser module
 
+* TODO
+
 ### Create a Pub/Sub listener for log updates
+
+* TODO
 
 ## Configuration
 
+* TODO
+
 ## File Layout
 
-* &nbsp;<code>app</code> : desc
-  * &nbsp;<code>controllers</code>: desc
-  * &nbsp;<code>graphs</code>: desc
-  * &nbsp;<code>jobs</code>: desc
-  * &nbsp;<code>modules</code>: desc
-  * &nbsp;<code>parsers</code>: desc
-  * &nbsp;<code>sockets</code>: desc
-  * &nbsp;<code>views</code>: desc
-* &nbsp;<code>bin</code>: desc
-* &nbsp;<code>config</code>: desc
-* &nbsp;<code>public</code>: desc
-  * &nbsp;<code>backbone</code>: desc
-  * &nbsp;<code>collections</code>: desc
-  * &nbsp;<code>controllers</code>: desc
-  * &nbsp;<code>helpers</code>: desc
-  * &nbsp;<code>models</code>: desc
-  * &nbsp;<code>observers</code>: desc
-  * &nbsp;<code>shared</code>: desc
-  * &nbsp;<code>views</code>: desc
-* &nbsp;<code>static</code>: desc
-* &nbsp;<code>test</code>: desc
-  * &nbsp;<code>bin</code>: desc
-  * &nbsp;<code>browser</code>: desc
-  * &nbsp;<code>fixtures</code>: desc
-  * &nbsp;<code>jobs</code>: desc
-  * &nbsp;<code>modules</code>: desc
-
-
-
-## Frontend static files
-  - public/build.js
-  - public/js/templates.build.js
-  - public/js/app.build.js
+* `app` : TODO
+  * `controllers`: TODO
+  * `graphs`: TODO
+  * `jobs`: TODO
+  * `modules`: TODO
+  * `parsers`: TODO
+  * `sockets`: TODO
+  * `views`: TODO
+* `bin`: TODO
+* `config`: TODO
+* `public`: TODO
+  * `backbone`: TODO
+  * `collections`: TODO
+  * `controllers`: TODO
+  * `helpers`: TODO
+  * `models`: TODO
+  * `observers`: TODO
+  * `shared`: TODO
+  * `views`: TODO
+* `static`: TODO
+* `test`: TODO
+  * `bin`: TODO
+  * `browser`: TODO
+  * `fixtures`: TODO
+  * `jobs`: TODO
+  * `modules`: TODO
 
 ## Testing
-  - testutil.js's
-  - how to run
-  - test/all.js
-  - (optional) create test/fixtures/tail-config-remote.js
+
+Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Example:
+
+`$ nodeunit test/redis.js`
+
+### Components
+
+* `app/parsers/testutil.js`: TODO
+* `test/modules/testutil.js`: TODO
+* `test/modules/job.js`: TODO
+* `$test/all.js`: Runs all tests found under `app/parsers` and `test/`.
+
+Client-side tests under `test/browser` rely on YUI Test. `bin/test.js` will serve the runner page.
+
+### Remote Logs
+
+`$ cp test/fixtures/tail-config.js test/fixtures/tail-config-remote.js`
+
+Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 
 ## Events
 
 ### Server-side
 
-* InsertLog
+* InsertLog: TODO
 
 ### Client-side
 
-* LinkClick
-* DataFetchError
-* ContentPreRender
+* LinkClick: TODO
+* DataFetchError: TODO
+* ContentPreRender: TODO
 
 ### Bundled dependencies and their licenses
 
