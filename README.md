@@ -179,9 +179,9 @@ Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[
     * <code>[shared/](https://github.com/codeactual/mainevent/blob/master/public/js/shared/)</code>: Modules/classes available server-side and client-side, ex. `mainevent.shared.Date`.
     * <code>[views/](https://github.com/codeactual/mainevent/blob/master/public/js/views/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#View) views.
 * <code>static/</code>: JS/CSS/images from <code>[public/](https://github.com/codeactual/mainevent/blob/master/public/)</code> processed by <code>[public/build.js](https://github.com/codeactual/mainevent/blob/master/public/build.js)</code>.
-* <code>[test/]((https://github.com/codeactual/mainevent/blob/master/test/)</code>
-  * <code>[browser/]((https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code>.
-  * <code>[modules/]((https://github.com/codeactual/mainevent/blob/master/test/modules/)</code>: Test helpers.
+* <code>[test/](https://github.com/codeactual/mainevent/blob/master/test/)</code>
+  * <code>[browser/](https://github.com/codeactual/mainevent/blob/master/test/browsers/)</code>: Client-side tests processed by <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code>.
+  * <code>[modules/](https://github.com/codeactual/mainevent/blob/master/test/modules/)</code>: Test helpers.
 
 ## Testing
 
