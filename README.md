@@ -136,13 +136,6 @@ Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/vi
 
 Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
 
-#### [bin/import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
-
-`$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
-`$ bin/import.js --help`
-
-Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
-
 #### [app/graphs/CountAllPartitioned.js](https://github.com/codeactual/mainevent/blob/master/app/graphs/CountAllPartitioned.js)
 
 **Required by the dashboard.**
@@ -151,6 +144,15 @@ Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tai
 `$ app/graphs/CountAllPartitioned.js --help`
 
 Generates the cached data used by the graph on `/dashboard` visualizing total events. Runs continually and sleeps for 1 minute if no new events are read.
+
+### Utilities
+
+#### [bin/import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
+
+`$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
+`$ bin/import.js --help`
+
+Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
 
 ### Testing
 
