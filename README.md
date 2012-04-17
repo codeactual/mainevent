@@ -151,9 +151,9 @@ Generates the cached data used by the graph on `/dashboard` visualizing total ev
 
 ### Testing
 
-#### [bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
+#### [bin/test_server.js](https://github.com/codeactual/mainevent/blob/master/bin/test_server.js)
 
-`$ bin/test.js`
+`$ bin/test_server.js`
 
 Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code> and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> test cases.
 
@@ -193,7 +193,7 @@ Run all tests found under <code>[app/parsers/](https://github.com/codeactual/mai
 
 `$ test/all.js`
 
-Client-side tests under <code>[test/browser/](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)</code> will serve the runner page.
+Client-side tests under <code>[test/browser/](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test_server.js](https://github.com/codeactual/mainevent/blob/master/bin/test_server.js)</code> will serve the runner page.
 
 ### Remote Logs
 
