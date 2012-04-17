@@ -126,21 +126,32 @@ Compiles [dust.js](http://akdubya.github.com/dustjs/) templates in <code>[app/vi
 
 ### Background
 
-#### [tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)
+#### [bin/tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)
 
 `$ bin/tail.js`
+`$ bin/tail.js --help`
 
 Spawns `tail` instances for each source described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.
 
-#### [import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
+#### [bin/import.js](https://github.com/codeactual/mainevent/blob/master/bin/import.js)
 
 `$ bin/import.js --parser json --path /var/log/myApp/prod.json --tags myApp,import`
+`$ bin/import.js --help`
 
 Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
 
+#### [app/graphs/CountAllPartitioned.js](https://github.com/codeactual/mainevent/blob/master/app/graphs/CountAllPartitioned.js)
+
+**Required by the dashboard.**
+
+`$ app/graphs/CountAllPartitioned.js --verbose --jobWait 2 --chunkWait 2 --limit 1000`
+`$ app/graphs/CountAllPartitioned.js --help`
+
+Generates the cached data used by the graph on `/dashboard` visualizing total events. Runs continually and sleeps for 1 minute if no new events are read.
+
 ### Testing
 
-#### [test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
+#### [bin/test.js](https://github.com/codeactual/mainevent/blob/master/bin/test.js)
 
 `$ bin/test.js`
 
