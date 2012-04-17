@@ -18,7 +18,8 @@ require(__dirname + '/../app/modules/mainevent.js');
 var express = require('express'),
     app = express.createServer(),
     io = require('socket.io').listen(app),
-    build = mainevent.requireModule('build');
+    build = mainevent.requireModule('build'),
+    config = mainevent.getConfig();
 
 build.staticDir();
 build.mongoDbIndexes();
@@ -79,4 +80,4 @@ app.error(function(err, req, res, next) {
   res.send({__error: err.message}, 500);
 });
 
-app.listen(8080, '127.0.0.1');
+app.listen(config.express.mainevent_server.port, config.express.mainevent_server.ip);

@@ -6,10 +6,13 @@
 
 'use strict';
 
-var _ = require('underscore');
-var fs = require('fs');
-var express = require('express');
-var app = express.createServer();
+require(__dirname + '/../app/modules/mainevent.js');
+
+var _ = require('underscore'),
+    fs = require('fs'),
+    express = require('express'),
+    app = express.createServer(),
+    config = mainevent.getConfig();
 
 app.register('.html', {
   compile: function(str, options) {
@@ -34,5 +37,5 @@ app.get('/', function(req, res) {
   res.render('test.html', {testScripts: JSON.stringify(suites)});
 });
 
-app.listen(8081, '127.0.0.1');
+app.listen(config.express.test_server.port, config.express.test_server.ip);
 

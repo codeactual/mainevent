@@ -14,6 +14,16 @@ exports.read = function () {
         previewAttr: ['subject']
       }
     ],
+    express: {
+      mainevent_server: {
+        port: 8080,
+        ip: '127.0.0.1'
+      },
+      test_server: {
+        port: 8081,
+        ip: '127.0.0.1'
+      }
+    },
     mongodb: {
       db: 'mydb',
       host: '127.0.0.1',
