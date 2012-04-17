@@ -12,6 +12,14 @@ exports.read = function () {
         tags: [],
         timeAttr: 'atime',
         previewAttr: ['subject']
+      },
+      {
+        path: '/path/to/json/log',
+        parser: 'Json',
+        sshKey: '/path/to/key',
+        sshPort: 22,
+        sshUser: 'whoami',
+        sshHost: 'gracioushost'
       }
     ],
     express: {

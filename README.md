@@ -82,6 +82,11 @@ Notes about the main properties:
   * `parser`: Parser class/class-file name, e.g. `Json` or `NginxAccess`.
   * `tags`: (Optional) One or more tags to automatically attach to every event.
   * `timeAttr`: (Optional) By default, mainevent expects parsers to return a `time` property to represent the event's timestamp. Select a different property name here.
+  * To specify a remote host (all are required):
+    * `sshKey`: Ex. `/path/to/my/ec2.pem`
+    * `sshPort`: Ex. `22`
+    * `sshUser`: Ex. `ubuntu`
+    * `sshHost`: Ex. `ec2-135-28-52-91.compute-1.amazonaws.com`
   * `previewAttr`: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
 * `express`
   * `mainevent_server`: Verify the default `port`/`ip`.
