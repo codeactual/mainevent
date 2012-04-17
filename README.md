@@ -42,8 +42,10 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
 ### Create a [Pub/Sub](http://redis.io/topics/pubsub) listener for log updates
 
 1. Create a module that exports an `on(logs)` function that receives an array of one or more log objects.
+
 2. Perform any non-native tasks you need.
-3. Find the <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code> section that looks like:
+
+3. Find this <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code> section and add the location of your listener module to the `subscribers` list:
 
 ```javascript
 {
@@ -65,7 +67,9 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
   // ...
 }
 ```
-4. Add the location of your listener module to the `subscribers` list.
+
+
+See <code>[app/modules/redis/InsertLogPubSub.js](https://github.com/codeactual/mainevent/blob/master/app/modules/redis/InsertLogPubSub.js)</code> for a working example.
 
 ## Configuration
 
@@ -77,7 +81,7 @@ Notes about the main properties:
   * `path`: Absolute path to the log file.
   * `parser`: Parser class/class-file name, e.g. `Json` or `NginxAccess`.
   * `tags`: (Optional) One or more tags to automatically attach to every event.
-  * `timeAttr`: (Optional) By default a `time` property is used for the event's timestamp. Select a different property name here.
+  * `timeAttr`: (Optional) By default, mainevent expects parsers to return a `time` property to represent the event's timestamp. Select a different property name here.
   * `previewAttr`: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
 * `mongodb`
   * Customize the collection name in `collections.event`.
