@@ -83,6 +83,9 @@ Notes about the main properties:
   * `tags`: (Optional) One or more tags to automatically attach to every event.
   * `timeAttr`: (Optional) By default, mainevent expects parsers to return a `time` property to represent the event's timestamp. Select a different property name here.
   * `previewAttr`: (Optional) Allows parsers like `Json`, which do not have preview templates, to know which properties should be included in preview text.
+* `express`
+  * `mainevent_server`: Verify the default `port`/`ip`.
+  * `test_server`: Verify the default `port`/`ip`.
 * `mongodb`
   * Customize the collection name in `collections.event`.
   * Select a different pagination maximum in `maxResultSize` if needed.
