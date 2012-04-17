@@ -172,7 +172,7 @@ Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[
   * <code>[js/](https://github.com/codeactual/mainevent/blob/master/public/js/)</code>
     * <code>[backbone/](https://github.com/codeactual/mainevent/blob/master/public/js/backbone/)</code>: Additions to [backbone.js](http://documentcloud.github.com/backbone/) prototypes like `Backbone.View.prototype`.
     * <code>[collections/](https://github.com/codeactual/mainevent/blob/master/public/js/collections/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Collection) collections.
-    * <code>[controllers/](https://github.com/codeactual/mainevent/blob/master/public/js/controllers/)</code>: Handlers for [backbone.js](http://documentcloud.github.com/backbone/) routes.
+    * <code>[controllers/](https://github.com/codeactual/mainevent/blob/master/public/js/controllers/)</code>: Handlers for [backbone.js](http://documentcloud.github.com/backbone/#Router-route) routes.
     * <code>[helpers/](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/)</code>: Ex. `mainevent.helpers.Socket` for creating new [socket.io](http://socket.io/) connections.
     * <code>[models/](https://github.com/codeactual/mainevent/blob/master/public/js/models/)</code>: [backbone.js](http://documentcloud.github.com/backbone/#Model) models.
     * <code>[observers/](https://github.com/codeactual/mainevent/blob/master/public/js/observers/)</code>: Global listeners of custom events like `ContentPreRender`.
