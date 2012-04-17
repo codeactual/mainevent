@@ -61,7 +61,7 @@ define([], function() {
         });
       },
       expires,
-      // On read/write-through completion.
+      // On read/read-through completion.
       function(err, results) {
         if (err) {
           res.send({__error: err}, 500);

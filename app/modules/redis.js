@@ -121,10 +121,10 @@ Redis.prototype.get = function(key, callback, bulk) {
 };
 
 /**
- * Read a string key w/ write-through.
+ * Read a string key w/ read-through.
  *
  * @param key {String}
- * @param reader {Function} Retrieves the value for write-through.
+ * @param reader {Function} Retrieves the value for read-through.
  * - Must accept (key, readerCallback) and invoke readerCallback(value).
  * @param expire {Number} TTL in seconds.
  * @param callback {Function} Fires on completion.
