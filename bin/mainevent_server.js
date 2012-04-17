@@ -3,8 +3,6 @@
 /**
  * Serve HTTP requests for the backbone.js powered frontend, assets, and log JSON.
  *
- * Example usage: supervisor --extensions 'css|js|html' app/mainevent_server.js
- *
  * Example flow:
  *   browser - GET /#event/4f44bc7ea679dd8866000002
  *   backbone.js - GET /event/4f44bc7ea679dd8866000002

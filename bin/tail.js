@@ -3,10 +3,6 @@
 /**
  * `tail` source files listed in app/config.js.
  *
- * Usage:
- * - To use config/config.js source list: app/tail.js
- * - To use external source list: app/tail.js path/to/config.js
- *
  * process.send() is occasionally used to coordinate flow with test scripts.
  */
 
