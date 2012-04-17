@@ -212,12 +212,12 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 
 ### Client-side
 
-* LinkClick
+* `LinkClick`
   * Triggered in <code>[public/js/helpers/Event.js](https://github.com/codeactual/mainevent/blob/master/public/js/helpers/Event.js)</code> on any link with a relative `href`.
-* CritFetchError
+* `CritFetchError`
   * Triggered when a view cannot fetch data critical to its presentation, ex. the event view cannot retrieve the object describing the event.
   * Callbacks receive the `response` object from <code>[$.ajax](http://api.jquery.com/jQuery.ajax/)</code>.
-* ContentPreRender
+* `ContentPreRender`
   * Triggered in <code>[public/js/index.js](https://github.com/codeactual/mainevent/blob/master/public/js/index.js)</code> before the <code>[content.html](https://github.com/codeactual/mainevent/blob/master/app/views/content.html)</code> template is rendered.
 
 ### Bundled dependencies and their licenses
