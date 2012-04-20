@@ -316,10 +316,8 @@ define([
      * Creates the automatic updates socket. Also handles reconnection and diverts
      * update payloads.
      *
-     * @param initialId {String} All updates (if any) will be newer than this ID.
-     * @param initialTime {Number} All updates (if any) will be newer than this time.
      */
-    startTimelineUpdate: function(initialId, initialTime) {
+    startTimelineUpdate: function() {
       var view = this;
 
       if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
