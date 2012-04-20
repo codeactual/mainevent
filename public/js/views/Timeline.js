@@ -24,6 +24,10 @@ define([
       search: null
     },
 
+    // Event handler wrappers bound to 'this' via $.proxy.
+    onWindowBlurProxy: null,
+    onWindowFocusProxy: null,
+
     initialize: function(options) {
       var view = this;
 
@@ -60,6 +64,13 @@ define([
         view.renderUpdateSensitive();
         view.fetchTimeline.call(view, view.renderTimeline);
       });
+
+      // Create wrappers for onWindowFocus{Blur,Focus} bound to 'this'.
+      this.onWindowBlurProxy = $.proxy(this.onWindowBlur, this);
+      this.onWindowFocusProxy = $.proxy(this.onWindowFocus, this);
+      $(window).on('blur', this.onWindowBlurProxy);
+      $(window).on('focus', this.onWindowFocusProxy);
+
     },
 
     events: {
@@ -70,6 +81,8 @@ define([
 
     onClose: function() {
       this.closeSocket();
+      $(window).off('focus', this.onWindowFocusProxy);
+      $(window).off('blur', this.onWindowBlurProxy);
     },
 
     onSearchSubmit: function(searchArgs) {
@@ -146,6 +159,14 @@ define([
           view.truncateRows();
         }
       });
+    },
+
+    onWindowFocus: function(event) {
+      this.startTimelineUpdate();
+    },
+
+    onWindowBlur: function(event) {
+      this.closeSocket();
     },
 
     /**
