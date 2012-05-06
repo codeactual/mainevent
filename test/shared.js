@@ -8,23 +8,51 @@ var testutil = require(__dirname + '/modules/testutil.js');
 
 exports.async = {
 
-  testWalkAsync: function(test) {
-    var list = [1, 2, 3];
-    var consumed = [];
+  testRunSync: function(test) {
+    var consumed = [],
+        list = [1, 2, 3];
 
     var consumer = function(num, callback) {
-      consumed.push(num);
-      callback(num);
+      // Delay consumption of 1 but still expect it to finish first.
+      setTimeout(function() {
+        consumed.push(num);
+        callback();
+      }, num == 1 ? 1000 : 0);
     };
 
     var onDone = function() {
-      test.deepEqual(list, [1, 2, 3]);
       test.deepEqual(consumed, [1, 2, 3]);
       test.done();
     };
 
-    test.expect(2);
+    test.expect(1);
     mainevent.shared.Async.runSync(list, consumer, onDone);
+  },
+
+  testRunMixed: function(test) {
+    var consumed = [0, 0, 0],
+        list = [0, 1, 2];
+
+    var consumer = function(num, callback) {
+      consumed[num]++;
+      callback();
+    };
+
+    var onDone = function(deferred) {
+      deferred.resolve();
+    };
+
+    test.expect(1);
+    var asyncChunks = [
+      mainevent.shared.Async.runSync(list, consumer, onDone),
+      mainevent.shared.Async.runSync(list, consumer, onDone),
+      mainevent.shared.Async.runSync(list, consumer, onDone)
+    ];
+
+    mainevent.shared.Async.Deferred.when.apply(null, asyncChunks).done(function() {
+      test.deepEqual(consumed, [3, 3, 3]);
+      test.done();
+    });
   }
 };
 
