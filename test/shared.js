@@ -29,7 +29,7 @@ exports.async = {
     mainevent.shared.Async.runSync(list, consumer, onDone);
   },
 
-  testRunMixed: function(test) {
+  testRunSyncReturnedPromises: function(test) {
     var consumed = [0, 0, 0],
         list = [0, 1, 2];
 
@@ -42,13 +42,13 @@ exports.async = {
       deferred.resolve();
     };
 
-    test.expect(1);
     var asyncChunks = [
       mainevent.shared.Async.runSync(list, consumer, onDone),
       mainevent.shared.Async.runSync(list, consumer, onDone),
       mainevent.shared.Async.runSync(list, consumer, onDone)
     ];
 
+    test.expect(1);
     mainevent.shared.Async.Deferred.when.apply(null, asyncChunks).done(function() {
       test.deepEqual(consumed, [3, 3, 3]);
       test.done();
