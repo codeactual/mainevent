@@ -38,14 +38,10 @@ exports.async = {
       callback();
     };
 
-    var onDone = function(deferred) {
-      deferred.resolve();
-    };
-
     var asyncChunks = [
-      mainevent.shared.Async.runSync(list, consumer, onDone),
-      mainevent.shared.Async.runSync(list, consumer, onDone),
-      mainevent.shared.Async.runSync(list, consumer, onDone)
+      mainevent.shared.Async.runSync(list, consumer),
+      mainevent.shared.Async.runSync(list, consumer),
+      mainevent.shared.Async.runSync(list, consumer)
     ];
 
     test.expect(1);

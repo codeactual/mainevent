@@ -39,7 +39,8 @@ define([], function() {
             mainevent.shared.Async.runSync(list, consumer, onDone, deferred);
           });
         } else {
-          onDone(deferred);
+          deferred.resolve();
+          onDone();
         }
       }).apply(null, arguments);
 
