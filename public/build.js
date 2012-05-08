@@ -31,7 +31,7 @@ exec('pgrep -f "node.*public/build.js" | wc -w', null, function(code, stdout) {
     commands = commands.concat(step());
   });
 
-  mainevent.shared.Async.runSync(
+  async.forEachSeries(
     commands,
     function(command, onCommandDone) {
       exec(command, null, function(code, stdout, stderr) {

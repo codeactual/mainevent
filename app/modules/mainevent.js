@@ -8,6 +8,7 @@
 'use strict';
 
 GLOBAL._ = require('underscore');
+GLOBAL.async = require('async');
 GLOBAL.util = require('util');
 GLOBAL.XRegExp = require(__dirname + '/../../public/js/xregexp.js').XRegExp;
 
@@ -111,6 +112,5 @@ _.sha1 = function(value) {
 };
 
 requirejs('shared/XRegExp');
-requirejs('shared/Async');
 requirejs('shared/Date');
 requirejs('shared/Lang');

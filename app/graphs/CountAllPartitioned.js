@@ -99,14 +99,14 @@ var runJob = function(lastId) {
 
   // For each parser, walk through the same intervals as available in
   // the UI drop-downs.
-  mainevent.shared.Async.runSync(
+  async.forEachSeries(
     parserNames,
 
     function(parser, onParserDone) {
 
       // For each interval, run the map/reduce job if the related cache
       // entry has expired.
-      mainevent.shared.Async.runSync(
+      async.forEachSeries(
         intervals,
 
         function(interval, onIntervalDone) {

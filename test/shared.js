@@ -6,52 +6,6 @@
 
 var testutil = require(__dirname + '/modules/testutil.js');
 
-exports.async = {
-
-  testRunSync: function(test) {
-    var consumed = [],
-        list = [1, 2, 3];
-
-    var consumer = function(num, callback) {
-      // Delay consumption of 1 but still expect it to finish first.
-      setTimeout(function() {
-        consumed.push(num);
-        callback();
-      }, num == 1 ? 1000 : 0);
-    };
-
-    var onDone = function() {
-      test.deepEqual(consumed, [1, 2, 3]);
-      test.done();
-    };
-
-    test.expect(1);
-    mainevent.shared.Async.runSync(list, consumer, onDone);
-  },
-
-  testRunSyncReturnedPromises: function(test) {
-    var consumed = [0, 0, 0],
-        list = [0, 1, 2];
-
-    var consumer = function(num, callback) {
-      consumed[num]++;
-      callback();
-    };
-
-    var asyncChunks = [
-      mainevent.shared.Async.runSync(list, consumer),
-      mainevent.shared.Async.runSync(list, consumer),
-      mainevent.shared.Async.runSync(list, consumer)
-    ];
-
-    test.expect(1);
-    mainevent.shared.Async.Deferred.when.apply(null, asyncChunks).done(function() {
-      test.deepEqual(consumed, [3, 3, 3]);
-      test.done();
-    });
-  }
-};
-
 exports.lang = {
 
   testNumericStrToNum: function(test) {

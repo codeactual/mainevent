@@ -69,7 +69,7 @@ exports.buildPreviewTemplateContext = function(logs, onAllDone) {
     );
   };
 
-  mainevent.shared.Async.runSync(
+  async.forEachSeries(
     logs,
     function(log, onSingleDone) {
       var parser = exports.createInstance(log.parser);

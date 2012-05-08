@@ -32,7 +32,7 @@ _.each(dirs, function(dir) {
 });
 
 // Run each JS test file sequentially.
-mainevent.shared.Async.runSync(
+async.forEachSeries(
   files,
   function(file, onFileDone) {
     if (__filename == file) {

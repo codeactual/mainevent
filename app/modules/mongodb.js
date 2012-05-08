@@ -520,12 +520,12 @@ MongoDb.prototype.ensureConfiguredIndexes = function(callback) {
   var mongodb = this, lastError = null, lastResults = null;
   mongodb.dbConnectAndOpen(callback, function(err, db) {
     // Process each collection's list of definitions.
-    mainevent.shared.Async.runSync(
+    async.forEachSeries(
       mongodb.config.indexes,
       function(index, onIndexDone) {
 
         // Process each index definition.
-        mainevent.shared.Async.runSync(
+        async.forEachSeries(
           index.definitions,
           function(definition, onDefinitionDone) {
 
