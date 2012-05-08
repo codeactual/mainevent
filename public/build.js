@@ -6,8 +6,7 @@
 
 require(__dirname + '/../app/modules/mainevent');
 
-var _ = require('underscore'),
-    fs = require('fs'),
+var fs = require('fs'),
     path = require('path'),
     program = require('commander'),
     exec = require('child_process').exec,
