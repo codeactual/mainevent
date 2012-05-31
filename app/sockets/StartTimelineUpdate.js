@@ -38,6 +38,9 @@ define([], function() {
     });
 
     socket.on('disconnect', function () {
+      if (!redis) {
+        return;
+      }
       redis.client.unsubscribe();
       redis.end();
       redis = null;
