@@ -13,8 +13,8 @@
   program
     .option('-c, --config <file>', '/path/to/config.js', null)
     .option('-t, --test <#>', 'Exit after # expected lines for unit tests', Number, 0)
-    .option('-q, --quiet')
-    .option('-v, --verbose')
+    .option('-q, --quiet', '')
+    .option('-v, --verbose', '')
     .parse(process.argv);
 
   require(__dirname + '/../app/modules/mainevent.js');
