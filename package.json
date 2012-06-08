@@ -1,7 +1,7 @@
 {
   "name": "mainevent",
   "description": "Parse, store, and view events written to flat file logs.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [ "logs", "mongodb", "frontend" ],
   "maintainers": [
     {
@@ -26,15 +26,15 @@
     }
   ],
   "dependencies": {
-    "async": "0.1.18",
-    "commander": "0.6.0",
+    "async": "0.1.22",
+    "commander": "0.6.1",
     "dust": "0.3.0",
-    "express": "2.5.8",
+    "express": "2.5.9",
     "lazy": "1.0.8",
-    "moment": "1.4.0",
-    "mongodb": "0.9.9",
-    "redis":"0.7.1",
-    "requirejs": "1.0.7",
+    "moment": "1.6.2",
+    "mongodb": "1.0.2",
+    "redis":"0.7.2",
+    "requirejs": "2.0.1",
     "socket.io": "0.9.6",
     "underscore": "1.3.3"
   },
