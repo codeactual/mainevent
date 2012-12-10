@@ -43,5 +43,8 @@
   },
   "directories": {
     "lib": "app/modules"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/nodeunit test/all.js"
   }
 }
