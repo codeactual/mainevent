@@ -7,22 +7,22 @@
  */
 
 require([
-  'order!jquery',
-  'order!jquery-ui',
-  'order!jquery-ui-timepicker-addon',
-  'order!underscore',
-  'order!backbone',
-  'order!backbone/View',
-  'order!bootstrap',
-  'order!moment',
-  'order!clientsiiide',
-  'order!templates',
-  'order!helpers/Cache',
-  'order!helpers/Event',
-  'order!helpers/Prefs',
-  'order!shared/Date',
-  'order!helpers/Widget',
-  'order!observers/ContentPreRender'
+  'jquery',
+  'jquery-ui',
+  'jquery-ui-timepicker-addon',
+  'underscore',
+  'backbone',
+  'backbone/View',
+  'bootstrap',
+  'moment',
+  'clientsiiide',
+  'templates',
+  'helpers/Cache',
+  'helpers/Event',
+  'helpers/Prefs',
+  'shared/Date',
+  'helpers/Widget',
+  'observers/ContentPreRender'
   ], function() {
 
   'use strict';

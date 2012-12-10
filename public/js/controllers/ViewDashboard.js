@@ -1,10 +1,10 @@
 define([
-  'order!helpers/Graph',
-  'order!views/Dashboard',
-  'order!jquery.jqplot',
-  'order!jqplot.cursor',
-  'order!jqplot.highlighter',
-  'order!jqplot.dateAxisRenderer'
+  'helpers/Graph',
+  'views/Dashboard',
+  'jquery.jqplot',
+  'jqplot.cursor',
+  'jqplot.highlighter',
+  'jqplot.dateAxisRenderer'
   ], function(Graph, view) {
 
   'use strict';
