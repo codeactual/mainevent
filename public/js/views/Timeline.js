@@ -320,12 +320,15 @@ define([
       var view = this;
 
       if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
+        view.log('ABORTED StartTimelineUpdate');
         return;
       }
 
       this.socket = mainevent.helpers.Socket.create({
         event: {
           connect: function() {
+            view.log('CONNECTED');
+            view.log('SENDING StartTimelineUpdate');
             // Start/restart automatic updates.
             view.socket.emit('StartTimelineUpdate');
           }
@@ -334,8 +337,13 @@ define([
 
       // Update the view with latest event.
       this.socket.on('TimelineUpdate', function(data) {
+        view.log('RECEIVED TimelineUpdate');
         view.onTimelineUpdate.call(view, data);
       });
+    },
+
+    log: function(message) {
+      this.onTimelineUpdate([{time: Date.now(), preview: message}]);
     },
 
     /**
