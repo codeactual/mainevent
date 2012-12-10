@@ -22,7 +22,7 @@ exports.job = {
     var logs = [
       {
       source: {parser: 'Json'},
-      lines: ['{"time":"3/12/2012 09:00:00","message":"' + run + '"}']
+      lines: ['{"time":"3/12/2012 09:00:00 UTC","message":"' + run + '"}']
     },
     {
       source: {parser: 'Php'},
@@ -39,8 +39,8 @@ exports.job = {
       logs,
       expected,
       {
-        'time-gte': strtotime('3/12/2012 09:00:00'),
-        'time-lte': strtotime('3/12/2012 12:00:00'),
+        'time-gte': strtotime('3/12/2012 09:00:00 UTC'),
+        'time-lte': strtotime('3/12/2012 12:00:00 UTC'),
         message: run
       }
     );

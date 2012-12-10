@@ -80,7 +80,7 @@ exports.parsers = {
         source = {parser: 'Json', timeAttr: 't'},
         parser = this.parsers.createInstance('Json'),
         run = testutil.getRandHash(),  // Only for verification lookup.
-        log = {t: "3/12/2012 09:03:31", message: "something happened", run: run};
+        log = {t: "3/12/2012 09:03:31 UTC", message: "something happened", run: run};
     test.expect(2);
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: JSON.stringify(log)}, function() {
       testcase.mongodb.getTimeline({run: run}, function(err, docs) {

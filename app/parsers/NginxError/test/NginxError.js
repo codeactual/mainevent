@@ -58,7 +58,7 @@ exports.NginxError = {
 
   testExtractTime: function(test) {
     var parser = testutil.parsers.createInstance('NginxError'),
-        log = {time: '2012/03/12 09:03:31'};
+        log = {time: '2012/03/12 09:03:31 UTC'};
     test.equal(parser.extractTime(log), 1331543011000);
     test.done();
   }

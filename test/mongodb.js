@@ -399,7 +399,7 @@ exports.events = {
 
     var testcase = this,
         run = testutil.getRandHash(),  // Only for verification lookup.
-        expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00'}],
+        expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00 UTC'}],
         redis = mainevent.requireModule('redis').createInstance(),
         mongodb = mainevent.requireModule('mongodb').createInstance();
 
