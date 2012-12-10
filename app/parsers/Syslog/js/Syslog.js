@@ -22,6 +22,8 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
   },
 
   /**
+   * Warning: Assumes system timezone is UTC.
+   *
    * @param now {Object} (Parser-specific, Test-only) Date instance.
    */
   extractTime: function(log, now) {
@@ -35,8 +37,10 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
       return NaN;
     }
 
+    var template = '%d/%d/%d %s UTC';
+
     var parsable = util.format(
-      '%d/%d/%d %s',
+      template,
       mainevent.shared.Date.monthNameToNum(matches[1]),
       matches[2],
       now.getFullYear(), // syslog dates do not include years
@@ -49,7 +53,7 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
     // will always be in the past.
     if (parsed > now.getTime()) {
       parsable = util.format(
-        '%d/%d/%d %s',
+        template,
         mainevent.shared.Date.monthNameToNum(matches[1]),
         matches[2],
         now.getFullYear() - 1,  // Current year is in the future, try last year.
