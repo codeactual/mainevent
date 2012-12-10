@@ -45,6 +45,10 @@
     "lib": "app/modules"
   },
   "scripts": {
-    "test": "node_modules/.bin/nodeunit test/all.js"
+    "test": "test/all.js",
+    "static": "public/build.js",
+    "static:prod": "public/build.js --prod",
+    "start": "bin/mainevent_server.js",
+    "start:test": "bin/test_server.js"
   }
 }
