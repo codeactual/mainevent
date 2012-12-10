@@ -1,7 +1,8 @@
 define([
+    'dust',
     'views/TimelineSearch',
     'views/CountAllPartitioned'
-  ], function(TimelineSearch, CountAllPartitioned) {
+  ], function(dust, TimelineSearch, CountAllPartitioned) {
 
   'use strict';
 

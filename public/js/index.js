@@ -75,7 +75,7 @@ require([
         route = route.match(/\^/) ? new RegExp(route) : route;
         router.route(route, config.controller, function() {
           var routeArgs = arguments;
-          require(['helpers/Event', 'controllers/' + config.controller], function(Event, controller) {
+          require(['dust', 'helpers/Event', 'controllers/' + config.controller], function(dust, Event, controller) {
             // Apply 'context' options to the 'content' template, ex. show sidebar.
             dust.render(
               'content',
@@ -108,7 +108,7 @@ require([
     }
   });
 
-  require([], function() {
+  require(['dust'], function(dust) {
     /**
      * Common error handler for all fetch/sync operations.
      *

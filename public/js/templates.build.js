@@ -6,7 +6,7 @@
 
 'use strict';
 
-var dust = require('dust'),
+var dust = require('dustjs-linkedin'),
     fs = require('fs'),
     fd = fs.openSync(__dirname + '/templates.js', 'w'),
     path = require('path'),

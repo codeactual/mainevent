@@ -53,7 +53,7 @@ exports.getPreviewTemplate = function(log) {
  * @param onAllDone {Function} Called after all previews have been added.
  */
 exports.buildPreviewTemplateContext = function(logs, onAllDone) {
-  var dust = require('dust');
+  var dust = require('dustjs-linkedin');
   var updatedLogs = [];
 
   var updateLogFromTemplate = function(name, log, context, callback) {

@@ -1,4 +1,4 @@
-define([], function() {
+define(['dust'], function(dust) {
 
   'use strict';
 

@@ -1,7 +1,8 @@
 define([
+    'dust',
     'models/Event',
     'views/TimelineSearch'
-  ], function(EventModel, TimelineSearch) {
+  ], function(dust, EventModel, TimelineSearch) {
 
   'use strict';
 
