@@ -4,7 +4,6 @@ define([
     'views/TimelineSearch',
     'helpers/Socket',
     'helpers/View',
-    'bootstrap-dropdown',
     'socket.io'
   ], function(TimelineCollection, EditSingleValue, TimelineSearch) {
 
