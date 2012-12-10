@@ -62,7 +62,7 @@ Parser.prototype.parseLines = function(source, lines) {
  * @return {Object} Captured properties.
  */
 Parser.prototype.namedCapture = function(subject, regex) {
-  return mainevent.shared.XRegExp.namedCaptureMatch(subject, XRegExp(regex));
+  return mainevent.shared.XRegExp.namedCaptureMatch(subject, regex);
 };
 
 /**

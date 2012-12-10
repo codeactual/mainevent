@@ -10,7 +10,6 @@
 GLOBAL._ = require('underscore');
 GLOBAL.async = require('async');
 GLOBAL.util = require('util');
-GLOBAL.XRegExp = require(__dirname + '/../../public/js/xregexp.js').XRegExp;
 
 GLOBAL.requirejs = require('requirejs');
 requirejs.config({
