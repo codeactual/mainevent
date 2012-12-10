@@ -16,6 +16,8 @@ var fs = require('fs'),
     BUILD_OLD = APP + '/static-old',
     BUILD_TMP = APP + '/static-tmp';
 
+process.chdir(__dirname + '/..');
+
 program
   .option('-p, --prod', 'Compress JS/CSS')
   .parse(process.argv);
