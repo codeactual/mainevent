@@ -21,7 +21,7 @@ program
   .parse(process.argv);
 
 exec('pgrep -f "node.*public/build.js" | wc -w', null, function(code, stdout) {
-  if (stdout.toString().trim() != '2') {
+  if (parseInt(stdout.toString().trim(), 10) > 2) {
     console.log('Another instance is already running.');
     process.exit(0);
   }
