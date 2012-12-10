@@ -154,17 +154,23 @@ define(['shared/Date'], function() {
      */
     addDateUnit: function(str, amount, unit) {
       unit = unit || Graph.detectDateUnit(str);
-      var format = Graph.momentFormat[unit];
-      switch (unit) {
-        case 'second':
-        case 'minute':
-        case 'hour':
-        case 'day':
-        case 'month':
-        case 'year':
-          return moment(str).add(unit + 's', amount).format(format);
-        default: return null;
+
+      var validUnits = ['second', 'minute', 'hour', 'day', 'month', 'year'];
+      if (-1 === _.indexOf(validUnits, unit)) {
+        return null;
       }
+
+      var format = Graph.momentFormat[unit];
+
+      // Otherwise 'YYYY-MM' will be parsed to the prior day.
+      if ('month' === unit) {
+        str += '-01 00:00:00';
+      // Otherwise 'YYYY' will be parsed to the prior year.
+      } else if ('year' === unit) {
+        str += '-01-01 00:00:00';
+      }
+
+      return moment(str).add(unit + 's', amount).format(format);
     },
 
     /**
