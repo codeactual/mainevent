@@ -16,7 +16,7 @@
  * - Elements adjacent to modal submit button.
  */
 .inline-control {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 /* [DASHBOARD,EVENT,TIMELINE] Horizontally aligned modal forms. */
 .form-inline .form-row {
