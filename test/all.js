@@ -40,9 +40,11 @@ async.forEachSeries(
       return;
     }
 
+    var cmd = __dirname + '/../node_modules/.bin/nodeunit';
+
     // `nodeunit` requires paths relative the CWD.
     var relPath = path.relative(process.cwd(), file),
-        nodeunit = spawn('/usr/bin/env', ['nodeunit', relPath], {env: process.env});
+        nodeunit = spawn(cmd, [relPath], {env: process.env});
 
     nodeunit.stdout.on('data', function (data) {
       process.stdout.write(data.toString());
