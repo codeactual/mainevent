@@ -31,8 +31,6 @@ define([], function() {
       });
       options.socket = options.socket || {
         'reconnect': true,
-        'reconnection delay': 500,
-        'max reconnection attempts': 10,
 
         // Required to allow views to close sockets onClose().
         'force new connection': true
