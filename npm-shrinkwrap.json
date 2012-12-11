@@ -124,12 +124,7 @@
       }
     },
     "redis": {
-      "version": "0.7.2",
-      "dependencies": {
-        "hiredis": {
-          "version": "0.1.14"
-        }
-      }
+      "version": "0.8.2"
     },
     "requirejs": {
       "version": "2.1.2"

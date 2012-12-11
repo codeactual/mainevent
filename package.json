@@ -33,7 +33,7 @@
     "lazy": "1.0.8",
     "moment": "1.7.2",
     "mongodb": "1.2.4",
-    "redis":"0.7.2",
+    "redis":"0.8.2",
     "requirejs": "2.1.2",
     "socket.io": "0.9.11",
     "underscore": "1.3.3",
