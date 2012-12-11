@@ -32,7 +32,7 @@
     "express": "3.0.4",
     "lazy": "1.0.8",
     "moment": "1.7.2",
-    "mongodb": "1.0.2",
+    "mongodb": "1.2.4",
     "redis":"0.7.2",
     "requirejs": "2.1.2",
     "socket.io": "0.9.11",

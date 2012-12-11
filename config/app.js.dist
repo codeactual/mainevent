@@ -34,6 +34,11 @@ exports.read = function () {
     },
     mongodb: {
       db: 'mydb',
+      dbOptions: {
+        w: 1,
+        journal: true,
+        fsync: false
+      },
       host: '127.0.0.1',
       port: 27017,
       collections: {

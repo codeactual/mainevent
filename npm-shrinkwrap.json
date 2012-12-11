@@ -116,10 +116,10 @@
       "version": "1.7.2"
     },
     "mongodb": {
-      "version": "1.0.2",
+      "version": "1.2.4",
       "dependencies": {
         "bson": {
-          "version": "0.0.6"
+          "version": "0.1.5"
         }
       }
     },

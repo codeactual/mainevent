@@ -158,7 +158,8 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success, attempt) {
     this.collections = this.config.collections;
     this.link = new mongoDbLib.Db(
       this.config.db,
-      new mongoDbLib.Server(this.config.host, this.config.port, {})
+      new mongoDbLib.Server(this.config.host, this.config.port),
+      this.config.dbOptions
     );
     var mongodb = this;
     this.link.open(function(err, db) {
@@ -232,7 +233,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
         docs.push(log);
       });
 
-      collection.insert(docs, {safe: true}, function(err, docs) {
+      collection.insert(docs, function(err, docs) {
         if (!err) {
           // Trigger other serializations, ex. Redis.
           mongodb.emit('InsertLog', _.clone(docs));
