@@ -14,21 +14,24 @@
 require(__dirname + '/../app/modules/mainevent.js');
 
 var express = require('express'),
-    app = express.createServer(),
-    io = require('socket.io').listen(app),
+    app = express(),
+    http = require('http'),
+    server = http.createServer(app),
+    io = require('socket.io').listen(server),
     build = mainevent.requireModule('build'),
-    config = mainevent.getConfig();
+    config = mainevent.getConfig(),
+    fs = require('fs');
 
 build.staticDir();
 build.mongoDbIndexes();
 
-// Required for using *.html with res.render().
-app.register('.html', {
-  compile: function(str, options) {
-    return function() {
-      return _.template(str)(options);
-    };
-  }
+app.engine('.html', function(filename, options, cb) {
+  fs.readFile(filename, 'utf8', function(err, str) {
+    if (err) {
+      return cb(err);
+    }
+    cb(null, _.template(str)(options))
+  });
 });
 
 // Make assets accessible to clients.
@@ -73,9 +76,10 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-app.error(function(err, req, res, next) {
+app.use(function(err, req, res, next) {
   console.log(err, err.stack, req.query, req.params);
   res.send({__error: err.message}, 500);
+  next();
 });
 
-app.listen(config.express.mainevent_server.port, config.express.mainevent_server.ip);
+server.listen(config.express.mainevent_server.port, config.express.mainevent_server.ip);
