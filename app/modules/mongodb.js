@@ -144,6 +144,7 @@ MongoDb.prototype.dbConnectAndOpen = function(error, success, attempt) {
       success(null, this.link);
     } catch (e) {
       // Connection reuse failed -- retry.
+      // To support bursts of concurrent writes that sometimes trigger connection loss.
       if (e.toString().match(/Cannot read property 'arbiterOnly' of undefined/)) {
         attempt = attempt || 0;
         if (attempt < config.maxInsertAttempt) {
@@ -234,6 +235,24 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
       });
 
       collection.insert(docs, function(err, docs) {
+        if (err) {
+          // Connection reuse failed -- retry.
+          // To support bursts of concurrent writes that sometimes trigger
+          // connection loss.
+          if (/no open connections/.test(err.toString())) {
+            mongodb.link = null;
+            mongodb.dbConnectAndOpen(
+              function() { // Failure.
+                callback(err, null);
+              },
+              function() { // Success.
+                mongodb.insertLog(logs, callback, bulk);
+              }
+            );
+            return;
+          }
+        }
+
         if (!err) {
           // Trigger other serializations, ex. Redis.
           mongodb.emit('InsertLog', _.clone(docs));
