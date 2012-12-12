@@ -22,7 +22,7 @@
       exec = require('child_process').exec,
       config = mainevent.getConfig(program.config),
       parsers = mainevent.requireModule('parsers'),
-      procLog = mainevent.createUtilLogger('tail.js');
+      procLog = mainevent.createUtilLogger('tail.js', program.quiet);
 
   // To support maximum line count for --test.
   var lineCount = 0;
