@@ -49,7 +49,7 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
     return line.indexOf('\n');
   },
 
-  isParsable: function(line) {
+  isLineParsable: function(line) {
     try {
       JSON.parse(line);
       return true;

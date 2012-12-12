@@ -175,7 +175,7 @@ exports.extractLines = function(rawLines, parser, consumeLine, extractDone) {
       );
     },
     function() {
-      if (parser.isParsable(currentLine)) {
+      if (parser.isLineParsable(currentLine)) {
         consumeLine(currentLine, extractDone);
       } else {
         // Send back overflow.

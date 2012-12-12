@@ -73,7 +73,7 @@ exports.Json = {
     test.strictEqual(fn('foo\n"}'), 3);
     test.strictEqual(fn('\nfoo"}'), 0);
     test.done();
-  }
+  },
 
   testExtractLines: function(test) {
     test.expect(1);
