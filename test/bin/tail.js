@@ -228,6 +228,7 @@ exports.ssh = {
   }
 };
 
+// Remove the SSH/remote test case if it wasn't configured.
 if (!fs.existsSync(sshConfigFile)) {
   delete exports.ssh;
 }
