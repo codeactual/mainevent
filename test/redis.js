@@ -113,7 +113,7 @@ exports.strings = {
       // Verify set() was skipped.
       redis.connect();
       redis.client.exists(run.keys[0], function(err, actual) {
-        test.equal(actual, false);
+        test.strictEqual(actual, 0);
         test.done();
       });
     });
@@ -149,7 +149,7 @@ exports.strings = {
       // get() past expiration should fail.
       setTimeout(function() {
         redis.get(run.keys[0], function(err, actual) {
-          test.equal(actual, undefined);
+          test.strictEqual(actual, undefined);
           test.done();
         });
       }, expires * 2000);
@@ -165,8 +165,8 @@ exports.strings = {
           callback(readerError);
         };
     redis.getWithWriteThrough(run.keys[0], reader, expires, function(err, actual) {
-      test.equal(err, readerError);
-      test.equal(actual, undefined);
+      test.strictEqual(err, readerError);
+      test.strictEqual(actual, undefined);
       test.done();
     });
   }
@@ -232,7 +232,7 @@ exports.hashes = {
     var run = this, updates = {};
 
     redis.hget(run.keys[0], function(err, actual) {
-      test.equal(actual, undefined);
+      test.strictEqual(actual, undefined);
       test.done();
     });
   },

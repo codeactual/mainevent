@@ -219,15 +219,15 @@ exports.job = {
   testGetCacheExpires: function(test) {
     var now = (new Date()).getTime();
 
-    test.equal(60, this.job.getExpires({}, now));
+    test.strictEqual(60, this.job.getExpires({}, now));
 
-    test.equal(60, this.job.getExpires({'time-lte': now - 59999}, now));
-    test.equal(60, this.job.getExpires({'time-lte': now - 60000}, now));
-    test.equal(null, this.job.getExpires({'time-lte': now - 60001}, now));
+    test.strictEqual(60, this.job.getExpires({'time-lte': now - 59999}, now));
+    test.strictEqual(60, this.job.getExpires({'time-lte': now - 60000}, now));
+    test.strictEqual(null, this.job.getExpires({'time-lte': now - 60001}, now));
 
-    test.equal(60, this.job.getExpires({'time-lte': now + 59999}, now));
-    test.equal(60, this.job.getExpires({'time-lte': now + 60000}, now));
-    test.equal(null, this.job.getExpires({'time-lte': now + 60001}, now));
+    test.strictEqual(60, this.job.getExpires({'time-lte': now + 59999}, now));
+    test.strictEqual(60, this.job.getExpires({'time-lte': now + 60000}, now));
+    test.strictEqual(null, this.job.getExpires({'time-lte': now + 60001}, now));
     test.done();
   },
 
@@ -235,7 +235,7 @@ exports.job = {
     this.job.updateKeyFields({parser: 'Json'});
     this.job.updateOptions({partition: 'hour'});
 
-    test.equal(
+    test.strictEqual(
       this.job.buildSortedSetKey('Json', 'hour'),
       this.namespace + ':CountAllPartitioned:Json:hour'
     );
@@ -246,7 +246,7 @@ exports.job = {
     this.job.updateKeyFields({parser: 'Json'});
     this.job.updateOptions({partition: 'hour'});
 
-    test.equal(
+    test.strictEqual(
       this.job.buildHashKey('2012-02'),
       this.namespace + ':CountAllPartitioned:Json:hour:result:2012-02'
     );

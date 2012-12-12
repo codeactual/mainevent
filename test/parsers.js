@@ -22,7 +22,7 @@ exports.parsers = {
       testcase.mongodb.getTimeline({message: line}, function(err, docs) {
         test.ok(Math.abs(docs[0].time - time) < 1000);
         test.deepEqual(docs[0].tags, source.tags);
-        test.equal(docs[0].__parse_error, 'line');
+        test.strictEqual(docs[0].__parse_error, 'line');
         test.done();
       });
     });
@@ -30,9 +30,9 @@ exports.parsers = {
 
   testGetPreviewTemplate: function(test) {
     var log = {parser: 'Php', parser_subtype: 'UserDefined'};
-    test.equal(this.parsers.getPreviewTemplate(log), 'PhpUserDefinedPreview');
+    test.strictEqual(this.parsers.getPreviewTemplate(log), 'PhpUserDefinedPreview');
     log = {parser: 'Json'};
-    test.equal(this.parsers.getPreviewTemplate(log), 'JsonPreview');
+    test.strictEqual(this.parsers.getPreviewTemplate(log), 'JsonPreview');
     test.done();
   },
 
@@ -52,7 +52,7 @@ exports.parsers = {
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function() {
       testcase.mongodb.getTimeline({run: expected.run}, function(err, docs) {
         testcase.parsers.buildPreviewTemplateContext(docs, function(actual) {
-          test.equal(actual[0].preview, 'role=db-slave');
+          test.strictEqual(actual[0].preview, 'role=db-slave');
           test.done();
         });
       });
@@ -68,8 +68,8 @@ exports.parsers = {
     test.expect(2);
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: JSON.stringify(log)}, function() {
       testcase.mongodb.getTimeline({run: run}, function(err, docs) {
-        test.equal(docs[0].time, 1331543011000);
-        test.equal(docs[0].message, log.message);
+        test.strictEqual(docs[0].time, 1331543011000);
+        test.strictEqual(docs[0].message, log.message);
         test.done();
       });
     });
@@ -84,8 +84,8 @@ exports.parsers = {
     test.expect(2);
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: JSON.stringify(log)}, function() {
       testcase.mongodb.getTimeline({run: run}, function(err, docs) {
-        test.equal(docs[0].time, 1331543011000);
-        test.equal(docs[0].message, log.message);
+        test.strictEqual(docs[0].time, 1331543011000);
+        test.strictEqual(docs[0].message, log.message);
         test.done();
       });
     });
@@ -101,8 +101,8 @@ exports.parsers = {
     test.expect(2);
     this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function() {
       testcase.mongodb.getTimeline({message: run}, function(err, docs) {
-        test.equal(docs[0].message, run);
-        test.equal(docs[0].time, 1331543011000);
+        test.strictEqual(docs[0].message, run);
+        test.strictEqual(docs[0].time, 1331543011000);
         test.done();
       });
     });
@@ -120,7 +120,7 @@ exports.parsers = {
       testcase.mongodb.getTimeline({message: message}, function(err, docs) {
         test.ok(Math.abs(docs[0].time - time) < 1000);
         test.deepEqual(docs[0].tags, source.tags);
-        test.equal(docs[0].__parse_error, 'time');
+        test.strictEqual(docs[0].__parse_error, 'time');
         test.done();
       });
     });

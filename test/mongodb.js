@@ -181,13 +181,13 @@ exports.timeline = {
       // Expect no next page.
       var params = {run: run};
       testcase.mongodb.getTimeline(params, function(err, docs, info) {
-        test.equal(docs.length, 3);
+        test.strictEqual(docs.length, 3);
         test.ok(false === info.prevPage);
 
         // Expect a previous page.
         params.skip = 1;
         testcase.mongodb.getTimeline(params, function(err, docs, info) {
-          test.equal(docs.length, 2);
+          test.strictEqual(docs.length, 2);
           test.ok(info.prevPage);
           test.done();
         });
@@ -217,13 +217,13 @@ exports.timeline = {
       // Expect no next page.
       var params = {run: run, 'time-ne': strtotime('3/12/2012 10:00:00')};
       testcase.mongodb.getTimeline(params, function(err, docs, info) {
-        test.equal(docs.length, 2);
+        test.strictEqual(docs.length, 2);
         test.ok(false === info.nextPage);
 
         // Expect another page.
         params.limit = 1;
         testcase.mongodb.getTimeline(params, function(err, docs, info) {
-          test.equal(docs.length, 1);
+          test.strictEqual(docs.length, 1);
           test.ok(info.nextPage);
           test.done();
         });
@@ -356,10 +356,10 @@ exports.events = {
         expected = [{run: run, parser: 'Json', time: '3/12/2012 11:00:00'}];
 
     this.mongodb.on('InsertLog', function(actual) {
-      test.equal(actual.length, 1);
-      test.equal(actual[0].run, expected[0].run);
-      test.equal(actual[0].parser, expected[0].parser);
-      test.equal(actual[0].time, expected[0].time);
+      test.strictEqual(actual.length, 1);
+      test.strictEqual(actual[0].run, expected[0].run);
+      test.strictEqual(actual[0].parser, expected[0].parser);
+      test.strictEqual(actual[0].time, expected[0].time);
       test.done();
     });
 
@@ -384,10 +384,10 @@ exports.events = {
     }];
 
     process.on('InsertLogListener', function(actual) {
-      test.equal(actual.length, 1);
-      test.equal(actual[0].run, expected[0].run);
-      test.equal(actual[0].parser, expected[0].parser);
-      test.equal(actual[0].time, expected[0].time);
+      test.strictEqual(actual.length, 1);
+      test.strictEqual(actual[0].run, expected[0].run);
+      test.strictEqual(actual[0].parser, expected[0].parser);
+      test.strictEqual(actual[0].time, expected[0].time);
       test.done();
     });
 
@@ -409,8 +409,8 @@ exports.events = {
       actual = JSON.parse(actual);
       if (channel == 'InsertLog' && actual[0].run == expected[0].run) {
         redis.client.unsubscribe();
-        test.equal(actual[0].parser, expected[0].parser);
-        test.equal(actual[0].time, '2012-03-12T11:00:00.000Z');
+        test.strictEqual(actual[0].parser, expected[0].parser);
+        test.strictEqual(actual[0].time, '2012-03-12T11:00:00.000Z');
         redis.client.end();
         mongodb.dbClose();
         test.done();

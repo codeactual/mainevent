@@ -42,7 +42,7 @@ exports.core = {
       } else if ('TEST_BATCH_ENDED' === message) {
         mongodb.getTimeline({run: run}, function(err, docs) {
           tailJs.send('TEST_ENDED');
-          test.equal(docs[0].run, run);
+          test.strictEqual(docs[0].run, run);
           test.done();
         });
       }
@@ -70,7 +70,7 @@ exports.core = {
       if ('MONITORS_STARTED' == message) {
         exec(pgrepTailCmd, [], function(code, pid) {
           exec('env kill -9 ' + pid.toString(), [], function(code, stdout) {
-            test.equal(stdout.toString(), '');
+            test.strictEqual(stdout.toString(), '');
           });
         });
 
@@ -118,7 +118,7 @@ exports.core = {
       // Wait until we know tail.js should have restarted `tail`.
       } else if ('ALL_MONITORS_ENDED' == message) {
         exec(pgrepTailJs, [], function(error) {
-         test.equal(error.code, 1); // 'No processes matched.'
+         test.strictEqual(error.code, 1); // 'No processes matched.'
           test.done();
         });
       }
@@ -166,7 +166,7 @@ exports.core = {
           cursor.count(function(err, count) {
             mongodb.dbClose();
             tailJs.send('TEST_ENDED');
-            test.equal(count, lines.length);
+            test.strictEqual(count, lines.length);
             test.done();
           });
         });
@@ -218,11 +218,11 @@ exports.ssh = {
        // Verify remote `tail` output was processed.
      } else if ('ALL_MONITORS_ENDED' === message) {
        mongodb.getTimeline({run: run}, function(err, docs) {
-         test.equal(docs[0].run, run);
+         test.strictEqual(docs[0].run, run);
           setTimeout(function() {
             // Verify remote `tail` was killed.
             exec(pgrepTailCmd, [], function(error, stdout) {
-              test.equal(error.code, 1); // 'No processes matched.'
+              test.strictEqual(error.code, 1); // 'No processes matched.'
               test.done();
             });
           }, self.remoteKillWait);

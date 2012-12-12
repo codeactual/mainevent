@@ -105,7 +105,7 @@ exports.prototypes = {
   },
 
   testDefaultExpires: function(test) {
-    test.equal(60, this.jobA.getExpires());
+    test.strictEqual(60, this.jobA.getExpires());
     test.done();
   },
 
@@ -113,7 +113,7 @@ exports.prototypes = {
     var updates = {suffix: '_test'},
         query = {code: 200};
     this.jobA.updateOptions(updates);
-    test.equal(this.jobA.getSuffix(query), updates.suffix);
+    test.strictEqual(this.jobA.getSuffix(query), updates.suffix);
     test.done();
   },
 
@@ -121,7 +121,7 @@ exports.prototypes = {
     var options = this.jobA.getOptions(),
         query = {code: 200},
         expected = _.sha1(_.extend(options, query));
-    test.equal(this.jobA.getSuffix(query), expected);
+    test.strictEqual(this.jobA.getSuffix(query), expected);
     test.done();
   },
 
@@ -130,10 +130,10 @@ exports.prototypes = {
     var expected = {err: 'someerr', results: {a: 1}, stats: {collectionName: 'c'}},
         thisTest = this;
     var wrapper = this.jobA.wrapCallback(function(err, results, stats) {
-      test.equal(err, expected.err);
-      test.equal(results, expected.results);
-      test.equal(stats, expected.stats);
-      test.equal(thisTest.jobA.dropped, true);
+      test.strictEqual(err, expected.err);
+      test.strictEqual(results, expected.results);
+      test.strictEqual(stats, expected.stats);
+      test.strictEqual(thisTest.jobA.dropped, true);
       test.done();
     });
     wrapper(expected.err, expected.results, expected.stats);
@@ -145,9 +145,9 @@ exports.prototypes = {
         thisTest = this;
     this.jobA.updateOptions({dropResultsAfterUse: false});
     var wrapper = this.jobA.wrapCallback(function(err, results, stats) {
-      test.equal(err, expected.err);
-      test.equal(results, expected.results);
-      test.equal(thisTest.jobA.dropped, false);
+      test.strictEqual(err, expected.err);
+      test.strictEqual(results, expected.results);
+      test.strictEqual(thisTest.jobA.dropped, false);
       test.done();
     });
     wrapper(expected.err, expected.results, expected.stats);
@@ -158,28 +158,28 @@ exports.prototypes = {
     var expected = {err: 'someerr', results: {a: 1}},
         thisTest = this;
     var wrapper = this.jobA.wrapCallback(function(err, results, stats) {
-      test.equal(err, expected.err);
-      test.equal(results, expected.results);
-      test.equal(thisTest.jobA.dropped, false);
+      test.strictEqual(err, expected.err);
+      test.strictEqual(results, expected.results);
+      test.strictEqual(thisTest.jobA.dropped, false);
       test.done();
     });
     wrapper(expected.err, expected.results);
   },
 
   testBuildKey: function(test) {
-    test.equal(this.jobA.buildKey('a', 'b', 'c'), 'a:b:c');
-    test.equal(this.jobA.buildKey('', 'b', 'c'), 'b:c');
+    test.strictEqual(this.jobA.buildKey('a', 'b', 'c'), 'a:b:c');
+    test.strictEqual(this.jobA.buildKey('', 'b', 'c'), 'b:c');
     test.done();
   },
 
   testBuildLastIdKey: function(test) {
-    test.equal(this.jobA.buildLastIdKey(), this.namespace + ':JobA:lastId');
+    test.strictEqual(this.jobA.buildLastIdKey(), this.namespace + ':JobA:lastId');
     test.done();
   },
 
   testBuildHashKey: function(test) {
     var resultId = '2012-02';
-    test.equal(
+    test.strictEqual(
       this.jobA.buildHashKey(resultId),
       this.namespace + ':JobA:result:' + resultId
     );
@@ -189,7 +189,7 @@ exports.prototypes = {
   testExtractResultKey: function(test) {
     var resultId = '2012-02',
         hashKey = this.jobA.buildHashKey(resultId);
-    test.equal(
+    test.strictEqual(
       this.jobA.extractResultKey(hashKey),
       resultId
     );

@@ -36,8 +36,8 @@ exports.testImport = function(test) {
   // Verify fields.
   tailJs.on('exit', function(code) {
     mongodb.getTimeline({run: run}, function(err, docs) {
-      test.equal(docs[0].time, parsed.t);
-      test.equal(docs[0].message, source.path);
+      test.strictEqual(docs[0].time, parsed.t);
+      test.strictEqual(docs[0].message, source.path);
       test.deepEqual(docs[0].previewAttr, source.previewAttr);
       test.deepEqual(docs[0].tags, source.tags);
       test.done();
