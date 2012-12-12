@@ -49,7 +49,7 @@
     "test": "test/all.js",
     "static": "public/build.js",
     "static:prod": "public/build.js --prod",
-    "start": "bin/mainevent-server",
-    "start:test": "bin/mainevent-testserver"
+    "start": "public/build.js && bin/mainevent-server",
+    "start:test": "public/build.js && bin/mainevent-testserver"
   }
 }
