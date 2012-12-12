@@ -16,9 +16,11 @@ var spawn = require('child_process').spawn,
 // Collect all parser-specific test dirs.
 _.each(fs.readdirSync(parserDir), function(dir) {
   if (fs.statSync(parserDir + '/' + dir).isDirectory()) {
-    dirs.push(__dirname + '/../app/parsers/' + dir  + '/test');
+    dirs.push(parserDir + '/' + dir  + '/test');
   }
 });
+
+dirs.push(__dirname + '/bin');
 
 // Collect all JS files from 'dirs'.
 var files = [];
