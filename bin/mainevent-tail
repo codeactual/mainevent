@@ -58,6 +58,10 @@
     // Source-specific parser instance.
     this.parser = parsers.createInstance(this.source.parser);
 
+    // Recent `tail` output which contains a partial log line, left over from
+    // the the last extractLines() run. It will be prepended to the next `tail`
+    // output chunk, which most likely will complete the line started by the overflow.
+    // This prevents parseAndInsert() from receiving unparsable lines.
     this.overflow = '';
 
     _.bindAll(this);
@@ -103,16 +107,20 @@
     var monitor = this;
     var sourceLines = {source: this.source, lines: [line]};
     var bulk = true;
+
     parsers.parseAndInsert(this.mongodb, sourceLines, function() {
       lineCount++;
+
       if (program.verbose) {
         monitor.log(
           'inserted: count=%d line=%s length=%d',
           lineCount, line, line.length
         );
       }
+
       // Support maximum line count for --test.
       if (program.test > 0 && lineCount >= program.test) {
+        // In most cases the test script will respond by killing this process.
         process.send('TEST_BATCH_ENDED');
       }
       next();
@@ -143,6 +151,9 @@
     var monitor = this;
 
     this.tail.stdout.on('data', function(data) {
+      // If the last 'data' handling resulted in an unparsable chunk,
+      // prepend it so that the next extractLines() run (or subsequent one)
+      // will receive enough text to complete the line.
       data = monitor.overflow + data.toString();
       monitor.overflow = '';
 
@@ -159,20 +170,17 @@
         return;
       }
 
-      data = data.trim();
-
       parsers.extractLines(
         [data],
         monitor.parser,
-        function(line, next) {
+        function(line, next) { // Enqueue parsable line for insert.
           monitor.queue.push(line);
           next();
         },
-        function(overflow) {
+        function(overflow) {  // Extraction attempt complete.
           if (_.size(overflow)) {
+            // Append rather than set, in case log line spans multiple 'data' events.
             monitor.overflow += overflow;
-          } else {
-            monitor.overflow = '';
           }
         }
       );
@@ -188,7 +196,7 @@
 
     // Kill `tail` before parent process exits.
     var killTail = function() {
-      // Prevent restarts from collecting additional listeners.
+      // To allow a listener count of 0 to indicate that all monitors have been killed
       process.removeListener('END_MONITOR', killTail);
 
       if (monitor.tail) {
@@ -206,6 +214,8 @@
       }
 
       if (program.test) {
+        // All monitors have invoked killTail() and sent a kill signal to their
+        // remote tail processes.
         if (!process.listeners('END_MONITOR').length) {
           process.send('MONITORS_ENDED');
         }
@@ -238,6 +248,7 @@
    * Trigger monitors to clean up their `tail` instances.
    */
   var endAllMonitors = function() {
+    // Trigger each monitor to call killTail().
     process.emit('END_MONITOR');
   };
   process.on('exit', endAllMonitors);
