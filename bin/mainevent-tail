@@ -27,6 +27,9 @@
   // To support maximum line count for --test.
   var lineCount = 0;
 
+  // To support restart tests.
+  var startCount = 0;
+
   /**
    * Configure the monitor.
    */
@@ -90,6 +93,12 @@
    * Start a new `tail` instance and attach event handlers.
    */
   Monitor.prototype.start = function() {
+    startCount++;
+
+    if (startCount > 1 && program.test) {
+      process.send('MONITOR_RESTART');
+    }
+
     this.log('spawning tail');
 
     if (this.source.sshKey) {
@@ -107,7 +116,8 @@
       data = data.toString();
 
       // Use -v header output to detect tail readiness (for remote invocation).
-      if (program.test && data.match(/^==>/)) {
+      // Check startCount to avoid beginning a new restart cycle.
+      if (1 === startCount && program.test && data.match(/^==>/)) {
         if (monitor.source.sshKey) {
           monitor.saveRemotePid(function() {
             process.send('MONITORS_STARTED');
@@ -139,10 +149,6 @@
 
       // Auto-restart.
       monitor.start();
-
-      if (program.test) {
-        process.send('MONITOR_RESTART');
-      }
     });
 
     // Kill `tail` before parent process exits.
