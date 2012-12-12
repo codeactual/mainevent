@@ -186,10 +186,16 @@ exports.ssh = {
     this.configFile = sshConfigFile;
     this.config = mainevent.getConfig(this.configFile);
     this.path = this.config.sources[0].path;
+
+    // How long to wait for the remote kill to complete.
+    this.remoteKillWait = 500;
+
     callback();
   },
 
   testRemoteSource: function(test) {
+    var self = this;
+
     test.expect(2);
 
     var run = testutil.getRandHash(),
@@ -203,25 +209,24 @@ exports.ssh = {
           '--test', 1
         ], {env: process.env});
 
-   // Verify remote `tail` output was processed.
-   tailJs.on('exit', function(code) {
-     mongodb.getTimeline({run: run}, function(err, docs) {
-       test.equal(docs[0].run, run);
-
-       // Verify remote `tail` was killed.
-       exec(pgrepTailCmd, [], function(error) {
-         test.equal(error.code, 1); // 'No processes matched.'
-         test.done();
-       });
-     });
-   });
-
-   // Wait until we know tail.js has started watching 'path' to add a line.
    tailJs.on('message', function(message) {
-     if ('MONITORS_STARTED' == message) {
+     // Wait until we know tail.js has started watching 'path' to add a line.
+     if ('MONITORS_STARTED' === message) {
        fs.writeSync(fd, log);
        fs.closeSync(fd);
-     }
+       // Verify remote `tail` output was processed.
+     } else if ('MONITORS_ENDED' === message) {
+       mongodb.getTimeline({run: run}, function(err, docs) {
+         test.equal(docs[0].run, run);
+          setTimeout(function() {
+            // Verify remote `tail` was killed.
+            exec(pgrepTailCmd, [], function(error, stdout) {
+              test.equal(error.code, 1); // 'No processes matched.'
+              test.done();
+            });
+          }, self.remoteKillWait);
+       });
+      }
    });
 
    tailJs.send('START_TEST');

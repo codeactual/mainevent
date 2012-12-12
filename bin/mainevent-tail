@@ -154,7 +154,9 @@
 
     // Kill `tail` before parent process exits.
     var killTail = function() {
+      // Prevent restarts from collecting additional listeners.
       process.removeListener('END_MONITOR', killTail);
+
       if (monitor.tail) {
         monitor.mongodb.dbClose();
         monitor.tail.kill('SIGKILL');
