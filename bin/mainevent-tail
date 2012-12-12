@@ -54,6 +54,16 @@
 
     // Remote `tail` PID.
     this.remotePid = null;
+
+    // Source-specific parser instance.
+    this.parser = parsers.createInstance(this.source.parser);
+
+    this.overflow = '';
+
+    _.bindAll(this);
+
+    // Insertion queue.
+    this.queue = async.queue(this.insertLog, 1);
   };
 
   /**
@@ -89,6 +99,32 @@
     });
   };
 
+  Monitor.prototype.insertLog = function(line, next) {
+        console.log(
+          'inserting: count=%d line=%s length=%d',
+          lineCount, line, line.length
+        );
+    var monitor = this;
+    var sourceLines = {source: this.source, lines: [line]};
+    var bulk = true;
+    parsers.parseAndInsert(this.mongodb, sourceLines, function() {
+      lineCount++;
+      if (program.verbose) {
+        monitor.log(
+          'inserted: count=%d line=%s length=%d',
+          lineCount, line, line.length
+        );
+      }
+      // Support maximum line count for --test.
+      if (program.test > 0 && lineCount >= program.test) {
+        console.log('lineCount', lineCount);
+        console.log('program.test', program.test);
+        process.send('TEST_BATCH_ENDED');
+      }
+      next();
+    }, bulk);
+  };
+
   /**
    * Start a new `tail` instance and attach event handlers.
    */
@@ -113,7 +149,8 @@
     var monitor = this;
 
     this.tail.stdout.on('data', function(data) {
-      data = data.toString();
+      data = monitor.overflow + data.toString();
+      monitor.overflow = '';
 
       // Use -v header output to detect tail readiness (for remote invocation).
       // Check startCount to avoid beginning a new restart cycle.
@@ -127,21 +164,27 @@
         }
         return;
       }
+      console.log('data', data);
 
-      var lines = parsers.splitString(data);
-      lineCount += lines.length;
+      data = data.trim();
 
-      if (program.verbose) {
-        monitor.log('data=[%s] length={%d]', data, lines.length);
-      }
-
-      var sourceLines = {source: monitor.source, lines: lines}, bulk = true;
-      parsers.parseAndInsert(monitor.mongodb, sourceLines, function() {
-        // Support maximum line count for --test.
-        if (program.test > 0 && lineCount >= program.test) {
-          process.exit();
+      parsers.extractLines(
+        [data],
+        monitor.parser,
+        function(line, next) {
+          monitor.queue.push(line);
+          next();
+        },
+        function(overflow) {
+          if (_.size(overflow)) {
+            console.log('got overflow');
+            monitor.overflow += overflow;
+          } else {
+            monitor.overflow = '';
+          }
+          console.log('Chunk processed.');
         }
-      }, bulk);
+      );
     });
 
     this.tail.on('exit', function(code, signal) {
@@ -223,8 +266,10 @@
   // Test mode -- wait until instructed by parent process.
   if (program.test) {
     process.on('message', function(message) {
-      if ('START_TEST' == message) {
+      if ('START_TEST' === message) {
         startAllMonitors();
+      } else if ('END_TEST' === message) {
+        process.exit();
       }
     });
   // Normal mode -- start immediately.

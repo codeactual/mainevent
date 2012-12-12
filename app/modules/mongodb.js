@@ -234,12 +234,13 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
         docs.push(log);
       });
 
-      collection.insert(docs, function(err, docs) {
+      collection.insert(docs, function(err, insertedDocs) {
         if (err) {
           // Connection reuse failed -- retry.
           // To support bursts of concurrent writes that sometimes trigger
           // connection loss.
           if (/no open connections/.test(err.toString())) {
+        console.log('reconnecting, was writing', docs);
             mongodb.link = null;
             mongodb.dbConnectAndOpen(
               function() { // Failure.
@@ -253,9 +254,11 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
           }
         }
 
+        console.log('WROTE', _.size(insertedDocs));
+
         if (!err) {
           // Trigger other serializations, ex. Redis.
-          mongodb.emit('InsertLog', _.clone(docs));
+          mongodb.emit('InsertLog', insertedDocs);
         }
 
         if (!bulk) {

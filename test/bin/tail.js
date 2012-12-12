@@ -140,8 +140,8 @@ exports.core = {
     var testcase = this,
         run = testutil.getRandHash(),
         lines = [],
-        size = 200,
-        fd = fs.openSync(this.path, 'a'),
+        size = 100,
+        fd = fs.openSync(this.path, 'w'),
         // -t will enable test mode and force exit after 1 line.
         tailJs = fork(tailJsFile, [
           '--quiet',
@@ -149,19 +149,12 @@ exports.core = {
           '--test', size
         ], {env: process.env});
 
-    _(size).times(function() {
-      lines.push(JSON.stringify({path: testcase.path, run: run}) + "\n");
+    _(size).times(function(pos) {
+      lines.push(JSON.stringify({path: testcase.path, run: run, pos: pos}) + "\n");
     });
 
     // Verify the entire burst was saved.
     tailJs.on('exit', function(code) {
-      mongodb.getCollectionCursor(testcase.config.mongodb.collections.event, {run: run}, {}, function(cursor) {
-        cursor.count(function(err, count) {
-          mongodb.dbClose();
-          test.equal(count, lines.length);
-          test.done();
-        });
-      });
     });
 
     // Wait until we know tail.js has started watching 'path' to add lines.
@@ -171,6 +164,15 @@ exports.core = {
           fs.writeSync(fd, line);
         });
         fs.closeSync(fd);
+      } else if ('TEST_BATCH_ENDED' === message) {
+        mongodb.getCollectionCursor(testcase.config.mongodb.collections.event, {run: run}, {}, function(cursor) {
+          cursor.count(function(err, count) {
+            mongodb.dbClose();
+            tailJs.send('END_TEST');
+            test.equal(count, lines.length);
+            test.done();
+          });
+        });
       }
     });
 
