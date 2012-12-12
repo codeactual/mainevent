@@ -65,5 +65,41 @@ exports.Json = {
         test.done();
       });
     });
+  },
+
+  testExtractLines: function(test) {
+    test.expect(1);
+
+    var rawLines = [
+      '{"',
+      'key1":"val1',
+      '","key',
+      '2":"val2","key3"',
+      ':"val3"',
+      '}\n{"',
+      'key4":"val4","key5":',
+      '"val5","key6":"val6"}\n{"key7":"val7","key8":"val8","key9":"val9"}\n{"key10":"val10","key11":"val11","key12":"val12"}'
+    ];
+    var expectedLines = [
+      '{"key1":"val1","key2":"val2","key3":"val3"}',
+      '{"key4":"val4","key5":"val5","key6":"val6"}',
+      '{"key7":"val7","key8":"val8","key9":"val9"}',
+      '{"key10":"val10","key11":"val11","key12":"val12"}'
+    ];
+
+    var fullLines = [];
+
+    testutil.parsers.extractLines(
+      rawLines,
+      testutil.parsers.createInstance('Json'),
+      function(line, next) {
+        fullLines.push(line);
+        next();
+      },
+      function() {
+        test.deepEqual(fullLines, expectedLines);
+        test.done();
+      }
+    );
   }
 };

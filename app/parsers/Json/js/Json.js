@@ -43,5 +43,9 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
       preview.push(key + '=' + value);
     });
     return preview.join(', ');
+  },
+
+  detectDelimiter: function(line) {
+    return line.indexOf('\n');
   }
 });

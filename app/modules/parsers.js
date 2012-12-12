@@ -127,3 +127,59 @@ exports.splitString = function(str) {
     return line.match(/^\s+$/);
   });
 };
+
+/**
+ * Extract parsable lines from a collection of partials.
+ *
+ * @param {Array} rawLines Partial lines.
+ * @param {Object} parser Parser instance.
+ * @param {Function} consumeLine Callback fires for each line.
+ *   {String} Parsable line.
+ *   {Function} Callback to fire after line has been consumed.
+ * @param {Function} extractDone Callback fires after all lines have been consumed.
+ */
+exports.extractLines = function(rawLines, parser, consumeLine, extractDone) {
+  var async = require('async');
+  var currentLine = '';
+  var detectDelimiter = parser.detectDelimiter;
+
+  async.forEachSeries(
+    rawLines,
+    function(line, nextLine) {
+      async.until(
+        function() {
+          return '' === line;
+        },
+        function(continueLineRead) {
+          var delimPos = detectDelimiter(line);
+
+          // No delimter found. Keep building a full line.
+          if (-1 === delimPos) {
+            currentLine += line;
+            line = '';
+            continueLineRead();
+          } else {
+            // Append everything up to, but not including, the delimiter.
+            currentLine += line.substr(0, delimPos);
+
+            var consumable = currentLine;
+            currentLine = '';
+
+            // Remaining characters after the delimiter.
+            line = line.substr(delimPos + 1);
+
+            consumeLine(consumable, continueLineRead);
+          }
+        },
+        nextLine
+      );
+    },
+    function() {
+      if (currentLine) {
+        consumeLine(currentLine, extractDone);
+      } else {
+        extractDone();
+      }
+    }
+  );
+};
