@@ -2,10 +2,6 @@ define([], function() {
 
   'use strict';
 
-  if ('undefined' != typeof require) {
-    var moment = require('moment');
-  }
-
   var root = 'undefined' === typeof window ? GLOBAL : window;
   root.mainevent = root.mainevent || {};
   root.mainevent.shared = root.mainevent.shared || {};
