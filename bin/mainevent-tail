@@ -148,6 +148,7 @@
       monitor.log("tail exited with code %d, signal %s", code, signal);
 
       // Auto-restart.
+      monitor.log('restarting');
       monitor.start();
     });
 
@@ -157,13 +158,13 @@
       if (monitor.tail) {
         monitor.mongodb.dbClose();
         monitor.tail.kill('SIGKILL');
-        monitor.log('killed local pid %d ...', monitor.tail.pid);
+        monitor.log('killed local pid %d', monitor.tail.pid);
         monitor.tail = null;
 
         if (monitor.remotePid) { // Manually kill -- `ssh -t` approach hasn't worked.
           monitor.log('killing remote pid %d ...', monitor.remotePid);
           spawn('ssh', monitor.buildSshCmd(['kill -9 ' + monitor.remotePid]));
-          monitor.log('killed remote pid %d ...', monitor.remotePid);
+          monitor.log('killed remote pid %d', monitor.remotePid);
           monitor.remotePid = null;
         }
       }
