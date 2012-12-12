@@ -5,7 +5,6 @@
 'use strict';
 
 var fs = require('fs'),
-    path = require('path'),
     testutil = require(__dirname + '/../modules/testutil.js'),
     fork = require('child_process').fork,
     exec = require('child_process').exec,
@@ -229,6 +228,6 @@ exports.ssh = {
   }
 };
 
-if (!path.existsSync(sshConfigFile)) {
+if (!fs.existsSync(sshConfigFile)) {
   delete exports.ssh;
 }
