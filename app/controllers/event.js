@@ -24,7 +24,7 @@ define([], function() {
         return;
       }
 
-      if ('Json' == doc.parser) {
+      if ('Json' === doc.parser) {
         var list = [];
         _.each(doc, function(value, key) {
           list.push({key: key, value: value});

@@ -20,7 +20,7 @@ exports.NginxAccessParser = extend({name: 'NginxAccess', humanName: 'nginx acces
     }
 
     if (log.referer) {
-      log.referer = '-' == log.referer ? '' : log.referer;
+      log.referer = '-' === log.referer ? '' : log.referer;
       log.__refererMin = log.referer.replace(/^http(s)?:\/\//, '');
     }
     return log;

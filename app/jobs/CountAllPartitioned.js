@@ -39,40 +39,40 @@ Job.extend(CountAllPartitioned, {
       case 'month':
         group =
           this.time.getFullYear()
-          + '-' + (month.length == 2 ? month : '0' + month);
+          + '-' + (month.length === 2 ? month : '0' + month);
         break;
       case 'day':
         group =
-          (month.length == 2 ? month : '0' + month)
-          + '/' + (date.length == 2 ? date : '0' + date)
+          (month.length === 2 ? month : '0' + month)
+          + '/' + (date.length === 2 ? date : '0' + date)
           + '/' + this.time.getFullYear()
           + ' 00:00:00';
         break;
       case 'hour':
         group =
-          (month.length == 2 ? month : '0' + month)
-          + '/' + (date.length == 2 ? date : '0' + date)
+          (month.length === 2 ? month : '0' + month)
+          + '/' + (date.length === 2 ? date : '0' + date)
           + '/' + this.time.getFullYear()
-          + ' ' + (hours.length == 2 ? hours : '0' + hours)
+          + ' ' + (hours.length === 2 ? hours : '0' + hours)
           + ':00';
         break;
       case 'minute':
         group =
-          (month.length == 2 ? month : '0' + month)
-          + '/' + (date.length == 2 ? date : '0' + date)
+          (month.length === 2 ? month : '0' + month)
+          + '/' + (date.length === 2 ? date : '0' + date)
           + '/' + this.time.getFullYear()
-          + ' ' + (hours.length == 2 ? hours : '0' + hours)
-          + ':' + (minutes.length == 2 ? minutes : '0' + minutes)
+          + ' ' + (hours.length === 2 ? hours : '0' + hours)
+          + ':' + (minutes.length === 2 ? minutes : '0' + minutes)
           + ':00';
         break;
       case 'second':
         group =
-          (month.length == 2 ? month : '0' + month)
-          + '/' + (date.length == 2 ? date : '0' + date)
+          (month.length === 2 ? month : '0' + month)
+          + '/' + (date.length === 2 ? date : '0' + date)
           + '/' + this.time.getFullYear()
-          + ' ' + (hours.length == 2 ? hours : '0' + hours)
-          + ':' + (minutes.length == 2 ? minutes : '0' + minutes)
-          + ':' + (seconds.length == 2 ? seconds : '0' + seconds);
+          + ' ' + (hours.length === 2 ? hours : '0' + hours)
+          + ':' + (minutes.length === 2 ? minutes : '0' + minutes)
+          + ':' + (seconds.length === 2 ? seconds : '0' + seconds);
         break;
       default:
         return;

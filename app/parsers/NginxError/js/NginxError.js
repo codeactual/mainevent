@@ -25,7 +25,7 @@ exports.NginxErrorParser = extend({name: 'NginxError', humanName: 'nginx error'}
   },
 
   buildTemplateContext: function(template, log) {
-    if ('full' == template) {
+    if ('full' === template) {
       return log;
     }
 

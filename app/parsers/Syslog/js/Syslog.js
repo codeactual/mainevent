@@ -13,7 +13,7 @@ exports.SyslogParser = extend({name: 'Syslog', humanName: 'Syslog'}, {
   },
 
   buildTemplateContext: function(template, log) {
-    if ('full' == template) {
+    if ('full' === template) {
       return log;
     }
 

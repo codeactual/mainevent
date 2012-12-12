@@ -46,7 +46,7 @@ MongoDb.prototype.eventPostFind = function(docs, options) {
   var post = {
     info: {
       prevPage: docs && options.skip > 0,
-      nextPage: docs && (docs.length == options.limit)
+      nextPage: docs && (docs.length === options.limit)
     },
     docs: docs
   };
@@ -74,16 +74,16 @@ MongoDb.prototype.extractSortOptions = function(params) {
   params = params || {};
 
   if (params['sort-attr']) {
-    if ('desc' == params['sort-dir']) {
+    if ('desc' === params['sort-dir']) {
       options.sort = [[params['sort-attr'], 'desc']];
       delete params['sort-dir'];
-    } else if ('asc' == params['sort-dir']) {
+    } else if ('asc' === params['sort-dir']) {
       options.sort = [[params['sort-attr'], 'asc']];
       delete params['sort-dir'];
     }
     delete params['sort-attr'];
 
-    if ('time' == options.sort[0][0]) {
+    if ('time' === options.sort[0][0]) {
       options.sort.push(['_id', options.sort[0][1]]);
     }
   }
@@ -111,7 +111,7 @@ MongoDb.prototype.filterQuery = function(params) {
   _.each(params, function(value, key) {
     var matches = null;
     if ((matches = key.match(/^(.*)-(gte|gt|lte|lt|ne)$/))) {
-      if ('time' == matches[1]) {
+      if ('time' === matches[1]) {
         value = new Date(parseInt(value, 10));
       }
       if (!params[matches[1]]) {
@@ -119,9 +119,9 @@ MongoDb.prototype.filterQuery = function(params) {
       }
       params[matches[1]]['$' + matches[2]] = value;
       delete params[key];
-    } else if ('_id' == key && _.isString(value)) {
+    } else if ('_id' === key && _.isString(value)) {
       params[key] = new BSON.ObjectID(value);
-    } else if ('_id' == key && _.isObject(value)) {
+    } else if ('_id' === key && _.isObject(value)) {
       _.each(value, function(v, comparison) {
         value[comparison] = new BSON.ObjectID(v.toString());
       });
@@ -506,10 +506,10 @@ MongoDb.prototype.sortObjectIdAsc = function(a, b) {
   a = MongoDb.prototype.parseObjectId(a);
   b = MongoDb.prototype.parseObjectId(b);
 
-  if (a.time == b.time) {
-    if (a.machine == b.machine) {
-      if (a.pid == b.pid) {
-        if (a.increment == b.increment) {
+  if (a.time === b.time) {
+    if (a.machine === b.machine) {
+      if (a.pid === b.pid) {
+        if (a.increment === b.increment) {
           return 0;
         } else if (a.increment < b.increment) {
           return -1;

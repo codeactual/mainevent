@@ -24,7 +24,7 @@ define([], function() {
         redis.client.on('ready', function() {
           redis.client.subscribe('InsertLog');
           redis.client.on('message', function(channel, message) {
-            if ('InsertLog' == channel) {
+            if ('InsertLog' === channel) {
               var docs = JSON.parse(message),
               parsers = mainevent.requireModule('parsers');
 

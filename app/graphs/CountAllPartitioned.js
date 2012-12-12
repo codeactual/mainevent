@@ -204,7 +204,7 @@ var runJob = function(lastId) {
         chunkLastId = lastId;
       }
 
-      if (lastId == chunkLastId) {
+      if (lastId === chunkLastId) {
         if (program.verbose) {
           log('last event reached');
         }

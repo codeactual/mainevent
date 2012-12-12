@@ -5,7 +5,7 @@ define([], function() {
   return function(req, res) {
     var mongodb = mainevent.requireModule('mongodb').createInstance();
 
-    if ('time' == req.query['sort-attr'] && 'desc' == req.query['sort-dir']) {
+    if ('time' === req.query['sort-attr'] && 'desc' === req.query['sort-dir']) {
       res.setHeader('Cache-Control: no-store, no-cache, must-revalidate');
     }
 

@@ -18,7 +18,7 @@ exports.PhpParser = extend({name: 'Php', humanName: 'PHP'}, {
   },
 
   buildTemplateContext: function(template, log) {
-    if ('full' == template) {
+    if ('full' === template) {
       return log;
     }
 

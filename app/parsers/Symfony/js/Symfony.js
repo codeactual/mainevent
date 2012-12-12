@@ -18,7 +18,7 @@ exports.SymfonyParser = extend({name: 'Symfony', humanName: 'Symfony'}, {
   },
 
   buildTemplateContext: function(template, log) {
-    if ('full' == template) {
+    if ('full' === template) {
       return log;
     }
 

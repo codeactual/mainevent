@@ -18,7 +18,7 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
   },
 
   buildTemplateContext: function(template, log) {
-    if ('full' == template) {
+    if ('full' === template) {
       return log;
     }
 

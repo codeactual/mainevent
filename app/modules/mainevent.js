@@ -45,7 +45,7 @@ GLOBAL.mainevent = {
    * @return {String}
    */
   extractJobName: function(name) {
-    if (name[0] == '/') {
+    if (name[0] === '/') {
       name = require('path').basename(name, '.js');
     }
     return name;
