@@ -41,14 +41,14 @@ exports.core = {
         fs.closeSync(fd);
       } else if ('TEST_BATCH_ENDED' === message) {
         mongodb.getTimeline({run: run}, function(err, docs) {
-          tailJs.send('END_TEST');
+          tailJs.send('TEST_ENDED');
           test.equal(docs[0].run, run);
           test.done();
         });
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   testAutoRestart: function(test) {
@@ -82,7 +82,7 @@ exports.core = {
           fs.writeSync(fd, log);
           fs.closeSync(fd);
 
-          tailJs.send('END_TEST');
+          tailJs.send('TEST_ENDED');
 
           test.ok(parseInt(stdout.toString(), 10) > 0);
           test.done();
@@ -90,7 +90,7 @@ exports.core = {
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   testMonitorCleanup: function(test) {
@@ -116,7 +116,7 @@ exports.core = {
         });
 
       // Wait until we know tail.js should have restarted `tail`.
-      } else if ('MONITORS_ENDED' == message) {
+      } else if ('ALL_MONITORS_ENDED' == message) {
         exec(pgrepTailJs, [], function(error) {
          test.equal(error.code, 1); // 'No processes matched.'
           test.done();
@@ -124,7 +124,7 @@ exports.core = {
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   /**
@@ -165,7 +165,7 @@ exports.core = {
         mongodb.getCollectionCursor(testcase.config.mongodb.collections.event, {run: run}, {}, function(cursor) {
           cursor.count(function(err, count) {
             mongodb.dbClose();
-            tailJs.send('END_TEST');
+            tailJs.send('TEST_ENDED');
             test.equal(count, lines.length);
             test.done();
           });
@@ -173,7 +173,7 @@ exports.core = {
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   }
 };
 
@@ -214,9 +214,9 @@ exports.ssh = {
        fs.writeSync(fd, log);
        fs.closeSync(fd);
     } else if ('TEST_BATCH_ENDED' === message) {
-      tailJs.send('END_TEST');
+      tailJs.send('TEST_ENDED');
        // Verify remote `tail` output was processed.
-     } else if ('MONITORS_ENDED' === message) {
+     } else if ('ALL_MONITORS_ENDED' === message) {
        mongodb.getTimeline({run: run}, function(err, docs) {
          test.equal(docs[0].run, run);
           setTimeout(function() {
@@ -230,7 +230,7 @@ exports.ssh = {
       }
    });
 
-   tailJs.send('START_TEST');
+   tailJs.send('TEST_STARTED');
   }
 };
 
