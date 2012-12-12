@@ -1,0 +1,17 @@
+'use strict';
+
+exports.read = function () {
+  var config = mainevent.getConfig();
+  config.sources = [{
+    path: '/path/to/log',
+    parser: 'Json',
+    tags: ['test1', 'test2'],
+    timeAttr: 't',
+    previewAttr: ['subject'],
+    sshKey: '/path/to/.ssh/mainevent-test-tail',
+    sshPort: 22,
+    sshUser: '',
+    sshHost: ''
+  }];
+  return config;
+};
