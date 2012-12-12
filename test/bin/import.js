@@ -25,7 +25,7 @@ exports.testImport = function(test) {
   fs.closeSync(fd);
 
   // Import it w/ all options.
-  var tailJs = spawn(__dirname + '/../../bin/import.js', [
+  var tailJs = spawn(__dirname + '/../../bin/mainevent-import', [
     '--path', source.path,
     '--parser', source.parser,
     '--tags', source.tags.join(','),

@@ -9,7 +9,7 @@ var fs = require('fs'),
     testutil = require(__dirname + '/../modules/testutil.js'),
     fork = require('child_process').fork,
     exec = require('child_process').exec,
-    tailJsFile = __dirname + '/../../bin/tail.js',
+    tailJsFile = __dirname + '/../../bin/mainevent-tail',
     mongodb = mainevent.requireModule('mongodb').createInstance(),
     pgrepTailCmdFormat = 'pgrep -f "^tail --bytes=0 -F %s -v"';
 
