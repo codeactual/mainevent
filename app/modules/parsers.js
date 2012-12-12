@@ -175,10 +175,11 @@ exports.extractLines = function(rawLines, parser, consumeLine, extractDone) {
       );
     },
     function() {
-      if (currentLine) {
+      if (parser.isLineParsable(currentLine)) {
         consumeLine(currentLine, extractDone);
       } else {
-        extractDone();
+        // Send back overflow.
+        extractDone(currentLine);
       }
     }
   );

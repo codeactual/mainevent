@@ -34,22 +34,21 @@ exports.core = {
           '--test', 1
         ], {env: process.env});
 
-    tailJs.on('exit', function(code) {
-      mongodb.getTimeline({run: run}, function(err, docs) {
-        test.equal(docs[0].run, run);
-        test.done();
-      });
-    });
-
     // Wait until we know tail.js has started watching 'path' to add a line.
     tailJs.on('message', function(message) {
       if ('MONITORS_STARTED' == message) {
         fs.writeSync(fd, log);
         fs.closeSync(fd);
+      } else if ('TEST_BATCH_ENDED' === message) {
+        mongodb.getTimeline({run: run}, function(err, docs) {
+          tailJs.send('TEST_ENDED');
+          test.equal(docs[0].run, run);
+          test.done();
+        });
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   testAutoRestart: function(test) {
@@ -83,13 +82,15 @@ exports.core = {
           fs.writeSync(fd, log);
           fs.closeSync(fd);
 
+          tailJs.send('TEST_ENDED');
+
           test.ok(parseInt(stdout.toString(), 10) > 0);
           test.done();
         });
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   testMonitorCleanup: function(test) {
@@ -115,7 +116,7 @@ exports.core = {
         });
 
       // Wait until we know tail.js should have restarted `tail`.
-      } else if ('MONITORS_ENDED' == message) {
+      } else if ('ALL_MONITORS_ENDED' == message) {
         exec(pgrepTailJs, [], function(error) {
          test.equal(error.code, 1); // 'No processes matched.'
           test.done();
@@ -123,7 +124,7 @@ exports.core = {
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   },
 
   /**
@@ -140,8 +141,8 @@ exports.core = {
     var testcase = this,
         run = testutil.getRandHash(),
         lines = [],
-        size = 200,
-        fd = fs.openSync(this.path, 'a'),
+        size = 100,
+        fd = fs.openSync(this.path, 'w'),
         // -t will enable test mode and force exit after 1 line.
         tailJs = fork(tailJsFile, [
           '--quiet',
@@ -149,19 +150,8 @@ exports.core = {
           '--test', size
         ], {env: process.env});
 
-    _(size).times(function() {
-      lines.push(JSON.stringify({path: testcase.path, run: run}) + "\n");
-    });
-
-    // Verify the entire burst was saved.
-    tailJs.on('exit', function(code) {
-      mongodb.getCollectionCursor(testcase.config.mongodb.collections.event, {run: run}, {}, function(cursor) {
-        cursor.count(function(err, count) {
-          mongodb.dbClose();
-          test.equal(count, lines.length);
-          test.done();
-        });
-      });
+    _(size).times(function(pos) {
+      lines.push(JSON.stringify({path: testcase.path, run: run, pos: pos}) + "\n");
     });
 
     // Wait until we know tail.js has started watching 'path' to add lines.
@@ -171,10 +161,19 @@ exports.core = {
           fs.writeSync(fd, line);
         });
         fs.closeSync(fd);
+      } else if ('TEST_BATCH_ENDED' === message) {
+        mongodb.getCollectionCursor(testcase.config.mongodb.collections.event, {run: run}, {}, function(cursor) {
+          cursor.count(function(err, count) {
+            mongodb.dbClose();
+            tailJs.send('TEST_ENDED');
+            test.equal(count, lines.length);
+            test.done();
+          });
+        });
       }
     });
 
-    tailJs.send('START_TEST');
+    tailJs.send('TEST_STARTED');
   }
 };
 
@@ -214,8 +213,10 @@ exports.ssh = {
      if ('MONITORS_STARTED' === message) {
        fs.writeSync(fd, log);
        fs.closeSync(fd);
+    } else if ('TEST_BATCH_ENDED' === message) {
+      tailJs.send('TEST_ENDED');
        // Verify remote `tail` output was processed.
-     } else if ('MONITORS_ENDED' === message) {
+     } else if ('ALL_MONITORS_ENDED' === message) {
        mongodb.getTimeline({run: run}, function(err, docs) {
          test.equal(docs[0].run, run);
           setTimeout(function() {
@@ -229,7 +230,7 @@ exports.ssh = {
       }
    });
 
-   tailJs.send('START_TEST');
+   tailJs.send('TEST_STARTED');
   }
 };
 
