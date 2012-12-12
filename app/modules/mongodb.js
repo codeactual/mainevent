@@ -240,7 +240,6 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
           // To support bursts of concurrent writes that sometimes trigger
           // connection loss.
           if (/no open connections/.test(err.toString())) {
-        console.log('reconnecting, was writing', docs);
             mongodb.link = null;
             mongodb.dbConnectAndOpen(
               function() { // Failure.
@@ -253,8 +252,6 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
             return;
           }
         }
-
-        console.log('WROTE', _.size(insertedDocs));
 
         if (!err) {
           // Trigger other serializations, ex. Redis.

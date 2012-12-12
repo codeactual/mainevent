@@ -34,18 +34,17 @@ exports.core = {
           '--test', 1
         ], {env: process.env});
 
-    tailJs.on('exit', function(code) {
-      mongodb.getTimeline({run: run}, function(err, docs) {
-        test.equal(docs[0].run, run);
-        test.done();
-      });
-    });
-
     // Wait until we know tail.js has started watching 'path' to add a line.
     tailJs.on('message', function(message) {
       if ('MONITORS_STARTED' == message) {
         fs.writeSync(fd, log);
         fs.closeSync(fd);
+      } else if ('TEST_BATCH_ENDED' === message) {
+        mongodb.getTimeline({run: run}, function(err, docs) {
+          tailJs.send('END_TEST');
+          test.equal(docs[0].run, run);
+          test.done();
+        });
       }
     });
 
@@ -82,6 +81,8 @@ exports.core = {
           var fd = fs.openSync(testcase.path, 'a');
           fs.writeSync(fd, log);
           fs.closeSync(fd);
+
+          tailJs.send('END_TEST');
 
           test.ok(parseInt(stdout.toString(), 10) > 0);
           test.done();
@@ -153,10 +154,6 @@ exports.core = {
       lines.push(JSON.stringify({path: testcase.path, run: run, pos: pos}) + "\n");
     });
 
-    // Verify the entire burst was saved.
-    tailJs.on('exit', function(code) {
-    });
-
     // Wait until we know tail.js has started watching 'path' to add lines.
     tailJs.on('message', function(message) {
       if ('MONITORS_STARTED' == message) {
@@ -216,6 +213,8 @@ exports.ssh = {
      if ('MONITORS_STARTED' === message) {
        fs.writeSync(fd, log);
        fs.closeSync(fd);
+    } else if ('TEST_BATCH_ENDED' === message) {
+      tailJs.send('END_TEST');
        // Verify remote `tail` output was processed.
      } else if ('MONITORS_ENDED' === message) {
        mongodb.getTimeline({run: run}, function(err, docs) {

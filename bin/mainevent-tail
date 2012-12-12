@@ -100,10 +100,6 @@
   };
 
   Monitor.prototype.insertLog = function(line, next) {
-        console.log(
-          'inserting: count=%d line=%s length=%d',
-          lineCount, line, line.length
-        );
     var monitor = this;
     var sourceLines = {source: this.source, lines: [line]};
     var bulk = true;
@@ -117,8 +113,6 @@
       }
       // Support maximum line count for --test.
       if (program.test > 0 && lineCount >= program.test) {
-        console.log('lineCount', lineCount);
-        console.log('program.test', program.test);
         process.send('TEST_BATCH_ENDED');
       }
       next();
@@ -164,7 +158,6 @@
         }
         return;
       }
-      console.log('data', data);
 
       data = data.trim();
 
@@ -177,12 +170,10 @@
         },
         function(overflow) {
           if (_.size(overflow)) {
-            console.log('got overflow');
             monitor.overflow += overflow;
           } else {
             monitor.overflow = '';
           }
-          console.log('Chunk processed.');
         }
       );
     });
