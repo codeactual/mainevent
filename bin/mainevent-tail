@@ -160,8 +160,8 @@
         monitor.log('killed local pid %d ...', monitor.tail.pid);
         monitor.tail = null;
 
-        monitor.log('killing remote pid %d ...', monitor.remotePid);
         if (monitor.remotePid) { // Manually kill -- `ssh -t` approach hasn't worked.
+          monitor.log('killing remote pid %d ...', monitor.remotePid);
           spawn('ssh', monitor.buildSshCmd(['kill -9 ' + monitor.remotePid]));
           monitor.log('killed remote pid %d ...', monitor.remotePid);
           monitor.remotePid = null;
