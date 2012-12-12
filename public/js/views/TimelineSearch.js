@@ -59,7 +59,7 @@ define([], function() {
         var name = selector.substr(1);
         if (_.has(view.options.searchArgs, name)) {
           var value = view.options.searchArgs[name];
-          if (('time-gte' == name || 'time-lte' == name)) {
+          if (('time-gte' === name || 'time-lte' === name)) {
             value = moment(parseInt(value, 10)).format(view.datetimePickerFormat);
           }
           view.$(selector).val(value);
@@ -71,7 +71,7 @@ define([], function() {
       var condCount = 0;
       var condPairModel = this.$('.condition-pair');
       _.each(this.options.searchArgs, function(value, key) {
-        if ('skip' == key || 'limit' == key) {
+        if ('skip' === key || 'limit' === key) {
           return;
         }
 

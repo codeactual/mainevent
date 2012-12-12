@@ -2,7 +2,7 @@ define(['xregexp'], function(XRegExp) {
 
   'use strict';
 
-  var root = 'undefined' == typeof window ? GLOBAL : window;
+  var root = 'undefined' === typeof window ? GLOBAL : window;
   root.mainevent = root.mainevent || {};
   root.mainevent.shared = root.mainevent.shared || {};
   var mainevent = root.mainevent;
@@ -27,7 +27,7 @@ define(['xregexp'], function(XRegExp) {
 
       var filtered = {};
       _.each(Object.keys(match), function(key) {
-        if (key.match(/^[0-9]+$/) || 'input' == key || 'index' == key) {
+        if (key.match(/^[0-9]+$/) || 'input' === key || 'index' === key) {
           return;
         }
         filtered[key] = match[key];

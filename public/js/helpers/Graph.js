@@ -97,7 +97,7 @@ define(['shared/Date'], function() {
       axes.xaxis = axes.xaxis || {};
       axes.yaxis = axes.yaxis || {};
 
-      if (data.length == 1) {
+      if (data.length === 1) {
         // Zoom in, one unit padding on both sides.
         axes.xaxis.min = Graph.subtractDateUnit(data[0][0], 1);
         axes.xaxis.max = Graph.addDateUnit(data[0][0], 1);
@@ -201,7 +201,7 @@ define(['shared/Date'], function() {
           if (hint) {
             var hintIndex = _.indexOf(candidates, hint);
             // Unhelpful hint, just pick the first one.
-            match = -1 == hintIndex ? candidates[0] : candidates[hintIndex];
+            match = -1 === hintIndex ? candidates[0] : candidates[hintIndex];
           } else {
             match = candidates[0];
           }

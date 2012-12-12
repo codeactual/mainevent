@@ -27,7 +27,7 @@ define([], function() {
   });
   $('body').delegate('a', 'click', function(event) {
     var href = $(this).attr('href');
-    if (href[0] == '/') {
+    if (href[0] === '/') {
       event.preventDefault();
       mainevent.helpers.Event.trigger('LinkClick', href);
     };

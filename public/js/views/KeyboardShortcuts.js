@@ -47,7 +47,7 @@ define([], function() {
           }
           item.find('.keyChar').text(keyChar + ':');
           item.find('.description').text(handler.description);
-          count++ == 0 || list.append(item);
+          count++ === 0 || list.append(item);
         });
       });
       this.$el.modal('show');

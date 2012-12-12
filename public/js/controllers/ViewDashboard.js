@@ -29,7 +29,7 @@ define([
       _.each(parts, function(part) {
         // Ex. 'time-lte=1333495749798'. Push key/value pairs into dashArgs.
         var assign_part = part.split('=');
-        if (2 == assign_part.length) {
+        if (2 === assign_part.length) {
           dashArgs[assign_part[0]] = assign_part[1];
         }
       });

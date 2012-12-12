@@ -2,7 +2,7 @@ define([], function() {
 
   'use strict';
 
-  var root = 'undefined' == typeof window ? GLOBAL : window;
+  var root = 'undefined' === typeof window ? GLOBAL : window;
   root.mainevent = root.mainevent || {};
   root.mainevent.shared = root.mainevent.shared || {};
   var mainevent = root.mainevent;
@@ -21,7 +21,7 @@ define([], function() {
       }
 
       var constructor = val.constructor.toString().match(/^function ([^\(]+)/);
-      if (constructor[1] == 'Object' || constructor[1] == 'Array') {
+      if (constructor[1] === 'Object' || constructor[1] === 'Array') {
         val = _.clone(val);
         _.each(val, function(oVal, oKey) {
           val[oKey] = Lang.numericStrToNum(oVal);
@@ -29,7 +29,7 @@ define([], function() {
       } else if (_.isString(val) && val.match(/^-?[0-9.]+$/)) {
         var dots = val.match(/(\.)/g);
         if (dots) {
-          val = dots.length == 1 ? parseFloat(val) : val;
+          val = dots.length === 1 ? parseFloat(val) : val;
         } else {
           val = parseInt(val, 10);
         }

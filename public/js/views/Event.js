@@ -67,7 +67,7 @@ define([
         }
 
         _.each(searchArgs, function(value, key) {
-          if ('_' == key[0] || '' == value || key.match(/^(previewAttr|time|id)$/)) {
+          if ('_' === key[0] || '' === value || key.match(/^(previewAttr|time|id)$/)) {
             delete searchArgs[key];
           }
         });
@@ -96,9 +96,9 @@ define([
       if (event.__list) {
         event.__list = _.filter(event.__list, function(pair) {
           // Omit database ID.
-          if (pair.key == '_id') {
+          if (pair.key === '_id') {
             return false;
-          } else if (pair.key == 'tags') {
+          } else if (pair.key === 'tags') {
             context.tags = pair.value;
             return false;
           }
@@ -114,7 +114,7 @@ define([
 
         // Ex. format the time attribute.
         context.list = _.map(context.list, function(pair, index) {
-          if ('time' == pair.key) {
+          if ('time' === pair.key) {
             context.time = mainevent.shared.Date.formatTime(pair.value);
             context.timeFromNow = moment(pair.value).fromNow();
           }
@@ -124,7 +124,7 @@ define([
         // Ex. remove internal attributes for display.
         context.list = _.filter(context.list, function(pair, index) {
           var blacklist = ['parser', 'previewAttr', 'time'];
-          return -1 == blacklist.indexOf(pair.key);
+          return -1 === blacklist.indexOf(pair.key);
         });
 
       // Attributes are in a one-dimensional object, ex. from nginx_access parser.

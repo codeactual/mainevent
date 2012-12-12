@@ -25,7 +25,7 @@ define(['views/Timeline'], function(view) {
       _.each(parts, function(part) {
         // Ex. 'limit=10'. Push key/value pairs into searchArgs.
         var assign_part = part.split('=');
-        if (2 == assign_part.length) {
+        if (2 === assign_part.length) {
           var key = assign_part[0].replace(/\[\]$/, ''),
               value = assign_part[1];
           // Collect all options, ex. 'limit=10'.
@@ -62,9 +62,9 @@ define(['views/Timeline'], function(view) {
 
     // Enable compatible feature(s).
     mainevent.features.timelineUpdate =
-      'time' == searchArgs['sort-attr']
-      && 'desc' == searchArgs['sort-dir']
-      && 2 == _.size(searchArgs);
+      'time' === searchArgs['sort-attr']
+      && 'desc' === searchArgs['sort-dir']
+      && 2 === _.size(searchArgs);
 
     return new view({searchArgs: searchArgs, el: $('#backbone-view')});
   };
