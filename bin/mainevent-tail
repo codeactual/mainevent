@@ -67,7 +67,10 @@
     _.bindAll(this);
 
     // Insertion queue.
-    this.queue = async.queue(this.insertLog, 1);
+    this.queues = {
+      insert: async.queue(this.insertWorker, 1),
+      data: async.queue(this.dataWorker, 1)
+    }
   };
 
   /**
@@ -103,7 +106,13 @@
     });
   };
 
-  Monitor.prototype.insertLog = function(line, next) {
+  /**
+   * Queue worker which inserts a parsable line extracted from a `tail` output chunk.
+   *
+   * @param {String} line Parsable line.
+   * @param {Function} workDone Fires after work completes.
+   */
+  Monitor.prototype.insertWorker = function(line, workDone) {
     var monitor = this;
     var sourceLines = {source: this.source, lines: [line]};
     var bulk = true;
@@ -123,22 +132,72 @@
         // In most cases the test script will respond by killing this process.
         process.send('TEST_BATCH_ENDED');
       }
-      next();
+
+      workDone();
     }, bulk);
+  };
+
+  /**
+   * Queue worker that processes a `tail` output chunk.
+   *
+   * @param {String} data 'data' event payload.
+   * @param {Function} workDone Fires after work completes.
+   */
+  Monitor.prototype.dataWorker = function(data, workDone) {
+    var monitor = this;
+
+    // If the last 'data' handling resulted in an unparsable chunk,
+    // prepend it so that the next extractLines() run (or subsequent one)
+    // will receive enough text to complete the line.
+    data = this.overflow + data;
+    this.overflow = '';
+
+    // Use -v header output to detect tail readiness (for remote invocation).
+    // Check startCount to avoid beginning a new restart cycle.
+    if (1 === startCount && program.test && data.match(/^==>/)) {
+      if (this.source.sshKey) {
+        this.saveRemotePid(function() {
+          process.send('MONITORS_STARTED');
+        });
+      } else {
+        process.send('MONITORS_STARTED');
+      }
+
+      workDone();
+      return;
+    }
+
+    parsers.extractLines(
+      [data],
+      this.parser,
+      function(line, next) { // Enqueue parsable line for insert.
+        monitor.queues.insert.push(line);
+        next();
+      },
+      function(overflow) {  // Extraction attempt complete.
+        if (_.size(overflow)) {
+          // Append rather than set, in case log line spans multiple 'data' events.
+          monitor.overflow += overflow;
+        }
+      }
+    );
+
+    workDone();
   };
 
   /**
    * Start a new `tail` instance and attach event handlers.
    */
   Monitor.prototype.start = function() {
+    // Detect all restarts.
     startCount++;
-
     if (startCount > 1 && program.test) {
       process.send('MONITOR_RESTART');
     }
 
     this.log('spawning tail');
 
+    // Detect remote sources.
     if (this.source.sshKey) {
       this.tail = spawn('ssh', this.buildSshCmd(['tail'].concat(this.tailArgs)));
       if (!program.test) {
@@ -150,42 +209,12 @@
 
     var monitor = this;
 
+    // Enqueue `tail` output chunks for line extraction.
     this.tail.stdout.on('data', function(data) {
-      // If the last 'data' handling resulted in an unparsable chunk,
-      // prepend it so that the next extractLines() run (or subsequent one)
-      // will receive enough text to complete the line.
-      data = monitor.overflow + data.toString();
-      monitor.overflow = '';
-
-      // Use -v header output to detect tail readiness (for remote invocation).
-      // Check startCount to avoid beginning a new restart cycle.
-      if (1 === startCount && program.test && data.match(/^==>/)) {
-        if (monitor.source.sshKey) {
-          monitor.saveRemotePid(function() {
-            process.send('MONITORS_STARTED');
-          });
-        } else {
-          process.send('MONITORS_STARTED');
-        }
-        return;
-      }
-
-      parsers.extractLines(
-        [data],
-        monitor.parser,
-        function(line, next) { // Enqueue parsable line for insert.
-          monitor.queue.push(line);
-          next();
-        },
-        function(overflow) {  // Extraction attempt complete.
-          if (_.size(overflow)) {
-            // Append rather than set, in case log line spans multiple 'data' events.
-            monitor.overflow += overflow;
-          }
-        }
-      );
+      monitor.queues.data.push(data.toString());
     });
 
+    // Respond to `tail` exits by restarting.
     this.tail.on('exit', function(code, signal) {
       monitor.log("tail exited with code %d, signal %s", code, signal);
 
