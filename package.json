@@ -49,6 +49,7 @@
     "test": "test/all.js",
     "static": "public/build.js",
     "static:prod": "public/build.js --prod",
-    "start": "public/build.js && bin/mainevent-server"
+    "start": "public/build.js && bin/mainevent-server",
+    "tail": "bin/mainevent-tail"
   }
 }
