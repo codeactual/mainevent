@@ -239,6 +239,7 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 * [jqPlot](http://www.jqplot.com/) (MIT/GPLv2)
 * [jQuery](http://jquery.com/) (MIT/GPLv2)
 * [jQuery UI](http://jqueryui.com/) (MIT/GPLv2)
+  * Core, Widget, Mouse, Datepicker, Slider
 * [jQuery-Timepicker-Addon](https://github.com/trentrichardson/jQuery-Timepicker-Addon) (MIT/GPLv2)
 * [moment.js](http://momentjs.com/) (MIT)
 * [RequireJS](http://requirejs.org/) (MIT/New BSD)
