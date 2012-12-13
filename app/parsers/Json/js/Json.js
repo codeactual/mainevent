@@ -45,10 +45,6 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
     return preview.join(', ');
   },
 
-  detectDelimiter: function(line) {
-    return line.indexOf('\n');
-  },
-
   isLineParsable: function(line) {
     try {
       JSON.parse(line);

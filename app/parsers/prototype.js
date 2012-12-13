@@ -138,6 +138,17 @@ Parser.prototype.extractTime = function(log) {
 };
 
 /**
+ * Find the first log line break, e.g. within a `tail` output chunk.
+ *
+ * @param {string} line Contains one or more lines, some of which may be
+ *   unparsable partial lines.
+ * @return {number} indexOf() position.
+ */
+Parser.prototype.detectDelimiter = function(line) {
+  return line.indexOf('\n');
+};
+
+/**
  * Convenience wrapper around mainevent.shared.Lang.extend().
  *
  * - Curries the super class argument.
