@@ -4,7 +4,7 @@
 
 'use strict';
 
-var testutil = require(__dirname + '/modules/testutil.js');
+var testutil = require(__dirname + '/../modules/testutil.js');
 
 exports.lang = {
 

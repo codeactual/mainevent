@@ -21,6 +21,7 @@ _.each(fs.readdirSync(parserDir), function(dir) {
 });
 
 dirs.push(__dirname + '/bin');
+dirs.push(__dirname + '/shared');
 
 // Collect all JS files from 'dirs'.
 var files = [];

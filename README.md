@@ -159,14 +159,6 @@ Generates the cached data used by the graph on `/dashboard` visualizing total ev
 
 Like <code>[tail.js](https://github.com/codeactual/mainevent/blob/master/bin/tail.js)</code> except it processes the entire file. (The file does not need to be described in <code>[config/app.js](https://github.com/codeactual/mainevent/blob/master/config/app.js.dist)</code>.)
 
-### Testing
-
-#### [bin/test_server.js](https://github.com/codeactual/mainevent/blob/master/bin/test_server.js)
-
-`$ bin/test_server.js`
-
-Serves the [YUI Test](http://yuilibrary.com/yui/docs/test/) runner page, <code>[app/views/test.html](https://github.com/codeactual/mainevent/blob/master/app/views/test.html)</code> and [test/browser/*.js](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> test cases.
-
 ## File Layout Notes
 
 * <code>[app/](https://github.com/codeactual/mainevent/blob/master/app/)</code> : Holds most server-side modules and classes.
@@ -201,9 +193,7 @@ Server-side tests rely on [nodeunit](https://github.com/caolan/nodeunit). Exampl
 
 Run all tests found under <code>[app/parsers/](https://github.com/codeactual/mainevent/blob/master/app/parsers/)</code> and <code>[test/](https://github.com/codeactual/mainevent/blob/master/test/)</code>.
 
-`$ test/all.js`
-
-Client-side tests under <code>[test/browser/](https://github.com/codeactual/mainevent/blob/master/test/browser/)</code> rely on [YUI Test](http://yuilibrary.com/yui/docs/test/). <code>[bin/test_server.js](https://github.com/codeactual/mainevent/blob/master/bin/test_server.js)</code> will serve the runner page.
+`$ npm test`
 
 ### Remote Logs
 
@@ -247,7 +237,6 @@ Update `ssh*` configuration values in `test/fixtures/tail-config-remote.js`.
 * [Twitter Bootstrap](http://twitter.github.com/bootstrap/index.html) (Apachev2)
 * [underscore.js](http://documentcloud.github.com/underscore/) (MIT)
 * [XRegExp](https://github.com/slevithan/XRegExp) (MIT)
-* [YUI Test](http://yuilibrary.com/yui/docs/test/) (BSD)
 
 ### Copyright and license (MIT)
 

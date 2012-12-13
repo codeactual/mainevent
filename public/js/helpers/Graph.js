@@ -2,9 +2,10 @@ define(['shared/Date'], function() {
 
   'use strict';
 
-  window.mainevent = window.mainevent || {};
-  window.mainevent.helpers = window.mainevent.helpers || {};
-  var mainevent = window.mainevent;
+  var root = 'undefined' === typeof window ? GLOBAL : window;
+  root.mainevent = root.mainevent || {};
+  root.mainevent.helpers = root.mainevent.helpers || {};
+  var mainevent = root.mainevent;
 
   var Graph = mainevent.helpers.Graph = {
 
@@ -250,6 +251,7 @@ define(['shared/Date'], function() {
     findBestPartition: function(idealTicks, span) {
       var priorSize = null, priorTicks = null, bestSize = null;
       _.any(Object.keys(Graph.partitionSizes), function(size) {
+        var size = parseInt(size, 10);
         var ticks = Math.ceil(span / size);
         // Ideal passed.
         if (ticks <= idealTicks) {
