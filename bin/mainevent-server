@@ -20,7 +20,8 @@ var express = require('express'),
     io = require('socket.io').listen(server),
     build = mainevent.requireModule('build'),
     config = mainevent.getConfig(),
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 build.staticDir();
 build.mongoDbIndexes();
@@ -42,10 +43,8 @@ app.set('views', __dirname + '/../app/views');
 app.set('view options', {layout: false});
 
 // All non-API requests go to Backbone.js + pushState.
-app.get(/^((?!\/(api|js|css|img|socket.io)\/).)*$/, function(req, res) {
-  requirejs([__dirname + '/../app/controllers/index.js'], function(controller) {
-    controller(req, res);
-  });
+requirejs([__dirname + '/../app/controllers/index/get.js'], function(controller) {
+  app.get(/^((?!\/(api|js|css|img|socket.io)\/).)*$/, controller);
 });
 
 // API routes mapped to app/controllers/*.js modules.
@@ -56,8 +55,19 @@ var routes = {
   '/api/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {
-  requirejs([__dirname + '/../app/controllers/' + controller + '.js'], function(controller) {
-    controller(route, app);
+  // In each route-specific directory, look for method-specific files, ex. get.js.
+  var dir = __dirname + '/../app/controllers/' + controller;
+  fs.readdir(dir, function(err, files) {
+    if (err) {
+      throw err;
+    }
+    _.each(files, function(file) {
+      // Ex. app/controllers/graph/get.js
+      requirejs([dir + '/' + file], function(controller) {
+        var method = path.basename(file, '.js');
+        app[method](route, controller);
+      });
+    });
   });
 });
 

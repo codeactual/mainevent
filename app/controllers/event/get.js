@@ -2,7 +2,7 @@ define([], function() {
 
   'use strict';
 
-  var get = function(req, res) {
+  return function(req, res) {
     var parsers = mainevent.requireModule('parsers'),
     send404 = function() {
       res.send({__error: 'Event not found.'}, 404);
@@ -35,9 +35,5 @@ define([], function() {
         res.send(doc);
       }
     });
-  };
-
-  return function(route, app) {
-    app.get(route, get);
   };
 });
