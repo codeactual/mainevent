@@ -149,6 +149,16 @@ Parser.prototype.detectDelimiter = function(line) {
 };
 
 /**
+ * Verify a line is parsable.
+ *
+ * @param {string} line Ex. log line extracted from `tail` output.
+ * @return {boolean}
+ */
+Parser.prototype.isLineParsable = function(line) {
+  return _.isObject(this.parse(line));
+};
+
+/**
  * Convenience wrapper around mainevent.shared.Lang.extend().
  *
  * - Curries the super class argument.

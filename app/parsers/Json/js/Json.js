@@ -43,14 +43,5 @@ exports.JsonParser = extend({name: 'Json', humanName: 'JSON'}, {
       preview.push(key + '=' + value);
     });
     return preview.join(', ');
-  },
-
-  isLineParsable: function(line) {
-    try {
-      JSON.parse(line);
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 });
