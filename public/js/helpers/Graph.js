@@ -80,14 +80,15 @@ define(['shared/Date'], function() {
      * Ex. if there is only one data point, then ensure the axis scope is zoomed
      * in on that point.
      *
-     * @param container {Object} Container element's jQuery object.
+     * @param height {Number} Container element's height.
+     * @param width {Number} Container element's width.
      * @param data {Array} Array of [x,y] arrays.
      * @param axes {Object} Default options for each axis.
      * - x {Object}
      * - y {Object}
      * @return {Object} Modified 'axes'.
      */
-    adjustAxes: function(container, data, axes) {
+    adjustAxes: function(height, width, data, axes) {
       if (!data || !data.length) {
         return axes;
       }
@@ -116,7 +117,7 @@ define(['shared/Date'], function() {
         axes.xaxis.max = data[data.length - 1][0];
 
         // Estiamte x-axis tickInterval based on current dimensions.
-        var graphWidth = container.width() - Graph.yLabelWidth,
+        var graphWidth = width - Graph.yLabelWidth,
             idealTicks = Math.floor(graphWidth / Graph.xMinTickWidth),
             span = date.strtotime(data[data.length - 1][0]) - date.strtotime(data[0][0]),
             partition = Graph.findBestPartition(idealTicks, span);
@@ -125,7 +126,7 @@ define(['shared/Date'], function() {
       }
 
       // Estimate y-axis numberTicks and tickInterval based on current dimensions.
-      var graphHeight = container.parent().height() - Graph.xLabelWidth,
+      var graphHeight = height - Graph.xLabelWidth,
           ymax = 0;
       _.each(data, function(point) {
         ymax = point[1] > ymax ? point[1] : ymax;

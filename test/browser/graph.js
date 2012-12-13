@@ -5,20 +5,16 @@ require(['helpers/Graph'], function() {
     var suite = new Y.Test.Suite("Graph Data");
     suite.add(
       new Y.Test.Case({
-        'name': 'Utils',
-
-        addGraphContainer: function() {
-          var container = $('<div id="jqplot">'),
-              parent = $('<div>').css('height', 400);
-          parent.append(container);
-          $('body').append(parent);
+        setUp: function() {
+          this.height = 400;
+          this.width = 1300;
         },
+
+        name: 'Utils',
 
         'should adjust single-point data set': function() {
           var axes = {xaxis: {}, yaxis: {}},
               data = [["03/28/2012", 35]];
-
-          this.addGraphContainer();
 
           areDeepEqual(
             {
@@ -35,7 +31,7 @@ require(['helpers/Graph'], function() {
                 min: 0
               }
             },
-            Graph.adjustAxes($('#jqplot'), data, axes)
+            Graph.adjustAxes(this.height, this.width, data, axes)
           );
         },
 
@@ -47,8 +43,6 @@ require(['helpers/Graph'], function() {
                 ["03/26/2012", 2311],
                 ["03/28/2012", 4320]
               ];
-
-          this.addGraphContainer();
 
           areDeepEqual(
             {
@@ -65,7 +59,7 @@ require(['helpers/Graph'], function() {
                 min: 0
               }
             },
-            Graph.adjustAxes($('#jqplot'), data, axes)
+            Graph.adjustAxes(this.height, this.width, data, axes)
           );
         },
 
