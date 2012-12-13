@@ -35,6 +35,9 @@ app.engine('.html', function(filename, options, cb) {
   });
 });
 
+// For req.body use, ex. JSON payloads via POST.
+app.use(express.bodyParser());
+
 // Make assets accessible to clients.
 app.use(express.static(__dirname + '/../static'));
 
@@ -49,7 +52,8 @@ requirejs([__dirname + '/../app/controllers/index/get.js'], function(controller)
 
 // API routes mapped to app/controllers/*.js modules.
 var routes = {
-  '/api/event/:id': 'event',
+  '/api/event': 'event',
+  '/api/event/:id': 'event-id',
   '/api/graph/:name': 'graph',
   '/api/job/:name': 'job',
   '/api/timeline': 'timeline'
