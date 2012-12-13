@@ -54,22 +54,6 @@ if (program.interval) {
 
 program.verbose = program.verbose || program.vverbose;
 
-// Start after a manually set last ID.
-if (program.id) {
-    runJob(program.id);
-
-// Start after the recorded last ID, if possible.
-} else {
-  redis.get(lastIdKey, function(err, lastId) {
-    if (err) {
-      log('could not read last ID: %s', err);
-      process.exit(1);
-    }
-
-    runJob(lastId);
-  });
-}
-
 /**
  * @param lastId {String} Job will query documents which were inserted after this ID.
  * - If falsey, the job will start at the first inserted ID.
@@ -269,3 +253,19 @@ process.on('SIGTERM', function() {
   log(exitGracefulMessage, 'SIGTERM');
   exitGraceful = true;
 });
+
+// Start after a manually set last ID.
+if (program.id) {
+    runJob(program.id);
+
+// Start after the recorded last ID, if possible.
+} else {
+  redis.get(lastIdKey, function(err, lastId) {
+    if (err) {
+      log('could not read last ID: %s', err);
+      process.exit(1);
+    }
+
+    runJob(lastId);
+  });
+}
