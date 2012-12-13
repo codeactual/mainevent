@@ -145,7 +145,7 @@ var runJob = function(lastId) {
               changes[member] = {hashFields: result, score: score};
 
               // Track last ID processed.
-              jobLastId = result._id;
+              jobLastId = result._id.toString();
             });
 
             if (!_.size(changes)) {
