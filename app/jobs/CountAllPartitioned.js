@@ -77,7 +77,7 @@ Job.extend(CountAllPartitioned, {
       default:
         return;
     }
-    emit(group, {count: 1, _id: this._id.toString()});
+    emit(group, {count: 1, _id: this._id});
   },
 
   reduce: function(key, values) {
