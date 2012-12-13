@@ -2,7 +2,7 @@ define([], function() {
 
   'use strict';
 
-  return function(req, res) {
+  var get = function(req, res) {
     var mongodb = mainevent.requireModule('mongodb').createInstance();
 
     if ('time' === req.query['sort-attr'] && 'desc' === req.query['sort-dir']) {
@@ -28,5 +28,9 @@ define([], function() {
         res.send({info: info, results: []});
       }
     });
+  };
+
+  return function(route, app) {
+    app.get(route, get);
   };
 });

@@ -2,12 +2,12 @@ define([], function() {
 
   'use strict';
 
-  return function(req, res) {
+  var get = function(req, res) {
     var parsers = mainevent.requireModule('parsers'),
-        send404 = function() {
-          res.send({__error: 'Event not found.'}, 404);
-        },
-        mongodb = mainevent.requireModule('mongodb').createInstance();
+    send404 = function() {
+      res.send({__error: 'Event not found.'}, 404);
+    },
+    mongodb = mainevent.requireModule('mongodb').createInstance();
 
     if (!req.params.id.match(/^[a-z0-9]{24}$/)) {
       send404();
@@ -35,5 +35,9 @@ define([], function() {
         res.send(doc);
       }
     });
+  };
+
+  return function(route, app) {
+    app.get(route, get);
   };
 });

@@ -56,10 +56,8 @@ var routes = {
   '/api/timeline': 'timeline'
 };
 _.each(routes, function(controller, route) {
-  app.get(route, function(req, res) {
-    requirejs([__dirname + '/../app/controllers/' + controller + '.js'], function(controller) {
-      controller(req, res);
-    });
+  requirejs([__dirname + '/../app/controllers/' + controller + '.js'], function(controller) {
+    controller(route, app);
   });
 });
 

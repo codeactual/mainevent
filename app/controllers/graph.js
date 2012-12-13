@@ -8,7 +8,7 @@ define([], function() {
 
   'use strict';
 
-  return function(req, res) {
+  var get = function(req, res) {
     var send404 = function() {
           res.send({__error: 'Graph not found.'}, 404);
         },
@@ -62,5 +62,9 @@ define([], function() {
 
       res.send(points);
     });
+  };
+
+  return function(route, app) {
+    app.get(route, get);
   };
 });
