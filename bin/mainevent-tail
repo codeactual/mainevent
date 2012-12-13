@@ -30,6 +30,9 @@
   // To support restart tests.
   var startCount = 0;
 
+  // To support signal/exceptions that do not trigger auto-restart.
+  var restartOnExit = true;
+
   /**
    * Configure the monitor.
    */
@@ -218,9 +221,13 @@
     this.tail.on('exit', function(code, signal) {
       monitor.log("tail exited with code %d, signal %s", code, signal);
 
-      // Auto-restart.
-      monitor.log('restarting');
-      monitor.start();
+      if (restartOnExit) {
+        // Auto-restart.
+        monitor.log('restarting');
+        monitor.start();
+      } else {
+        monitor.log('restart aborted due to signal/exception');
+      }
     });
 
     // Kill `tail` before parent process exits.
@@ -273,6 +280,11 @@
     });
   };
 
+  var exitWithoutRestart = function() {
+    restartOnExit = false;
+    process.exit();
+  };
+
   /**
    * Trigger monitors to clean up their `tail` instances.
    */
@@ -283,15 +295,15 @@
   process.on('exit', endAllMonitors);
   process.on('SIGINT', function() {
     procLog('SIGINT received');
-    process.exit();
+    exitWithoutRestart();
   });
   process.on('SIGTERM', function() {
     procLog('SIGTERM received');
-    process.exit();
+    exitWithoutRestart();
   });
   process.on('uncaughtException', function(err) {
     procLog('uncaught exception: %s', err.stack ? err.stack : '');
-    process.exit();
+    exitWithoutRestart();
   });
 
   // Test mode -- wait until instructed by parent process.
