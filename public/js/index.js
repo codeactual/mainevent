@@ -14,6 +14,7 @@ require([
   'backbone',
   'backbone/View',
   'bootstrap',
+  'moment',
   'clientsiiide',
   'templates',
   'helpers/Cache',
