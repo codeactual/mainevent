@@ -146,10 +146,10 @@ define([], function() {
           graphData.push([time, result.count]);
         });
 
-        var axes = Graph.adjustAxes(this.$el, graphData, defaultAxes),
-            title =
-              mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-gte'], 10))
-              + ' &mdash; ' +  mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-lte'], 10));
+        var axes = Graph.adjustAxes(this.$el.height(), this.$el.parent.width(), graphData, defaultAxes);
+        var title =
+          mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-gte'], 10)) +
+          ' &mdash; ' +  mainevent.shared.Date.formatTime(parseInt(this.options.dashArgs['time-lte'], 10));
       } else {
         var axes = defaultAxes,
              graphData = [[0,0]],
