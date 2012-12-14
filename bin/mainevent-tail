@@ -266,10 +266,22 @@
    * Seed initial `tail` set based on config/app.js 'sources' list.
    */
   var startAllMonitors = function() {
-    var maxListeners = config.sources.length;
+    // Per-monitor events:
+    // - MONITOR_ENDED
+    // Shared:
+    // - SIGINT
+    // - SIGTERM
+    // - uncaughtException
+    // - exit
+    var maxListeners = config.sources.length + 4;
 
-    if (program.test) {   // Tests add 'message' and 'exit' listeners.
-      maxListeners += 2;
+    // Test-only events:
+    // - ALL_MONITORS_ENDED
+    // - TEST_STARTED
+    // - TEST_ENDED
+    // - TEST_BATCH_ENDED
+    if (program.test) {
+      maxListeners += 4;
     }
 
     // Avoid EventEmitter mem leak false alarms about count > 10.
