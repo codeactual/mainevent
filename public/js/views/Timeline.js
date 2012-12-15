@@ -59,12 +59,15 @@ define([
         view.renderUpdateSensitive();
         view.fetchTimeline.call(view, view.renderTimeline);
       });
+
+      this.initWebNotify();
     },
 
     events: {
       'click #timeline-open-search': 'openSearch',
       'click #timeline-toggle-updates': 'toggleUpdates',
-      'click #timeline-edit-rowlimit': 'editRowLimit'
+      'click #timeline-edit-rowlimit': 'editRowLimit',
+      'click #timeline-enable-webnotify': 'requestWebNotifyPerm'
     },
 
     onClose: function() {
@@ -99,6 +102,36 @@ define([
           searchArgs: this.options.searchArgs,
           title: 'Search'
         });
+      }
+    },
+
+    /**
+     * Request Web Notifications permission.
+     */
+    requestWebNotifyPerm: function() {
+      var self = this;
+      this.webNotifyApi.requestPermission(function() {
+        self.$('#timeline-enable-webnotify').remove();
+      });
+    },
+
+    /**
+     * Allow Web Notifications to be enabled via drop-down menu.
+     */
+    initWebNotify: function() {
+      this.webNotifyApi = window.webkitNotifications;
+      if (!this.webNotifyApi) {
+        console.log('no api');
+        return;
+      }
+
+      var perm = this.webNotifyApi.checkPermission();
+
+      // User has not yet been asked for permission.
+      if (1 === perm) {
+        $('#timeline-enable-webnotify').parent().show();
+      } else {
+        $('#timeline-enable-webnotify').remove();
       }
     },
 
