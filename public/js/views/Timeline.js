@@ -383,8 +383,7 @@ define([
               //setTimeout(sendReady, 500);
             };
 
-            view.socket.on('TimelineUpdate', view.addUpdateToTable);
-            view.socket.on('TimelineUpdate', view.addUpdateToDesktop);
+            view.socket.on('TimelineUpdate', view.dispatchTimelineUpdates);
 
             // All client observers ready.
             view.socket.on('ServerReady', function() {
@@ -408,6 +407,7 @@ define([
      * @param data {Array} List of event objects on success.
      */
     dispatchTimelineUpdates: function(data) {
+      data = data.reverse();
       this.addUpdateToTable(data);
       this.addUpdateToDesktop(data);
     },
@@ -427,7 +427,7 @@ define([
         a.text(moment(a.data('time')).fromNow());
       });
 
-      this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
+      this.renderTimeline(data, {prepend: true, highlight: true});
 
       this.truncateRows();
     },
