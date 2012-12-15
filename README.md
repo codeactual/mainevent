@@ -68,8 +68,19 @@ Extending the base class is a simple one-call process via a [backbone.js](http:/
 }
 ```
 
-
 See <code>[app/modules/redis/InsertLogPubSub.js](https://github.com/codeactual/mainevent/blob/master/app/modules/redis/InsertLogPubSub.js)</code> for a working example.
+
+### Display a real-time update with Web Notifications
+
+* Add the tag 'WebNotificationApi' to the event.
+* Required event attribute(s):
+  * `WebNotificationApiBody`
+    * OR `WebNotificationApiBodyAttr` to specify the attribute to use instead.
+* Optional event attribute(s):
+  * `WebNotificationApiTitle`
+    * OR `WebNotificationApiTitleAttr` to specify the attribute to use instead.
+  * `WebNotificationApiUrl` (icon location)
+    * OR `WebNotificationApiUrlAttr` to specify the attribute to use instead.
 
 ## Configuration
 
