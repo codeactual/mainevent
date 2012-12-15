@@ -267,10 +267,6 @@ define([
       * - highlight {Boolean} If true, row receives styled class (default=false).
      */
     renderTimeline: function(events, options) {
-      if (!events.length) {
-        return;
-      }
-
       options = options || {
         prepend: false,
         highlight: false
@@ -387,8 +383,8 @@ define([
               //setTimeout(sendReady, 500);
             };
 
-            // Update the view with latest event.
             view.socket.on('TimelineUpdate', view.addUpdateToTable);
+            view.socket.on('TimelineUpdate', view.addUpdateToDesktop);
 
             // All client observers ready.
             view.socket.on('ServerReady', function() {
@@ -409,17 +405,19 @@ define([
     },
 
     /**
-     * Fires on received responses from the automatic updates socket.
+     * @param data {Array} List of event objects on success.
+     */
+    dispatchTimelineUpdates: function(data) {
+      this.addUpdateToTable(data);
+      this.addUpdateToDesktop(data);
+    },
+
+    /**
+     * Add timeline updates to the table as a new row at the top.
      *
-     * @param data {Array|Object} List of event objects on success.
-     * - On error, __socket_error string is set.
+     * @param data {Array} List of event objects on success.
      */
     addUpdateToTable: function(data) {
-      console.log('addUpdateToTable', data);
-      if (!data || !data.length) {
-        return;
-      }
-
       // Un-highlight any past updates.
       $('.timeline-update').removeClass('timeline-update');
 
@@ -432,6 +430,25 @@ define([
       this.renderTimeline(data.reverse(), {prepend: true, highlight: true});
 
       this.truncateRows();
+    },
+
+    /**
+     * Add timeline updates to the desktop via Web Notifications API.
+     *
+     * @param data {Array|Object} List of event objects on success.
+     */
+    addUpdateToDesktop: function(data) {
+      var self = this;
+      _.each(data, function(event) {
+        if (-1 === event.tags.indexOf('WebNotificationApi')) {
+          return;
+        }
+        self.webNotifyApi.createNotifiation(
+          null,
+          event.parser,
+          event.preview
+        );
+      });
     }
   });
 });
