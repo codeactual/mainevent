@@ -73,6 +73,9 @@ exports.read = function () {
       host: '127.0.0.1',
       options: {}
     },
-    timelineUpdateDelay: 3000
+    timelineUpdateDelay: 3000,
+    log: {
+      verbose: false
+    }
   };
 };
