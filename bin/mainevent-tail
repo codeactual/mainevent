@@ -233,7 +233,7 @@
     // Kill `tail` before parent process exits.
     var killTail = function() {
       // To allow a listener count of 0 to indicate that all monitors have been killed
-      process.removeListener('MONITOR_ENDED', killTail);
+      process.removeListener('PARENT_PROC_EXITING', killTail);
 
       if (monitor.tail) {
         monitor.mongodb.dbClose();
@@ -252,12 +252,12 @@
       if (program.test) {
         // All monitors have invoked killTail() and sent a kill signal to their
         // remote tail processes.
-        if (!process.listeners('MONITOR_ENDED').length) {
+        if (!process.listeners('PARENT_PROC_EXITING').length) {
           process.send('ALL_MONITORS_ENDED');
         }
       }
     };
-    process.on('MONITOR_ENDED', killTail);
+    process.on('PARENT_PROC_EXITING', killTail);
 
     this.log('local pid %d', this.tail.pid);
   };
@@ -267,7 +267,7 @@
    */
   var startAllMonitors = function() {
     // Per-monitor events:
-    // - MONITOR_ENDED
+    // - PARENT_PROC_EXITING
     // Shared:
     // - SIGINT
     // - SIGTERM
@@ -302,7 +302,7 @@
    */
   var endAllMonitors = function() {
     // Trigger each monitor to call killTail().
-    process.emit('MONITOR_ENDED');
+    process.emit('PARENT_PROC_EXITING');
   };
   process.on('exit', endAllMonitors);
   process.on('SIGINT', function() {
