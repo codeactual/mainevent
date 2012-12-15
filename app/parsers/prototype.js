@@ -15,43 +15,57 @@ Parser.prototype.parseLines = function(source, lines) {
 
   _.each(_.isArray(lines) ? lines : [lines], function(line, index) {
     var log = parser.parse(line);
+    log.parser = source.parser;
+    log.tags = source.tags;
 
-    // Parse succeeded.
-    if (log && _.size(log)) {
-      // Use a source-specific attribute for the canonical 'time' attribute.
-      if (source.timeAttr && log[source.timeAttr]) {
-        log.time = log[source.timeAttr];
-        delete log[source.timeAttr];
-      }
-
-      log.time = parser.extractTime(_.clone(log));
-
-      // Fallback to the current time.
-      if (isNaN(log.time)) {
-        log.time = (new Date()).getTime();
-        log.__parse_error = 'time';
-      }
-
-      // Attach source-specific attributes.
-      log.previewAttr = source.previewAttr || [];
-
-    // Parse failed. Store the line and mark it.
-    } else {
-      log = {
-        time: (new Date()).getTime(),
-        message: line,
-        __parse_error: 'line'
-      };
+    // Use a source-specific attribute for the canonical 'time' attribute.
+    if (source.timeAttr && log[source.timeAttr]) {
+      log.time = log[source.timeAttr];
+      delete log[source.timeAttr];
     }
 
-    log.time = Math.round(log.time);
-    log.parser = source.parser;
-    log.tags = source.tags || [];
+    // Attach source-specific attributes.
+    log.previewAttr = source.previewAttr || [];
 
+    log = this.beforeLineInsert(line, log);
     logs.push(log);
   });
 
   return logs;
+};
+
+/**
+ * Perform final validation/modification to a single log object before it's written.
+ *
+ * @param {String} line Log line prior to parse.
+ * @param {Object} log Parsed line.
+ * @return {Object}
+ */
+Parser.prototype.beforeLineInsert = function(line, log) {
+  if (_.isObject(log) && !_.isEmpty(log)) {
+    log = _.clone(log);
+
+    log.time = this.extractTime(_.clone(log));
+
+    // Fallback to the current time.
+    if (!log.time || isNaN(log.time)) {
+      log.time = (new Date()).getTime();
+      log.__parse_error = 'time';
+    }
+
+    // Parse failed. Store the line and mark it.
+  } else {
+    log = {
+      time: (new Date()).getTime(),
+      message: line,
+      __parse_error: 'line'
+    };
+  }
+
+  log.time = Math.round(log.time);
+  log.tags = log.tags || [];
+
+  return log;
 };
 
 /**

@@ -4,6 +4,7 @@ define([], function() {
 
   return function(req, res) {
     var mongodb = mainevent.requireModule('mongodb').createInstance();
+    var parser = mainevent.requireModule('parsers').createInstance('Json');
 
     var event = req.body;
 
@@ -12,10 +13,7 @@ define([], function() {
       return;
     }
 
-    if (_.has(event, '_id')) {
-      res.send({__error: 'Event definition cannot contain _id'}, 400);
-      return;
-    }
+    event = parser.beforeLineInsert(JSON.stringify(event), event);
 
     mongodb.insertLog([event], function(err, doc) {
       if (err) {

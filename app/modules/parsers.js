@@ -31,8 +31,10 @@ exports.parseAndInsert = function(mongodb, sourceLines, callback, bulk) {
     lines = lines.concat(parser.parseLines(sl.source, sl.lines));
   });
 
+  callback = callback || function() {};
+
   mongodb.insertLog(lines, function() {
-    (callback || function() {})();
+    callback.apply(null, arguments);
   }, bulk);
 };
 

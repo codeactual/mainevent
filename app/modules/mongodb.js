@@ -229,6 +229,7 @@ MongoDb.prototype.insertLog = function(logs, callback, bulk) {
       logs = _.isArray(logs) ? logs : [logs];
 
       _.each(logs, function(log) {
+        delete log._id;
         log.time = new Date(log.time);
         log = mainevent.shared.Lang.numericStrToNum(log);
         docs.push(log);
