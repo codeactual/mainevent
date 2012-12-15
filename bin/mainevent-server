@@ -75,14 +75,18 @@ _.each(routes, function(controller, route) {
   });
 });
 
-// Load all socket controllers under app/sockets/.
-io.sockets.on('connection', function (socket) {
-  var dir = __dirname + '/../app/sockets',
-      fs = require('fs');
-  fs.readdir(dir, function(err, files) {
-    _.each(files, function(socketController) {
-      requirejs([dir + '/' + socketController], function(addEventHandlers) {
-        addEventHandlers(socket);
+var redis = mainevent.requireModule('redis').createInstance();
+redis.connect();
+redis.client.on('ready', function() {
+  // Load all socket controllers under app/sockets/.
+  io.sockets.on('connection', function (socket) {
+    var dir = __dirname + '/../app/sockets',
+    fs = require('fs');
+    fs.readdir(dir, function(err, files) {
+      _.each(files, function(socketController) {
+        requirejs([dir + '/' + socketController], function(addEventHandlers) {
+          addEventHandlers({socket: socket, redis: redis});
+        });
       });
     });
   });

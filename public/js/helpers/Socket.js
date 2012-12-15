@@ -26,9 +26,6 @@ define([], function() {
     initOptions: function(options) {
       options = options || {};
       options.event = options.event || {};
-      _.each(this.eventNames, function(name) {
-        options.event[name] = options.event[name] || function() {};
-      });
       options.socket = options.socket || {
         'reconnect': true,
 
@@ -49,13 +46,11 @@ define([], function() {
       this.initOptions(options);
 
       // Create connection based on custom/default attributes.
-      var socket = io.connect(location.protocol + location.host, options.socket);
+      var socket = io.connect(location.protocol + '//' + location.host, options.socket);
 
       // Attach optional event handlers.
-      _.each(this.eventNames, function(name) {
-        if (options.event[name]) {
-          socket.on(name, options.event[name]);
-        }
+      _.each(options.event, function(callback, name) {
+        socket.on(name, callback);
       });
 
       return socket;

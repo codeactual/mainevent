@@ -61,6 +61,8 @@ define([
       });
 
       this.initWebNotify();
+
+      _.bindAll(this);
     },
 
     events: {
@@ -350,24 +352,59 @@ define([
      *
      */
     startTimelineUpdate: function() {
+      console.log('startTimelineUpdate');
       var view = this;
 
       if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
         return;
       }
 
+      console.log('startTimelineUpdate', 'creating socket');
       this.socket = mainevent.helpers.Socket.create({
         event: {
           connect: function() {
-            // Start/restart automatic updates.
-            view.socket.emit('StartTimelineUpdate');
+            console.log('startTimelineUpdate', 'socket connected', view.socket);
+/*
+            S -> im ready -> C
+            500ms
+            S -> im ready -> C
+            C -> me too (stop listening/responding for imready) -> S (stops listening/responding for me-too)
+            C/S -> first non-setup event -> S/C (who starts doesn't matter now because both have had just enough time to set up their observers)?*/
+
+
+            var serverReady = false;
+
+            var sendReady = function() {
+              if (serverReady) {
+                return; // Break cycle.
+              }
+              console.log('asking server to reply');
+
+              // All server observers created.
+              view.socket.emit('ClientReady');
+
+              // Send the event again soon.
+              //setTimeout(sendReady, 500);
+            };
+
+            // Update the view with latest event.
+            view.socket.on('TimelineUpdate', view.addUpdateToTable);
+
+            // All client observers ready.
+            view.socket.on('ServerReady', function() {
+              serverReady = true;
+
+              console.log('server is ready, sending StartTimelineUpdate');
+
+              view.socket.emit('ClientReady');
+
+              // Start/restart automatic updates.
+              view.socket.emit('StartTimelineUpdate');
+            });
+
+            //sendReady();
           }
         }
-      });
-
-      // Update the view with latest event.
-      this.socket.on('TimelineUpdate', function(data) {
-        view.onTimelineUpdate.call(view, data);
       });
     },
 
@@ -377,7 +414,8 @@ define([
      * @param data {Array|Object} List of event objects on success.
      * - On error, __socket_error string is set.
      */
-    onTimelineUpdate: function(data) {
+    addUpdateToTable: function(data) {
+      console.log('addUpdateToTable', data);
       if (!data || !data.length) {
         return;
       }
