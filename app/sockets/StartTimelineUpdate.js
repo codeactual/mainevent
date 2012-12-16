@@ -1,7 +1,7 @@
 /**
  * Serve automatic timeline updates.
  */
-define([], function() {
+define(['shared/socket'], function(socketHelper) {
 
   'use strict';
 
@@ -53,29 +53,8 @@ define([], function() {
       res.redis.client.removeListener('message', onRedisMessage);
     });
 
-    // TODO place this in a helper
-
-    var clientReady = false;
-
-    var sendReady = function() {
-      if (clientReady) {
-        return; // Break cycle.
-      }
-      log('asking client to reply');
-
-      // All server observers created.
-      res.socket.emit('ServerReady');
-
-      // Send the event again soon.
-      setTimeout(sendReady, 500);
-    };
-
-    res.socket.on('ClientReady', function() {
+    socketHelper.syncWithClient(res.socket, function() {
       log('client is ready');
-      clientReady = true;
     });
-
-    // All server observers ready.
-    sendReady();
   };
 });
