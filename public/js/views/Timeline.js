@@ -374,7 +374,7 @@ define([
             view.socket.on('TimelineUpdate', view.dispatchTimelineUpdates);
 
             // All client observers ready.
-            view.socket.on('ServerReady', function() {
+            view.socket.on('ServerReady', _.once(function() {
               serverReady = true;
 
               console.log('server is ready, sending StartTimelineUpdate');
@@ -383,7 +383,7 @@ define([
 
               // Start/restart automatic updates.
               view.socket.emit('StartTimelineUpdate');
-            });
+            }));
 
             //sendReady();
           }
