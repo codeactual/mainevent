@@ -2,10 +2,11 @@ define([
     'collections/Timeline',
     'views/EditSingleValue',
     'views/TimelineSearch',
+    'shared/socket',
     'helpers/Socket',
     'helpers/View',
     'socket.io'
-  ], function(TimelineCollection, EditSingleValue, TimelineSearch) {
+  ], function(TimelineCollection, EditSingleValue, TimelineSearch, socketHelper) {
 
   'use strict';
 
@@ -356,36 +357,10 @@ define([
       this.socket = mainevent.helpers.Socket.create({
         event: {
           connect: function() {
-            var serverReady = false;
-
-            var sendReady = function() {
-              if (serverReady) {
-                return; // Break cycle.
-              }
-              console.log('asking server to reply');
-
-              // All server observers created.
-              view.socket.emit('ClientReady');
-
-              // Send the event again soon.
-              //setTimeout(sendReady, 500);
-            };
-
             view.socket.on('TimelineUpdate', view.dispatchTimelineUpdates);
-
-            // All client observers ready.
-            view.socket.on('ServerReady', _.once(function() {
-              serverReady = true;
-
-              console.log('server is ready, sending StartTimelineUpdate');
-
-              view.socket.emit('ClientReady');
-
-              // Start/restart automatic updates.
+            socketHelper.syncWithServer(view.socket, function() {
               view.socket.emit('StartTimelineUpdate');
-            }));
-
-            //sendReady();
+            });
           }
         }
       });
