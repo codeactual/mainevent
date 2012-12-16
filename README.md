@@ -73,15 +73,15 @@ See <code>[app/modules/redis/InsertLogPubSub.js](https://github.com/codeactual/m
 ### Display a real-time update with Web Notifications
 
 * Enable Desktop Notifications via Timeline drop-down menu.
-* Add the tag 'WebNotificationApi' to the event.
+* Add the tag 'WebNotifyApi' to the event.
 * Required event attribute(s):
-  * `WebNotificationApiBody`
-    * OR `WebNotificationApiBodyAttr` to specify the attribute to use instead.
+  * `WebNotifyApiBody`
+    * OR `WebNotifyApiBodyAttr` to specify the attribute to use instead.
 * Optional event attribute(s):
-  * `WebNotificationApiTitle`
-    * OR `WebNotificationApiTitleAttr` to specify the attribute to use instead.
-  * `WebNotificationApiUrl` (icon location)
-    * OR `WebNotificationApiUrlAttr` to specify the attribute to use instead.
+  * `WebNotifyApiTitle`
+    * OR `WebNotifyApiTitleAttr` to specify the attribute to use instead.
+  * `WebNotifyApiUrl` (icon location)
+    * OR `WebNotifyApiUrlAttr` to specify the attribute to use instead.
 
 ## Configuration
 

@@ -123,7 +123,6 @@ define([
     initWebNotify: function() {
       this.webNotifyApi = window.webkitNotifications;
       if (!this.webNotifyApi) {
-        console.log('no api');
         return;
       }
 
@@ -348,26 +347,15 @@ define([
      *
      */
     startTimelineUpdate: function() {
-      console.log('startTimelineUpdate');
       var view = this;
 
       if (!this.prefs.autoUpdate || !mainevent.features.timelineUpdate) {
         return;
       }
 
-      console.log('startTimelineUpdate', 'creating socket');
       this.socket = mainevent.helpers.Socket.create({
         event: {
           connect: function() {
-            console.log('startTimelineUpdate', 'socket connected', view.socket);
-/*
-            S -> im ready -> C
-            500ms
-            S -> im ready -> C
-            C -> me too (stop listening/responding for imready) -> S (stops listening/responding for me-too)
-            C/S -> first non-setup event -> S/C (who starts doesn't matter now because both have had just enough time to set up their observers)?*/
-
-
             var serverReady = false;
 
             var sendReady = function() {
@@ -440,14 +428,14 @@ define([
     addUpdateToDesktop: function(data) {
       var self = this;
       _.each(data, function(event) {
-        if (-1 === event.tags.indexOf('WebNotificationApi')) {
+        if (-1 === event.tags.indexOf('WebNotifyApi')) {
           return;
         }
-        self.webNotifyApi.createNotifiation(
-          null,
-          event.parser,
-          event.preview
-        );
+        self.webNotifyApi.createNotification(
+          event.WebNotifyApiUrl || event[event.WebNotifyApiUrlAttr],
+          event.WebNotifyApiTitle || event[event.WebNotifyApiTitleAttr],
+          event.WebNotifyApiBody || event[event.WebNotifyApiBodyAttr]
+        ).show();
       });
     }
   });
