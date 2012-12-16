@@ -44,10 +44,10 @@ define([], function() {
      * - newestEventId {String}
      * - newestEventTime {Number}
      */
-    res.socket.on('StartTimelineUpdate', function (options) {
+    res.socket.on('StartTimelineUpdate', _.once(function (options) {
       log('received StartTimelineUpdate');
       res.redis.client.on('message', onRedisMessage);
-    });
+    }));
     res.socket.on('disconnect', function () {
       log('disconnecting');
       res.redis.client.removeListener('message', onRedisMessage);
