@@ -1,5 +1,4 @@
-var deps = [];
-var mod = function() {
+define([], function() {
   /**
    * @description Methods related to SocketIO.
    */
@@ -32,10 +31,21 @@ var mod = function() {
 
       // Start the poll.
       requestClientReply();
+    },
+
+    /**
+     * @description Invoke this helper on the client once it's ready -- it has
+     *   attached its (message) observer. The server will be notified of the client's
+     *   readiness.
+     * @param {object} socket
+     * @param {function} callback
+     */
+    syncWithServer: function(socket, callback) {
+      socket.on('ServerReady', _.once(function() {
+        socket.emit('ClientReady');
+      }));
     }
   };
 
   return Module;
-};
-
-define(deps, mod);
+});
