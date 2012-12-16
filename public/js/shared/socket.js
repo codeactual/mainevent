@@ -43,6 +43,7 @@ define([], function() {
     syncWithServer: function(socket, callback) {
       socket.on('ServerReady', _.once(function() {
         socket.emit('ClientReady');
+        callback();
       }));
     }
   };
