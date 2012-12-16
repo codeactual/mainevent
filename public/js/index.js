@@ -69,41 +69,51 @@ require([
         }
       };
 
-      var router = this;
-      _.each(routes, function(config, route) {
-        // Accept both standard routing string and RegExp() string.
-        route = route.match(/\^/) ? new RegExp(route) : route;
-        router.route(route, config.controller, function() {
-          var routeArgs = arguments;
-          require(['dust', 'helpers/Event', 'controllers/' + config.controller], function(dust, Event, controller) {
-            // Apply 'context' options to the 'content' template, ex. show sidebar.
-            dust.render(
-              'content',
-              config.context,
-              function(err, out) {
-                // Allow observers to tweak the layout based on configuration.
-                mainevent.helpers.Event.trigger('ContentPreRender', config.context);
+      _.bindAll(this);
 
-                // Display the rendered content container.
-                $('#content').html(out);
+      _.each(routes, this.addRoute);
+    },
 
-                // Let the preexisting view clean itself up.
-                if (mainevent.mainView) {
-                  mainevent.mainView.close();
-                  mainevent.mainView = null;
-                }
+    addRoute: function(config, selector) {
+      // Accept both standard routing string and RegExp() string.
+      selector = selector.match(/\^/) ? new RegExp(selector) : selector;
+      this.route(selector, config.controller, _.bind(this.renderContent, this, config));
+    },
 
-                routeArgs = _.map(routeArgs, decodeURIComponent);
+    renderContent: function(config) {
+      var self = this;
+      var routeArgs = [].slice.call(arguments, 1); // All args after 'config'.
+      require(['dust'], function(dust) {
+        // Apply 'context' options to the 'content' template, ex. show sidebar.
+        dust.render(
+          'content',
+          config.context,
+          _.bind(self.runController, self, config, routeArgs)
+        );
+      });
+    },
 
-                // Pass the matched route parameters to the actual controller.
-                var mainView = controller.apply(config.context, routeArgs);
-                if (mainView) {
-                  mainevent.mainView = mainView;
-                }
-              }
-            );
-          });
-        });
+    runController: function(config, routeArgs, err, out) {
+      require(['controllers/' + config.controller], function(controller) {
+        // Allow observers to tweak the layout based on configuration.
+        mainevent.helpers.Event.trigger('ContentPreRender', config.context);
+
+        // Display the rendered content container.
+        $('#content').html(out);
+
+        // Let the preexisting view clean itself up.
+        if (mainevent.mainView) {
+          mainevent.mainView.close();
+          mainevent.mainView = null;
+        }
+
+        routeArgs = _.map(routeArgs, decodeURIComponent);
+
+        // Pass the matched route parameters to the actual controller.
+        var mainView = controller.apply(config.context, routeArgs);
+        if (mainView) {
+          mainevent.mainView = mainView;
+        }
       });
     }
   });
