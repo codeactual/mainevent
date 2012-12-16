@@ -20,12 +20,12 @@ define(['xregexp'], function(XRegExp) {
      */
     namedCaptureMatch: function(subject, pattern) {
       var match = XRegExp.exec(subject, XRegExp(pattern));
+      var filtered = {};
 
       if (!match) {
-        return match;
+        return filtered;
       }
 
-      var filtered = {};
       _.each(Object.keys(match), function(key) {
         if (key.match(/^[0-9]+$/) || 'input' === key || 'index' === key) {
           return;

@@ -13,16 +13,38 @@ exports.parsers = {
 
   testUnparsableLine: function(test) {
     var testcase = this,
-        time = Math.round((new Date()).getTime()),
         source = {parser: 'Php', tags: ['a', 'b']},
         parser = this.parsers.createInstance('Php'),
         line = testutil.getRandHash();  // Only for verification lookup.
-    test.expect(3);
-    this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function() {
+    test.expect(4);
+    this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function(err) {
+      test.strictEqual(err, null);
       testcase.mongodb.getTimeline({message: line}, function(err, docs) {
-        test.ok(Math.abs(docs[0].time - time) < 1000);
+        test.ok(Math.abs(docs[0].time - Date.now()) < 1000);
         test.deepEqual(docs[0].tags, source.tags);
         test.strictEqual(docs[0].__parse_error, 'line');
+        test.done();
+      });
+    });
+  },
+
+  testUnparsableTime: function(test) {
+    var testcase = this,
+        source = {parser: 'Json', tags: ['a', 'b']},
+        parser = this.parsers.createInstance('Json'),
+        expected = {
+          time: 'foo',
+          run: testutil.getRandHash()  // Only for verification lookup.
+        },
+        line = JSON.stringify(expected);
+    test.expect(5);
+    this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function(err) {
+      test.strictEqual(err, null);
+      testcase.mongodb.getTimeline({run: expected.run}, function(err, docs) {
+        test.ok(Math.abs(docs[0].time - Date.now()) < 1000);
+        test.deepEqual(docs[0].tags, source.tags);
+        test.strictEqual(docs[0].__parse_error, 'time');
+        test.strictEqual(docs[0].__invalid_time, expected.time);
         test.done();
       });
     });
@@ -103,24 +125,6 @@ exports.parsers = {
       testcase.mongodb.getTimeline({message: run}, function(err, docs) {
         test.strictEqual(docs[0].message, run);
         test.strictEqual(docs[0].time, 1331543011000);
-        test.done();
-      });
-    });
-  },
-
-  testUnparsableTime: function(test) {
-    var testcase = this,
-        time = Math.round((new Date()).getTime()),
-        source = {parser: 'Php', tags: ['a', 'b']},
-        parser = this.parsers.createInstance('Php'),
-        message = testutil.getRandHash(),  // Only for verification lookup.
-        line = '[invalid time] ' + message;
-    test.expect(3);
-    this.parsers.parseAndInsert(testcase.mongodb, {source: source, lines: line}, function() {
-      testcase.mongodb.getTimeline({message: message}, function(err, docs) {
-        test.ok(Math.abs(docs[0].time - time) < 1000);
-        test.deepEqual(docs[0].tags, source.tags);
-        test.strictEqual(docs[0].__parse_error, 'time');
         test.done();
       });
     });

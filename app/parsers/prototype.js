@@ -5,29 +5,17 @@ var Parser = function() {};
 /**
  * Parse each line according to its source parser.
  *
- * @param source {Object}  Source properties from config.js
+ * @param source {Object} Source properties from config.js
  * @param lines {Array|String} Log line string(s).
  * @return {Array} Log objects.
  */
 Parser.prototype.parseLines = function(source, lines) {
-  var parser = this;
+  var self = this;
   var logs = [];
 
   _.each(_.isArray(lines) ? lines : [lines], function(line, index) {
-    var log = parser.parse(line);
-    log.parser = source.parser;
-    log.tags = source.tags;
-
-    // Use a source-specific attribute for the canonical 'time' attribute.
-    if (source.timeAttr && log[source.timeAttr]) {
-      log.time = log[source.timeAttr];
-      delete log[source.timeAttr];
-    }
-
-    // Attach source-specific attributes.
-    log.previewAttr = source.previewAttr || [];
-
-    log = this.beforeLineInsert(line, log);
+    var log = self.parse(line);
+    log = self.beforeLineInsert(line, log, source);
     logs.push(log);
   });
 
@@ -39,21 +27,39 @@ Parser.prototype.parseLines = function(source, lines) {
  *
  * @param {String} line Log line prior to parse.
  * @param {Object} log Parsed line.
+ * @param source {Object} [OPTIONAL] Source properties from config.js
  * @return {Object}
  */
-Parser.prototype.beforeLineInsert = function(line, log) {
+Parser.prototype.beforeLineInsert = function(line, log, source) {
+  // parse() returns {} if unparsable
   if (_.isObject(log) && !_.isEmpty(log)) {
     log = _.clone(log);
 
-    log.time = this.extractTime(_.clone(log));
+    // Save in case it's invalid.
+    var originalTime = log.time;
 
-    // Fallback to the current time.
+    // Apply source properties which may affect later logic.
+    if (source) {
+      // Use a source-specific attribute for the canonical 'time' attribute.
+      if (source.timeAttr && log[source.timeAttr]) {
+        log.time = log[source.timeAttr];
+        delete log[source.timeAttr];
+      }
+    }
+
+    // Fallback to the current time if extraction fails.
+    if (_.has(log, 'time')) {
+      log.time = this.extractTime(_.clone(log));
+    } else {
+      log.time = null;
+    }
     if (!log.time || isNaN(log.time)) {
       log.time = (new Date()).getTime();
       log.__parse_error = 'time';
+      log.__invalid_time = originalTime;
     }
 
-    // Parse failed. Store the line and mark it.
+  // Parse failed. Store the line and mark it.
   } else {
     log = {
       time: (new Date()).getTime(),
@@ -62,6 +68,14 @@ Parser.prototype.beforeLineInsert = function(line, log) {
     };
   }
 
+  // Apply all other source properties (which were not needed in above logic).
+  if (source) {
+    log.previewAttr = source.previewAttr || [];
+    log.parser = source.parser;
+    log.tags = source.tags;
+  }
+
+  // Parsable or not, always make these final changes.
   log.time = Math.round(log.time);
   log.tags = log.tags || [];
 
