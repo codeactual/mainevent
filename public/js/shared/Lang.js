@@ -16,7 +16,7 @@ define([], function() {
      * @return {mixed}
      */
     numericStrToNum: function(val) {
-      if (_.isUndefined(val)) {
+      if (_.isUndefined(val) || _.isNull(val)) {
         return val;
       }
 
