@@ -68,16 +68,17 @@ Parser.prototype.beforeLineInsert = function(line, log, source) {
     };
   }
 
+  log.tags = log.tags || [];
+  log.previewAttr = log.previewAttr || [];
+
   // Apply all other source properties (which were not needed in above logic).
   if (source) {
-    log.previewAttr = source.previewAttr || [];
+    log.previewAttr = log.previewAttr.concat(source.previewAttr || []);
     log.parser = source.parser;
-    log.tags = source.tags;
+    log.tags = log.tags.concat(source.tags || []);
   }
 
-  // Parsable or not, always make these final changes.
   log.time = Math.round(log.time);
-  log.tags = log.tags || [];
 
   return log;
 };
