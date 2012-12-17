@@ -403,7 +403,7 @@ define([
     addUpdateToDesktop: function(data) {
       var self = this;
       _.each(data, function(event) {
-        if (-1 === event.tags.indexOf('WebNotifyApi')) {
+        if (!_.has(event, 'WebNotifyApiBody') && !_.has(event, 'WebNotifyApiBodyAttr')) {
           return;
         }
         self.webNotifyApi.createNotification(
