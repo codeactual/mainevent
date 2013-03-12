@@ -584,7 +584,7 @@ MongoDb.prototype.attachConfiguredListeners = function(config) {
 
     var maxListeners = 1;
     _.each(listener.subscribers, function(subscriber) {
-      mongodb.setMaxListeners(listener.event, maxListeners++);
+      mongodb.setMaxListeners(maxListeners++);
       if ('/' != subscriber[0]) {
         subscriber = __dirname + '/../../' + subscriber;
       }
