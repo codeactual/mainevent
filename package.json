@@ -2,7 +2,11 @@
   "name": "mainevent",
   "description": "Parse, store, and view events written to flat file logs.",
   "version": "0.1.1",
-  "keywords": [ "logs", "mongodb", "frontend" ],
+  "keywords": [
+    "logs",
+    "mongodb",
+    "frontend"
+  ],
   "maintainers": [
     {
       "name": "David Smith",
@@ -26,21 +30,21 @@
     }
   ],
   "dependencies": {
-    "async": "0.1.22",
-    "commander": "0.6.1",
-    "dustjs-linkedin": "1.1.1",
-    "express": "3.0.4",
-    "lazy": "1.0.8",
-    "moment": "1.7.2",
-    "mongodb": "1.2.4",
-    "redis":"0.8.2",
-    "requirejs": "2.1.2",
-    "socket.io": "0.9.11",
-    "underscore": "1.4.3",
-    "xregexp": "2.0.0"
+    "async": "~0.2.6",
+    "commander": "~1.1.1",
+    "dustjs-linkedin": "~1.2.1",
+    "express": "~3.1.0",
+    "lazy": "~1.0.8",
+    "moment": "~2.0.0",
+    "mongodb": "~1.2.13",
+    "redis": "~0.8.2",
+    "requirejs": "~2.1.5",
+    "socket.io": "~0.9.13",
+    "underscore": "~1.4.4",
+    "xregexp": "~2.0.0"
   },
   "devDependencies": {
-    "nodeunit": "0.7.4"
+    "nodeunit": "~0.7.4"
   },
   "directories": {
     "lib": "app/modules"
