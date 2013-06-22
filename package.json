@@ -55,5 +55,8 @@
     "static:prod": "public/build.js --prod",
     "start": "public/build.js && bin/mainevent-server",
     "tail": "bin/mainevent-tail"
+  },
+  "devdir-ci": {
+    "version": 1
   }
 }
