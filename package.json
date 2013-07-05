@@ -32,14 +32,14 @@
   "dependencies": {
     "async": "~0.2.6",
     "commander": "~1.1.1",
-    "dustjs-linkedin": "~1.2.1",
-    "express": "~3.1.0",
+    "dustjs-linkedin": "~1.2.5",
+    "express": "~3.3.3",
     "lazy": "~1.0.8",
     "moment": "~2.0.0",
     "mongodb": "~1.2.13",
     "redis": "~0.8.2",
     "requirejs": "~2.1.5",
-    "socket.io": "~0.9.13",
+    "socket.io": "~0.9.16",
     "underscore": "~1.4.4",
     "xregexp": "~2.0.0"
   },
